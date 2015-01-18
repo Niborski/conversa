@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<registry type="compress">
+  <method>
+    <name>lzw</name>
+    <desc>the LZW (DCLZ) compression method</desc>
+    <doc>Standard ECMA-151: Data Compression for Information Interchange - Adaptive Coding with Embedded Dictionary - DLCZ Algorithm</doc>
+  </method>
+  <method>
+    <name>zlib</name>
+    <desc>the ZLIB compression method</desc>
+    <doc>RFC 1950: ZLIB Compressed Data Format Specification version 3.3</doc>
+  </method>
+</registry>

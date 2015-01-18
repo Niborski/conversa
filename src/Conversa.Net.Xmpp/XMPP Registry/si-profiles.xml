@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<registry type="si-profiles">
+  <profile>
+    <name>http://jabber.org/protocol/si/profile/file-transfer</name>
+    <desc>File transfer profile</desc>
+    <doc>XEP-0096: File Transfer</doc>
+  </profile>
+</registry>

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<registry type="jingle-apps">
+  <application>
+    <name>rtp</name>
+    <desc>
+    Jingle sessions that support media exchange 
+    via the Real-time Transport Protocol.
+  </desc>
+    <transport>datagram</transport>
+    <doc>XEP-0167</doc>
+  </application>
+</registry>

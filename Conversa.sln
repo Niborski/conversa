@@ -1,0 +1,57 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{ED8079DD-2B06-4030-9F0F-DC548F98E1C4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Conversa.Net.Xmpp", "src\Conversa.Net.Xmpp\Conversa.Net.Xmpp.csproj", "{2BA628DA-5041-45AB-A693-44ACC356C917}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Conversa.Net.Xmpp.Tests", "tests\Conversa.Net.Xmpp.Tests\Conversa.Net.Xmpp.Tests.csproj", "{F4B172B3-51AF-4001-A765-C6661BC2AC72}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{0D84CF3B-3412-407C-ADD0-EF4462F75E23}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|ARM = Debug|ARM
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|ARM = Release|ARM
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2BA628DA-5041-45AB-A693-44ACC356C917}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BA628DA-5041-45AB-A693-44ACC356C917}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BA628DA-5041-45AB-A693-44ACC356C917}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{2BA628DA-5041-45AB-A693-44ACC356C917}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2BA628DA-5041-45AB-A693-44ACC356C917}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2BA628DA-5041-45AB-A693-44ACC356C917}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BA628DA-5041-45AB-A693-44ACC356C917}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BA628DA-5041-45AB-A693-44ACC356C917}.Release|ARM.ActiveCfg = Release|Any CPU
+		{2BA628DA-5041-45AB-A693-44ACC356C917}.Release|x64.ActiveCfg = Release|Any CPU
+		{2BA628DA-5041-45AB-A693-44ACC356C917}.Release|x86.ActiveCfg = Release|Any CPU
+		{F4B172B3-51AF-4001-A765-C6661BC2AC72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4B172B3-51AF-4001-A765-C6661BC2AC72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4B172B3-51AF-4001-A765-C6661BC2AC72}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{F4B172B3-51AF-4001-A765-C6661BC2AC72}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F4B172B3-51AF-4001-A765-C6661BC2AC72}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F4B172B3-51AF-4001-A765-C6661BC2AC72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4B172B3-51AF-4001-A765-C6661BC2AC72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4B172B3-51AF-4001-A765-C6661BC2AC72}.Release|ARM.ActiveCfg = Release|Any CPU
+		{F4B172B3-51AF-4001-A765-C6661BC2AC72}.Release|x64.ActiveCfg = Release|Any CPU
+		{F4B172B3-51AF-4001-A765-C6661BC2AC72}.Release|x86.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F4B172B3-51AF-4001-A765-C6661BC2AC72} = {ED8079DD-2B06-4030-9F0F-DC548F98E1C4}
+	EndGlobalSection
+EndGlobal

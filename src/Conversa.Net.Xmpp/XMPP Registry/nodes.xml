@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<registry type="nodes">
+  <node>
+    <name>http://jabber.org/protocol/amp</name>
+    <desc>A node for all Advanced Message Processing conditions and actions supported by an entity.</desc>
+    <doc>XEP-0079: Advanced Message Processing</doc>
+  </node>
+  <node>
+    <name>http://jabber.org/protocol/commands</name>
+    <desc>A node for all ad-hoc commands provided by an entity.</desc>
+    <doc>XEP-0050: Ad-Hoc Commands</doc>
+  </node>
+  <node>
+    <name>http://jabber.org/protocol/muc#rooms</name>
+    <desc>A node for discovery of the rooms in which a user is an occupant.</desc>
+    <doc>XEP-0045: Multi-User Chat</doc>
+  </node>
+  <node>
+    <name>http://jabber.org/protocol/muc#traffic</name>
+    <desc>A node for discovery of the namespaces that are allowed in traffic sent through a room.</desc>
+    <doc>XEP-0045: Multi-User Chat</doc>
+  </node>
+  <node>
+    <name>pubsub/nodes</name>
+    <desc>A "meta-node" for all pubsub nodes hosted by a publish-subscribe service.</desc>
+    <doc>XEP-0060: Publish-Subscribe</doc>
+  </node>
+  <node>
+    <name>x-roomuser-item</name>
+    <desc>A node by which a user can discover his or her reserved room nickname.</desc>
+    <doc>XEP-0045: Multi-User Chat</doc>
+  </node>
+</registry>

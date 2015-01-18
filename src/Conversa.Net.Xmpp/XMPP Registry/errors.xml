@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<registry type="errors">
+  <condition>
+    <ns>urn:xmpp:errors</ns>
+    <element>resource-limit-exceeded</element>
+    <desc>
+      The account is not allowed to bind more resources at this time.
+    </desc>
+    <doc>XEP-0205: Best Practices to Discourage Denial of Service Attacks</doc>
+  </condition>
+  <condition>
+    <ns>urn:xmpp:errors</ns>
+    <element>stanza-too-big</element>
+    <desc>
+      The stanza is larger than the processing entity will accept.
+    </desc>
+    <doc>XEP-0182: Application-Specific Error Conditions</doc>
+  </condition>
+  <condition>
+    <ns>urn:xmpp:errors</ns>
+    <element>too-many-stanzas</element>
+    <desc>
+      A connected client has attempted to send multiple stanzas to 
+      too many different intended recipients in a given time period.
+    </desc>
+    <doc>XEP-0205: Best Practices to Discourage Denial of Service Attacks</doc>
+  </condition>
+</registry>

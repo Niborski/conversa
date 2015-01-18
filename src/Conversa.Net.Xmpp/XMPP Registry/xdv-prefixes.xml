@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<registry type="xdv-prefixes">
+  <datatype-prefix>
+    <prefix>sipub</prefix>
+    <desc>The datatype for a stream initiation profile</desc>
+    <doc>XEP-0137: Publishing SI Requests</doc>
+  </datatype-prefix>
+  <datatype-prefix>
+    <prefix>x</prefix>
+    <desc>An ad-hoc datatype</desc>
+    <doc>XEP-0122: Data Forms Validation</doc>
+  </datatype-prefix>
+  <datatype-prefix>
+    <prefix>xs</prefix>
+    <desc>A "standard" datatype as defined in XML Schema Part 2</desc>
+    <doc>XML Schema Part 2: Datatypes</doc>
+  </datatype-prefix>
+</registry>

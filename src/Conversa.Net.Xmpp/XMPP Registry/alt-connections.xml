@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<registry type="alt-connections">
+  <method>
+    <name>_xmpp-client-httppoll</name>
+    <desc>HTTP Polling connection method</desc>
+    <syntax>The http: or https: URL at which to contact the HTTP Polling connection manager or proxy</syntax>
+    <doc>XEP-0025 (DEPRECATED)</doc>
+  </method>
+  <method>
+    <name>_xmpp-client-websocket</name>
+    <desc>WebSocket connection method</desc>
+    <syntax>The ws: or wss: URI at which to contact the WebSocket connection manager or proxy</syntax>
+    <doc>An XMPP Sub-protocol for WebSocket</doc>
+  </method>
+  <method>
+    <name>_xmpp-client-xbosh</name>
+    <desc>XMPP Over Bosh connection method</desc>
+    <syntax>The http: or https: URL at which to contact the HTTP Binding connection manager or proxy</syntax>
+    <doc>XEP-0206: XMPP Over BOSH</doc>
+  </method>
+</registry>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<serializers>
+  <serializer group="Core" elementname="stream:stream">
+    <serializertype>Conversa.Net.Xmpp.Core.Stream, Conversa.Net.Xmpp</serializertype>
+    <namespace>
+      <prefix>stream</prefix>
+      <namespace>http://etherx.jabber.org/streams</namespace>
+    </namespace>
+  </serializer>
+  <serializer group="Core" elementname="stream:features">
+    <serializertype>Conversa.Net.Xmpp.Core.StreamFeatures, Conversa.Net.Xmpp</serializertype>
+    <namespace>
+      <prefix>stream</prefix>
+      <namespace>http://etherx.jabber.org/streams</namespace>
+    </namespace>
+  </serializer>
+  <serializer group="Core" elementname="stream:error">
+    <serializertype>Conversa.Net.Xmpp.Core.StreamError, Conversa.Net.Xmpp</serializertype>
+    <namespace>
+      <prefix>stream</prefix>
+      <namespace>http://etherx.jabber.org/streams</namespace>
+    </namespace>
+  </serializer>
+  <serializer group="Core" elementname="starttls">
+    <serializertype>Conversa.Net.Xmpp.Core.StartTls, Conversa.Net.Xmpp</serializertype>
+    <namespace>
+      <prefix></prefix>
+      <namespace>urn:ietf:params:xml:ns:xmpp-tls</namespace>
+    </namespace>
+  </serializer>
+  <serializer group="Core" elementname="proceed">
+    <serializertype>Conversa.Net.Xmpp.Core.TlsProceed, Conversa.Net.Xmpp</serializertype>
+    <namespace>
+      <prefix></prefix>
+      <namespace>urn:ietf:params:xml:ns:xmpp-tls</namespace>
+    </namespace>
+  </serializer>
+  <serializer group="Core" elementname="bind">
+    <serializertype>Conversa.Net.Xmpp.Core.Bind, Conversa.Net.Xmpp</serializertype>
+    <namespace>
+      <prefix></prefix>
+      <namespace>urn:ietf:params:xml:ns:xmpp-bind</namespace>
+    </namespace>
+  </serializer>
+  <serializer group="Core" elementname="abort">
+    <serializertype>Conversa.Net.Xmpp.Core.SaslAbort, Conversa.Net.Xmpp</serializertype>
+    <namespace>
+      <prefix></prefix>
+      <namespace>urn:ietf:params:xml:ns:xmpp-sasl</namespace>
+    </namespace>
+  </serializer>
+  <serializer group="Core" elementname="auth">
+    <serializertype>Conversa.Net.Xmpp.Core.SaslAuth, Conversa.Net.Xmpp</serializertype>
+    <namespace>
+      <prefix></prefix>
+      <namespace>urn:ietf:params:xml:ns:xmpp-sasl</namespace>
+    </namespace>
+  </serializer>
+  <serializer group="Core" elementname="challenge">
+    <serializertype>Conversa.Net.Xmpp.Core.SaslChallenge, Conversa.Net.Xmpp</serializertype>
+    <namespace>
+      <prefix></prefix>
+      <namespace>urn:ietf:params:xml:ns:xmpp-sasl</namespace>
+    </namespace>
+  </serializer>
+  <serializer group="Core" elementname="response">
+    <serializertype>Conversa.Net.Xmpp.Core.SaslResponse, Conversa.Net.Xmpp</serializertype>
+    <namespace>
+      <prefix></prefix>
+      <namespace>urn:ietf:params:xml:ns:xmpp-sasl</namespace>
+    </namespace>
+  </serializer>
+  <serializer group="Core" elementname="success">
+    <serializertype>Conversa.Net.Xmpp.Core.SaslSuccess, Conversa.Net.Xmpp</serializertype>
+    <namespace>
+      <prefix></prefix>
+      <namespace>urn:ietf:params:xml:ns:xmpp-sasl</namespace>
+    </namespace>
+  </serializer>
+  <serializer group="Core" elementname="failure">
+    <serializertype>Conversa.Net.Xmpp.Core.SaslFailure, Conversa.Net.Xmpp</serializertype>
+    <namespace>
+      <prefix></prefix>
+      <namespace>urn:ietf:params:xml:ns:xmpp-sasl</namespace>
+    </namespace>
+  </serializer>
+  <serializer group="Core" elementname="iq">
+    <serializertype>Conversa.Net.Xmpp.Core.InfoQuery, Conversa.Net.Xmpp</serializertype>
+    <namespace>
+      <prefix></prefix>
+      <namespace>jabber:client</namespace>
+    </namespace>
+  </serializer>
+  <serializer group="Core" elementname="message">
+    <serializertype>Conversa.Net.Xmpp.Core.Message, Conversa.Net.Xmpp</serializertype>
+    <namespace>
+      <prefix></prefix>
+      <namespace>jabber:client</namespace>
+    </namespace>
+  </serializer>
+  <serializer group="Core" elementname="presence">
+    <serializertype>Conversa.Net.Xmpp.Core.Presence, Conversa.Net.Xmpp</serializertype>
+    <namespace>
+      <prefix></prefix>
+      <namespace>jabber:client</namespace>
+    </namespace>
+  </serializer>
+  <serializer group="XEP-0077" elementname="register">
+    <serializertype>Conversa.Net.Xmpp.InBandRegistration.Register, Conversa.Net.Xmpp</serializertype>
+    <namespace>
+      <prefix></prefix>
+      <namespace>http://jabber.org/features/iq-register</namespace>
+    </namespace>
+  </serializer>
+  <!--<serializer group="Bosh" elementname="body">
+    <serializertype>Conversa.Net.Xmpp..HttpBindBody, Conversa.Net.Xmpp</serializertype>
+    <namespace>
+      <prefix></prefix>
+      <namespace>http://jabber.org/protocol/httpbind</namespace>
+    </namespace>
+  </serializer>-->
+</serializers>

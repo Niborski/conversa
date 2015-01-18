@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<registry type="stream-features">
+  <feature>
+    <ns>amp</ns>
+    <name>amp</name>
+    <element>amp</element>
+    <desc>Support for Advanced Message Processing</desc>
+    <doc>XEP-0079: Advanced Message Processing</doc>
+  </feature>
+  <feature>
+    <ns>compress</ns>
+    <name>compress</name>
+    <element>compression</element>
+    <desc>Support for Stream Compression</desc>
+    <doc>XEP-0138: Stream Compression</doc>
+  </feature>
+  <feature>
+    <ns>iq-auth</ns>
+    <name>iq-auth</name>
+    <element>auth</element>
+    <desc>Support for Non-SASL Authentication</desc>
+    <doc>XEP-0078: Non-SASL Authentication</doc>
+  </feature>
+  <feature>
+    <ns>iq-register</ns>
+    <name>iq-register</name>
+    <element>register</element>
+    <desc>Support for In-Band Registration</desc>
+    <doc>XEP-0077: In-Band Registration</doc>
+  </feature>
+  <feature>
+    <ns>bind</ns>
+    <name>bind</name>
+    <element>bind</element>
+    <desc>Support for Resource Binding</desc>
+    <doc>RFC 6120: XMPP Core</doc>
+  </feature>
+  <feature>
+    <ns>mechanisms</ns>
+    <name>mechanisms</name>
+    <element>mechanisms</element>
+    <desc>Support for Simple Authentication and Security Layer (SASL)</desc>
+    <doc>RFC 6120: XMPP Core</doc>
+  </feature>
+  <feature>
+    <ns>session</ns>
+    <name>session</name>
+    <element>session</element>
+    <desc>Support for IM Session Establishment</desc>
+    <doc>RFC 6121: XMPP IM</doc>
+  </feature>
+  <feature>
+    <ns>starttls</ns>
+    <name>starttls</name>
+    <element>starttls</element>
+    <desc>Support for Transport Layer Security (TLS)</desc>
+    <doc>RFC 6120: XMPP Core</doc>
+  </feature>
+  <feature>
+    <ns>bidi</ns>
+    <name>bidi</name>
+    <element>bidi</element>
+    <desc>Support for Bidirectional Server-to-Server Connections</desc>
+    <doc>XEP-0288: Bidirectional Server-to-Server Connections</doc>
+  </feature>
+  <feature>
+    <ns>Server Dialback</ns>
+    <name>Server Dialback</name>
+    <element>dialback</element>
+    <desc>Support for Server Dialback with dialback errors</desc>
+    <doc>XEP-0220: Server Dialback</doc>
+  </feature>
+  <feature>
+    <ns>sm</ns>
+    <name>sm</name>
+    <element>sm</element>
+    <desc>Support for Stream Management</desc>
+    <doc>XEP-0198: Stream Management</doc>
+  </feature>
+</registry>

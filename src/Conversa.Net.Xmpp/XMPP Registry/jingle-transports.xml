@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<registry type="jingle-transports">
+  <transport>
+    <name>ibb</name>
+    <desc>
+    A method for data exchange over In-Band Bytestreams.
+  </desc>
+    <type>streaming</type>
+    <doc>XEP-0261</doc>
+  </transport>
+  <transport>
+    <name>ice-udp</name>
+    <desc>
+    A method for negotiation of out-of-band UDP connections 
+    with built-in NAT and firewall traversal, equivalent to 
+    the IETF's Interactive Connectivity Establishment (ICE) 
+    methodology when resulting in the use of UDP as the
+    transport protocol.
+  </desc>
+    <type>datagram</type>
+    <doc>XEP-0176</doc>
+  </transport>
+  <transport>
+    <name>raw-udp</name>
+    <desc>A method for exchanging data over raw UDP associations.</desc>
+    <type>datagram</type>
+    <doc>XEP-0177</doc>
+  </transport>
+  <transport>
+    <name>s5b</name>
+    <desc>
+    A method for negotiating data exchange over SOCKS5 Bytestreams.
+  </desc>
+    <type>streaming</type>
+    <doc>XEP-0260</doc>
+  </transport>
+</registry>

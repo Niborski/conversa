@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<registry type="formtypes">
+  <form_type>
+    <name>http://jabber.org/network/serverinfo</name>
+    <desc>
+    Forms enabling the communication of contact addresses
+    and other server information.
+  </desc>
+    <doc>XEP-0157: Contact Addresses for XMPP Services</doc>
+  </form_type>
+  <form_type>
+    <name>http://jabber.org/protocol/admin</name>
+    <desc>Forms used for administration of servers and components.</desc>
+    <doc>XEP-0133: Service Administration</doc>
+  </form_type>
+  <form_type>
+    <name>http://jabber.org/protocol/muc#register</name>
+    <desc>
+    Forms enabling user registration with a
+    Multi-User Chat (MUC) room.
+  </desc>
+    <doc>XEP-0045: Multi-User Chat</doc>
+  </form_type>
+  <form_type>
+    <name>http://jabber.org/protocol/muc#roomconfig</name>
+    <desc>
+    Forms enabling creation and configuration of
+    a Multi-User Chat (MUC) room.
+  </desc>
+    <doc>XEP-0045: Multi-User Chat</doc>
+  </form_type>
+  <form_type>
+    <name>http://jabber.org/protocol/pubsub#subscribe_authorization</name>
+    <desc>Forms enabling authorization of subscriptions to pubsub nodes</desc>
+    <doc>XEP-0060: Publish-Subscribe</doc>
+  </form_type>
+  <form_type>
+    <name>http://jabber.org/protocol/pubsub#subscribe_options</name>
+    <desc>Forms enabling configuration of subscription options for pubsub nodes</desc>
+    <doc>XEP-0060: Publish-Subscribe</doc>
+  </form_type>
+  <form_type>
+    <name>http://jabber.org/protocol/pubsub#meta-data</name>
+    <desc>Forms enabling setting of meta-data information about pubsub nodes</desc>
+    <doc>XEP-0060: Publish-Subscribe</doc>
+  </form_type>
+  <form_type>
+    <name>http://jabber.org/protocol/pubsub#node_config</name>
+    <desc>Forms enabling configuration of pubsub nodes</desc>
+    <doc>XEP-0060: Publish-Subscribe</doc>
+  </form_type>
+  <form_type>
+    <name>http://jabber.org/protocol/pubsub#publish-options</name>
+    <desc>
+    Forms enabling publication with options; each field must specify whether it
+    defines METADATA to be attached to the item, a per-item OVERRIDE of the node 
+    configuration, or a PRECONDITION to be checked against the node configuration.
+  </desc>
+    <doc>XEP-0060: Publish-Subscribe</doc>
+  </form_type>
+  <form_type>
+    <name>http://jabber.org/protocol/rc</name>
+    <desc>Forms used for remote controlling clients</desc>
+    <doc>XEP-0146: Remote Controllling Clients</doc>
+  </form_type>
+  <form_type>
+    <name>jabber:iq:register</name>
+    <desc>
+    Standardization of fields related to in-band registration.
+  </desc>
+    <doc>XEP-0077: In-Band Registration</doc>
+  </form_type>
+  <form_type>
+    <name>jabber:iq:register:cancel</name>
+    <desc>Standardization of fields related to cancellation use case.</desc>
+    <doc>XEP-0077</doc>
+  </form_type>
+  <form_type>
+    <name>jabber:iq:register:changepassword</name>
+    <desc>Standardization of fields related to change password use case.</desc>
+    <doc>XEP-0077</doc>
+  </form_type>
+  <form_type>
+    <name>jabber:iq:search</name>
+    <desc>Forms enabling directory searches.</desc>
+    <doc>XEP-0055: Jabber Search</doc>
+  </form_type>
+  <form_type>
+    <name>urn:xmpp:captcha</name>
+    <desc>Forms enabling the use of CAPTCHAs.</desc>
+    <doc>XEP-0158</doc>
+  </form_type>
+  <form_type>
+    <name>urn:xmpp:ssn</name>
+    <desc>
+    Forms enabling negotation of a one-to-one
+    chat session between two entities.
+  </desc>
+    <doc>XEP-0155: Stanza Session Negotiation</doc>
+  </form_type>
+</registry>
