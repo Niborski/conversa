@@ -53,7 +53,7 @@ namespace Conversa.Net.Xmpp.Client
         private XmppServiceDiscovery    serviceDiscovery;
         private XmppPersonalEventing    personalEventing;
         private AvatarStorage           avatarStorage;
-		private bool                    isDisposed;
+        private bool                    isDisposed;
 
         /// <summary>
         /// Get a vector of SSL server errors to ignore when making an secure connection.
@@ -216,7 +216,7 @@ namespace Conversa.Net.Xmpp.Client
             this.authenticationFailed = new Subject<XmppAuthenticationFailure>();
             this.infoQueryStream      = new Subject<InfoQuery>();
             this.messageStream        = new Subject<Message>();
-			this.presenceStream       = new Subject<Presence>();
+            this.presenceStream       = new Subject<Presence>();
             this.subscriptions        = new CompositeDisposable();
             this.roster               = new XmppRoster(this);
             this.activity             = new XmppActivity(this);
@@ -468,32 +468,32 @@ namespace Conversa.Net.Xmpp.Client
             return authenticator;
         }
 
-		private async Task OnMessageReceivedAsync(XmppStreamElement xmlMessage)
-		{
-			Debug.WriteLine("SERVER <- " + xmlMessage.ToString());
+        private async Task OnMessageReceivedAsync(XmppStreamElement xmlMessage)
+        {
+            Debug.WriteLine("SERVER <- " + xmlMessage.ToString());
 
-			if (xmlMessage.OpensXmppStream)
-			{
-				// Stream opened
-			}
-			else if (xmlMessage.ClosesXmppStream)
-			{
-				// Stream closed
-			}
-			else
-			{
+            if (xmlMessage.OpensXmppStream)
+            {
+                // Stream opened
+            }
+            else if (xmlMessage.ClosesXmppStream)
+            {
+                // Stream closed
+            }
+            else
+            {
                 var message = XmppSerializer.Deserialize(xmlMessage.Name, xmlMessage.ToString());
 
-				if (message is InfoQuery || message is Message || message is Presence)
-				{
+                if (message is InfoQuery || message is Message || message is Presence)
+                {
                     await this.OnStanzaAsync(message).ConfigureAwait(false);
-				}
-				else
-				{
+                }
+                else
+                {
                     await this.OnStreamFragmentAsync(message).ConfigureAwait(false);
-				}
-			}
-		}
+                }
+            }
+        }
 
         private async Task OnStreamFragmentAsync(object fragment)
         {
@@ -501,14 +501,14 @@ namespace Conversa.Net.Xmpp.Client
             {
                 throw new XmppException(fragment as StreamError);
             }
-			else if (fragment is StreamFeatures)
-			{
+            else if (fragment is StreamFeatures)
+            {
                 this.OnNegotiateStreamFeaturesAsync(fragment as StreamFeatures);
-			}
-			else if (fragment is TlsProceed)
-			{
+            }
+            else if (fragment is TlsProceed)
+            {
                 await this.OnUpgradeToSsl().ConfigureAwait(false);
-			}
+            }
             else if (fragment is SaslChallenge || fragment is SaslResponse)
             {
                 await this.SendAsync(this.authenticator.ContinueNegotiationWith(fragment)).ConfigureAwait(false);
@@ -521,7 +521,7 @@ namespace Conversa.Net.Xmpp.Client
             {
                 await this.OnAuthenticationFailedAsync(fragment as SaslFailure).ConfigureAwait(false);
             }
-		}
+        }
 
         private async Task OnStanzaAsync(object stanza)
         {
@@ -537,7 +537,7 @@ namespace Conversa.Net.Xmpp.Client
             {
                 await this.OnInfoQueryAsync(stanza as InfoQuery).ConfigureAwait(false);
             }
-		}
+        }
 
         private async Task OnInfoQueryAsync(InfoQuery iq)
         {
@@ -566,10 +566,10 @@ namespace Conversa.Net.Xmpp.Client
             await this.SendAsync(ping.AsReponse()).ConfigureAwait(false);
         }
 
-		private async Task OnUpgradeToSsl()
-		{
-			await this.transport.UpgradeToSslAsync().ConfigureAwait(false);
-		}
+        private async Task OnUpgradeToSsl()
+        {
+          await this.transport.UpgradeToSslAsync().ConfigureAwait(false);
+        }
 
         private async void OnNegotiateStreamFeaturesAsync(StreamFeatures features)
         {
@@ -684,7 +684,7 @@ namespace Conversa.Net.Xmpp.Client
 
             this.authenticationFailed.OnNext(new XmppAuthenticationFailure(errorMessage));
 
-			this.State = XmppClientState.AuthenticationFailure;
+            this.State = XmppClientState.AuthenticationFailure;
 
             await this.CloseAsync().ConfigureAwait(false);
         }
