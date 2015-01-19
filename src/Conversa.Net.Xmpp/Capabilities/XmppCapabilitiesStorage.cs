@@ -27,7 +27,7 @@ namespace Conversa.Net.Xmpp.Caps
         {
         }
 
-        protected override async Task<XmppEntityCapabilities> OnDataLoaded(string data)
+        protected override XmppEntityCapabilities OnDataLoaded(string data)
         {
             var result   = default(XmppEntityCapabilities);
             var settings = new XmlReaderSettings

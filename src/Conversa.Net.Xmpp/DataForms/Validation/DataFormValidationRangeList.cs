@@ -16,9 +16,6 @@ namespace Conversa.Net.Xmpp.DataForms.Validation
     [XmlRootAttribute("list-range", Namespace = "http://jabber.org/protocol/xdata-validate", IsNullable = false)]
     public partial class DataFormValidationRangeList
     {
-        private uint? min;
-        private uint? max;
-
         [XmlTextAttribute]
         public Empty Value
         {
@@ -29,61 +26,29 @@ namespace Conversa.Net.Xmpp.DataForms.Validation
         [XmlAttribute("min")]
         public uint Min
         {
-            get
-            {
-                if (this.min.HasValue)
-                {
-                    return this.min.Value;
-                }
-                else
-                {
-                    return default(uint);
-                }
-            }
-            set { this.min = value; }
+            get;
+            set;
         }
 
         [XmlIgnore]
         public bool MinSpecified
         {
-            get { return this.min.HasValue; }
-            set
-            {
-                if (!value)
-                {
-                    this.min = null;
-                }
-            }
+            get;
+            set;
         }
 
         [XmlAttribute("max")]
         public uint Max
         {
-            get
-            {
-                if (this.max.HasValue)
-                {
-                    return this.max.Value;
-                }
-                else
-                {
-                    return default(uint);
-                }
-            }
-            set { this.max = value; }
+            get;
+            set;
         }
 
         [XmlIgnore]
         public bool MaxSpecified
         {
-            get { return this.max.HasValue; }
-            set
-            {
-                if (!value)
-                {
-                    this.max = null;
-                }
-            }
+            get;
+            set;
         }
 
         public DataFormValidationRangeList()

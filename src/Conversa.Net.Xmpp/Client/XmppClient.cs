@@ -399,7 +399,6 @@ namespace Conversa.Net.Xmpp.Client
 
         private void InitializeSubscriptions()
         {
-#warning TODO: Take a look at this http://log.paulbetts.org/rx-and-await-some-notes/
             this.subscriptions.Add(this.transport
                                        .MessageStream
                                        .Subscribe(message => this.OnMessageReceivedAsync(message)));
@@ -468,7 +467,7 @@ namespace Conversa.Net.Xmpp.Client
             return authenticator;
         }
 
-        private async Task OnMessageReceivedAsync(XmppStreamElement xmlMessage)
+        private async void OnMessageReceivedAsync(XmppStreamElement xmlMessage)
         {
             Debug.WriteLine("SERVER <- " + xmlMessage.ToString());
 
@@ -503,9 +502,9 @@ namespace Conversa.Net.Xmpp.Client
             }
             else if (fragment is StreamFeatures)
             {
-                this.OnNegotiateStreamFeaturesAsync(fragment as StreamFeatures);
+                await this.OnNegotiateStreamFeaturesAsync(fragment as StreamFeatures).ConfigureAwait(false);
             }
-            else if (fragment is TlsProceed)
+            else if (fragment is ProceedTls)
             {
                 await this.OnUpgradeToSsl().ConfigureAwait(false);
             }
@@ -568,10 +567,10 @@ namespace Conversa.Net.Xmpp.Client
 
         private async Task OnUpgradeToSsl()
         {
-          await this.transport.UpgradeToSslAsync().ConfigureAwait(false);
+            await this.transport.UpgradeToSslAsync().ConfigureAwait(false);
         }
 
-        private async void OnNegotiateStreamFeaturesAsync(StreamFeatures features)
+        private async Task OnNegotiateStreamFeaturesAsync(StreamFeatures features)
         {
             this.streamFeatures = XmppStreamFeatures.None;
 
@@ -679,8 +678,7 @@ namespace Conversa.Net.Xmpp.Client
 
         private async Task OnAuthenticationFailedAsync(SaslFailure failure)
         {
-#warning TODO: Decode error message
-            var errorMessage = failure.Text.Value;
+            var errorMessage = "Authentication failed (" + failure.GetErrorMessage() + ")";
 
             this.authenticationFailed.OnNext(new XmppAuthenticationFailure(errorMessage));
 
@@ -722,10 +720,11 @@ namespace Conversa.Net.Xmpp.Client
                 return;
             }
 
-            var iq = InfoQuery.Create()
-                              .ForUpdate();
-
-            iq.Session = new Session();
+            var iq = new InfoQuery 
+            {
+                Type    = InfoQueryType.Set
+              , Session = new Session()
+            };
 
             await this.SendAsync(iq).ConfigureAwait(false);
 

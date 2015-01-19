@@ -79,7 +79,7 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
 
             iq.ServiceInfo = new ServiceInfo();
 
-            await this.SendMessageAsync(iq);
+            await this.SendAsync(iq);
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
 
             iq.ServiceItem = new ServiceItem();
 
-            await this.SendMessageAsync(iq);
+            await this.SendAsync(iq);
         }
 
         /// <summary>

@@ -15,9 +15,6 @@ namespace Conversa.Net.Xmpp.MultiUserChat
     [XmlRootAttribute("item", Namespace = "http://jabber.org/protocol/muc#admin", IsNullable = false)]
     public partial class MucAdminItem
     {
-        private MucAffiliation? affiliation;
-        private MucRole?        role;
-
         [XmlElementAttribute("actor", Namespace = "http://jabber.org/protocol/muc#admin")]
         public MucActor Actor
         {
@@ -49,61 +46,29 @@ namespace Conversa.Net.Xmpp.MultiUserChat
         [XmlAttribute("affiliation", Namespace = "http://jabber.org/protocol/muc#admin")]
         public MucAffiliation Affiliation
         {
-            get
-            {
-                if (this.affiliation.HasValue)
-                {
-                    return this.affiliation.Value;
-                }
-                else
-                {
-                    return default(MucAffiliation);
-                }
-            }
-            set { this.affiliation = value; }
+            get;
+            set;
         }
 
         [XmlIgnore]
         public bool AffiliationSpecified
         {
-            get { return this.affiliation.HasValue; }
-            set
-            {
-                if (value)
-                {
-                    this.affiliation = null;
-                }
-            }
+            get;
+            set;
         }
 
         [XmlAttribute("role", Namespace = "http://jabber.org/protocol/muc#admin")]
         public MucRole Role
         {
-            get
-            {
-                if (this.role.HasValue)
-                {
-                    return this.role.Value;
-                }
-                else
-                {
-                    return default(MucRole);
-                }
-            }
-            set { this.role = value; }
+            get;
+            set;
         }
 
         [XmlIgnore]
         public bool RoleSpecified
         {
-            get { return this.role.HasValue; }
-            set
-            {
-                if (!value)
-                {
-                    this.role = null;
-                }
-            }
+            get;
+            set;
         }
 
         public MucAdminItem()

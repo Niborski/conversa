@@ -139,6 +139,7 @@
     <Compile Include="Core\SaslAuth.cs" />
     <Compile Include="Core\SaslChallenge.cs" />
     <Compile Include="Core\SaslFailure.cs" />
+    <Compile Include="Core\SaslFailure.Custom.cs" />
     <Compile Include="Core\SaslFailureType.cs" />
     <Compile Include="Core\SaslMechanisms.cs" />
     <Compile Include="Core\SaslMechanisms.Custom.cs" />

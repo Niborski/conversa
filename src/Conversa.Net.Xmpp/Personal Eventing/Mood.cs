@@ -105,7 +105,7 @@ namespace Conversa.Net.Xmpp.PersonalEventing
         }
 
         /// <remarks/>
-        [XmlIgnoreAttribute()]
+        [XmlIgnoreAttribute]
         public MoodType MoodType
         {
             get;

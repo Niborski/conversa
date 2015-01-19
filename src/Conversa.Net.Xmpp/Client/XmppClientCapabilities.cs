@@ -65,7 +65,7 @@ namespace Conversa.Net.Xmpp.Client
 
             presence.Items.Add(this.GetEntityCapabilities());
 
-            await this.SendMessageAsync(presence).ConfigureAwait(false);
+            await this.SendAsync(presence).ConfigureAwait(false);
         }
 
         protected override void OnResponseMessage(Presence presence)

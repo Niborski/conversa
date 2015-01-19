@@ -29,7 +29,7 @@
     </namespace>
   </serializer>
   <serializer group="Core" elementname="proceed">
-    <serializertype>Conversa.Net.Xmpp.Core.TlsProceed, Conversa.Net.Xmpp</serializertype>
+    <serializertype>Conversa.Net.Xmpp.Core.ProceedTls, Conversa.Net.Xmpp</serializertype>
     <namespace>
       <prefix></prefix>
       <namespace>urn:ietf:params:xml:ns:xmpp-tls</namespace>

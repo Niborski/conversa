@@ -245,7 +245,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                                      .Subscribe(message => this.OnPresenceMessage(message)));
         }
 
-        private void OnPresenceMessage(Presence message)
+        private async void OnPresenceMessage(Presence message)
         {
             var resource = this.resources.SingleOrDefault(contactResource => contactResource.Address == message.From);
 
@@ -270,28 +270,28 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
                         case PresenceType.Subscribe:
                             // auto-accept subscription requests
-                            resource.Presence.SubscribedAsync();
+                            await resource.Presence.SubscribedAsync().ConfigureAwait(false);
                             break;
 
                         case PresenceType.Unavailable:
-                            this.UpdateResource(resource, message);
+                            await this.UpdateResourceAsync(resource, message).ConfigureAwait(false);
                             break;
 
                         case PresenceType.Unsubscribe:
-                            resource.Presence.UnsuscribedAsync();
+                            await resource.Presence.UnsuscribedAsync().ConfigureAwait(false);
                             break;
                     }
                 }
                 else
                 {
-                    this.UpdateResource(resource, message);
+                    await this.UpdateResourceAsync(resource, message).ConfigureAwait(false);
                 }
             }
         }
         
-        private void UpdateResource(XmppContactResource resource, Presence message)
+        private async Task UpdateResourceAsync(XmppContactResource resource, Presence message)
         {
-            resource.Update(message);
+            await resource.UpdateAsync(message).ConfigureAwait(false);
 
             // Remove the resource information if the contact has gone offline
             if (resource.Presence.ShowAs == ShowType.Offline)

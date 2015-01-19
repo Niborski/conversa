@@ -56,7 +56,7 @@ namespace Conversa.Net.Xmpp.PublishSubscribe
         }
 
         /// <remarks/>
-        [XmlIgnoreAttribute()]
+        [XmlIgnoreAttribute]
         public bool SubscriptionSpecified
         {
             get;

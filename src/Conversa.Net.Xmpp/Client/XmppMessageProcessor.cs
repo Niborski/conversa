@@ -44,35 +44,40 @@ namespace Conversa.Net.Xmpp.Client
                                      .Subscribe(state => this.OnClientDisconnected()));
         }
 
-        protected async virtual Task SendMessageAsync(InfoQuery infoQuery)
+        protected async virtual Task SendAsync(InfoQuery infoQuery)
         {
             this.AddSubscription(infoQuery.Id
                                , this.Client
                                      .InfoQueryStream
-                                     .Where(message => message.Id == infoQuery.Id)
-                                     .Subscribe(message => {
-                                         if (message.Type == InfoQueryType.Error)
-                                         {
-                                             this.OnErrorMessage(message);
-                                         }
-                                         else
-                                         {
-                                             this.OnResponseMessage(message);
-                                         }
-                                      })
-                                );
+                                     .Where(message => message.Id   == infoQuery.Id
+                                                    && message.Type != InfoQueryType.Error)
+                                     .Subscribe(message => this.OnResponseMessage(message)));
+
+            this.AddSubscription(infoQuery.Id
+                               , this.Client
+                                     .InfoQueryStream
+                                     .Where(message => message.Id   == infoQuery.Id
+                                                    && message.Type == InfoQueryType.Error)
+                                     .Subscribe(message => this.OnErrorMessage(message)));
 
             await this.Client.SendAsync(infoQuery).ConfigureAwait(false);
         }
 
-        protected async virtual Task SendMessageAsync(Presence presence)
+        protected async virtual Task SendAsync(Presence presence)
         {
             this.AddSubscription(presence.Id
                                , this.Client
                                      .PresenceStream
-                                     .Where(message => message.Id == presence.Id)
-                                     .Subscribe(messsage => this.OnResponseMessage(messsage))
-                                );
+                                     .Where(message => message.Id   == presence.Id
+                                                    && message.Type != PresenceType.Error)
+                                     .Subscribe(messsage => this.OnResponseMessage(messsage)));
+
+            this.AddSubscription(presence.Id
+                               , this.Client
+                                     .PresenceStream
+                                     .Where(message => message.Id   == presence.Id
+                                                    && message.Type == PresenceType.Error)
+                                     .Subscribe(messsage => this.OnErrorMessage(messsage)));
 
             await this.Client.SendAsync(presence).ConfigureAwait(false);
         }
@@ -83,7 +88,7 @@ namespace Conversa.Net.Xmpp.Client
 
         protected virtual void OnClientDisconnected()
         {
-            if (this.respSubscriptions != null)
+            if (this.respSubscriptions != null && respSubscriptions.Count > 0)
             {
                 foreach (var pair in this.respSubscriptions)
                 {
@@ -104,12 +109,17 @@ namespace Conversa.Net.Xmpp.Client
             this.DisposeSubscription(response.Id);
         }
 
+        protected virtual void OnErrorMessage(InfoQuery response)
+        {
+            this.DisposeSubscription(response.Id);
+        }
+
         protected virtual void OnResponseMessage(Presence response)
         {
             this.DisposeSubscription(response.Id);
         }
 
-        protected virtual void OnErrorMessage(InfoQuery response)
+        protected virtual void OnErrorMessage(Presence response)
         {
             this.DisposeSubscription(response.Id);
         }

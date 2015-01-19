@@ -52,7 +52,7 @@ namespace Conversa.Net.Xmpp.DataForms.Validation
 
         public DataFormValidation()
         {
-            this.Ranges = new DataFormValidationRangeList();
+            this.Ranges   = new DataFormValidationRangeList();
             this.DataType = "xs:string";
         }
     }

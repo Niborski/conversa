@@ -86,7 +86,7 @@ namespace Conversa.Net.Xmpp.PersonalEventing
 
             this.features.Clear();
 
-            await this.SendMessageAsync(iq);
+            await this.SendAsync(iq);
         }
 
         private bool SupportsFeature(string featureName)

@@ -75,7 +75,7 @@ namespace Conversa.Net.Xmpp.Storage
             StorageFile file   = await this.folder.GetFileAsync(this.filename);
             IBuffer     buffer = await FileIO.ReadBufferAsync(file);
 
-            return await this.OnDataLoaded(await this.UnprotectAsync(buffer).ConfigureAwait(false));
+            return this.OnDataLoaded(await this.UnprotectAsync(buffer).ConfigureAwait(false));
         }
 
         public virtual async void SaveAsync(T data)
@@ -122,6 +122,6 @@ namespace Conversa.Net.Xmpp.Storage
         }
 
         protected abstract string OnSerializeData(T data);
-        protected abstract Task<T> OnDataLoaded(string data);
+        protected abstract T OnDataLoaded(string data);
     }
 }

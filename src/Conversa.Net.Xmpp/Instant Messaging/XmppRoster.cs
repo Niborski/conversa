@@ -59,21 +59,25 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <param name="name">Contact name</param>
         public async Task AddContactAsync(string address, string name)
         {
-            var roster = new Roster();
-            var item   = new RosterItem
+            var iq = new InfoQuery()
             {
-                Subscription = RosterSubscriptionType.None
-              , Jid          = address
-              , Name         = name
+                Type   = InfoQueryType.Set
+              , From   = this.Client.UserAddress
+              , Roster = new Roster
+                {
+                    Items =
+                    {
+                        new RosterItem
+                        {
+                            Subscription = RosterSubscriptionType.None
+                          , Jid          = address
+                          , Name         = name
+                        }
+                    }
+                }
             };
 
-            roster.Items.Add(item);
-
-            var iq = InfoQuery.Create().ForUpdate().FromAddress(this.Client.UserAddress);
-
-            iq.Roster = roster;
-
-            await this.Client.SendAsync(iq);
+            await this.SendAsync(iq).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -96,7 +100,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
             iq.Roster = roster;
 
-            await this.Client.SendAsync(iq);
+            await this.SendAsync(iq).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -108,7 +112,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
             iq.Roster = new Roster();
 
-            await this.Client.SendAsync(iq);
+            await this.SendAsync(iq).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -127,7 +131,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
             iq.BlockList = new BlockList();
 
-            await this.Client.SendAsync(iq);
+            await this.SendAsync(iq).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -146,7 +150,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
             iq.Unblock = new Unblock();
 
-            await this.Client.SendAsync(iq);
+            await this.SendAsync(iq).ConfigureAwait(false);
         }
 
         IEnumerator<XmppContact> IEnumerable<XmppContact>.GetEnumerator()
@@ -191,7 +195,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         {
             this.AddSubscription(this.Client
                                      .InfoQueryStream
-                                     .Where(message => message.To     == this.Client.UserAddress 
+                                     .Where(message => message.To     == this.Client.UserAddress
                                                     && message.Type   == InfoQueryType.Result
                                                     && message.Roster != null)
                                      .Subscribe(message => this.OnRosterMessage(message.Roster)));

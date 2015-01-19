@@ -196,7 +196,7 @@ namespace Conversa.Net.Xmpp.Core
         }
 
         /// <remarks/>
-        [XmlIgnoreAttribute()]
+        [XmlIgnoreAttribute]
         public bool CodeSpecified
         {
             get;

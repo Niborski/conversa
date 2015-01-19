@@ -19,8 +19,6 @@ namespace Conversa.Net.Xmpp.DataForms
     [XmlRootAttribute("field", Namespace = "jabber:x:data", IsNullable = false)]
     public partial class DataFormField
     {
-        private Nullable<Empty> required;
-
         [XmlElementAttribute("desc")]
         public string Description
         {
@@ -64,33 +62,18 @@ namespace Conversa.Net.Xmpp.DataForms
             set;
         }
 
+        [XmlAttribute("required")]
         public Empty Required
         {
-            get
-            {
-                if (this.required.HasValue)
-                {
-                    return this.required.Value;
-                }
-                else
-                {
-                    return default(Empty);
-                }
-            }
-            set { this.required = value; }
+            get;
+            set;
         }
 
         [XmlIgnore]
         public bool RequiredSpecified
         {
-            get { return this.required.HasValue; }
-            set
-            {
-                if (!value)
-                {
-                    this.required = null;
-                }
-            }
+            get;
+            set;
         }
 
         public DataFormField()

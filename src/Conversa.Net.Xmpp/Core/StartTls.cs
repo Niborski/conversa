@@ -15,36 +15,18 @@ namespace Conversa.Net.Xmpp.Core
     [XmlRootAttribute("starttls", Namespace = "urn:ietf:params:xml:ns:xmpp-tls", IsNullable = false)]
     public partial class StartTls
     {
-        private Empty? required;
-
         [XmlElementAttribute("required", Namespace = "urn:ietf:params:xml:ns:xmpp-tls")]
         public Empty Required
         {
-            get
-            {
-                if (this.required.HasValue)
-                {
-                    return this.required.Value;
-                }
-                else
-                {
-                    return default(Empty);
-                }
-            }
-            set { this.required = value; }
+            get;
+            set;
         }
 
         [XmlIgnore]
         public bool RequiredSpecified
         {
-            get { return this.required.HasValue; }
-            set
-            {
-                if (!value)
-                {
-                    this.required = null;
-                }
-            }
+            get;
+            set;
         }
 
         public StartTls()

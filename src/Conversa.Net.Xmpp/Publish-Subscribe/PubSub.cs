@@ -16,8 +16,6 @@ namespace Conversa.Net.Xmpp.PublishSubscribe
     [XmlRootAttribute("pubsub", Namespace = "http://jabber.org/protocol/pubsub", IsNullable = false)]
     public class PubSub
     {
-        private List<object> itemsField;
-
         /// <remarks/>
         [XmlElementAttribute("affiliations", typeof(PubSubAffiliationList))]
         [XmlElementAttribute("configure", typeof(PubSubConfigure))]
@@ -32,13 +30,13 @@ namespace Conversa.Net.Xmpp.PublishSubscribe
         [XmlElementAttribute("unsubscribe", typeof(PubSubUnsubscribe))]
         public List<object> Items
         {
-            get { return this.itemsField; }
-            set { this.itemsField = value; }
+            get;
+            private set;
         }
 
         public PubSub()
         {
-            this.itemsField = new List<object>();
+            this.Items = new List<object>();
         }
     }
 }

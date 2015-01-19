@@ -76,7 +76,7 @@ namespace Conversa.Net.Xmpp.Bosh
         }
 
         /// <remarks/>
-        [XmlIgnoreAttribute()]
+        [XmlIgnoreAttribute]
         public bool ConditionSpecified
         {
             get;
@@ -108,7 +108,7 @@ namespace Conversa.Net.Xmpp.Bosh
         }
 
         /// <remarks/>
-        [XmlIgnoreAttribute()]
+        [XmlIgnoreAttribute]
         public bool HoldSpecified
         {
             get;
@@ -260,7 +260,7 @@ namespace Conversa.Net.Xmpp.Bosh
         }
 
         /// <remarks/>
-        [XmlIgnoreAttribute()]
+        [XmlIgnoreAttribute]
         public bool TimeSpecified
         {
             get;
@@ -284,7 +284,7 @@ namespace Conversa.Net.Xmpp.Bosh
         }
 
         /// <remarks/>
-        [XmlIgnoreAttribute()]
+        [XmlIgnoreAttribute]
         public bool TypeSpecified
         {
             get;
@@ -308,7 +308,7 @@ namespace Conversa.Net.Xmpp.Bosh
         }
 
         /// <remarks/>
-        [XmlIgnoreAttribute()]
+        [XmlIgnoreAttribute]
         public bool WaitSpecified
         {
             get;

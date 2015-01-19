@@ -13,9 +13,9 @@ namespace Conversa.Net.Xmpp.Core
     /// </remarks>
     [XmlTypeAttribute(AnonymousType = true, Namespace = "urn:ietf:params:xml:ns:xmpp-tls")]
     [XmlRootAttribute("proceed", Namespace = "urn:ietf:params:xml:ns:xmpp-tls", IsNullable = false)]
-    public partial class TlsProceed
+    public partial class ProceedTls
     {
-        public TlsProceed()
+        public ProceedTls()
         {
         }
     }

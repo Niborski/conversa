@@ -16,12 +16,6 @@ namespace Conversa.Net.Xmpp.Privacy
     [XmlRootAttribute("item", Namespace = "jabber:iq:privacy", IsNullable = false)]
     public partial class PrivacyItem
     {
-        private Empty?           infoQuery;
-        private Empty?           message;
-        private Empty?           presenceIn;
-        private Empty?           presenceOut;
-        private PrivacyItemType? type;
-
         [XmlAttribute("action")]
         public PrivacyAction Action
         {
@@ -46,157 +40,71 @@ namespace Conversa.Net.Xmpp.Privacy
         [XmlElementAttribute("iq")]
         public Empty InfoQuery
         {
-            get
-            {
-                if (this.infoQuery.HasValue)
-                {
-                    return this.infoQuery.Value;
-                }
-                else
-                {
-                    return default(Empty);
-                }
-            }
-            set { this.infoQuery = value; }
+            get;
+            set;
         }
 
         [XmlIgnore]
         public bool InfoQuerySpecified
         {
-            get { return this.infoQuery.HasValue; }
-            set
-            {
-                if (!value)
-                {
-                    this.infoQuery = null;
-                }
-            }
+            get;
+            set;
         }
 
         [XmlElementAttribute("message")]
         public Empty Message
         {
-            get
-            {
-                if (this.message.HasValue)
-                {
-                    return this.message.Value;
-                }
-                else
-                {
-                    return default(Empty);
-                }
-            }
-            set
-            {
-                this.message = value;
-            }
+            get;
+            set;
         }
 
         [XmlIgnore]
         public bool MessageSpecified
         {
-            get { return this.message.HasValue; }
-            set
-            {
-                if (!value)
-                {
-                    this.message = null;
-                }
-            }
+            get;
+            set;
         }
 
         [XmlElementAttribute("presence-in")]
         public Empty PresenceIn
         {
-            get
-            {
-                if (this.presenceIn.HasValue)
-                {
-                    return this.presenceIn.Value;
-                }
-                else
-                {
-                    return default(Empty);
-                }
-            }
-            set { this.presenceIn = value; }
+            get;
+            set;
         }
 
         [XmlIgnore]
         public bool PresenceInSpecified
         {
-            get { return this.presenceIn.HasValue; }
-            set
-            {
-                if (!value)
-                {
-                    this.presenceIn = null;
-                }
-            }
+            get;
+            set;
         }
 
         [XmlElementAttribute("presence-out")]
         public Empty PresenceOut
         {
-            get
-            {
-                if (this.presenceOut.HasValue)
-                {
-                    return this.presenceOut.Value;
-                }
-                else
-                {
-                    return default(Empty);
-                }
-            }
-            set
-            {
-                this.presenceOut = value;
-            }
+            get;
+            set;
         }
 
         [XmlIgnore]
         public bool PresenceOutSpecified
         {
-            get { return this.presenceOut.HasValue; }
-            set
-            {
-                if (!value)
-                {
-                    this.presenceOut = null;
-                }
-            }
+            get;
+            set;
         }
 
         [XmlAttribute("type")]
         public PrivacyItemType Type
         {
-            get
-            {
-                if (this.type.HasValue)
-                {
-                    return this.type.Value;
-                }
-                else
-                {
-                    return default(PrivacyItemType);
-                }
-            }
-            set { this.type = value; }
+            get;
+            set;
         }
 
         [XmlIgnore]
         public bool TypeSpecified
         {
-            get { return this.type.HasValue; }
-            set
-            {
-                if (!value)
-                {
-                    this.type = null;
-                }
-            }
+            get;
+            set;
         }
 
         public PrivacyItem()

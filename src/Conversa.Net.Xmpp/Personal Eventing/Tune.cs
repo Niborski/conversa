@@ -32,7 +32,7 @@ namespace Conversa.Net.Xmpp.PersonalEventing
         }
 
         /// <remarks/>
-        [XmlIgnoreAttribute()]
+        [XmlIgnoreAttribute]
         public bool LengthSpecified
         {
             get;

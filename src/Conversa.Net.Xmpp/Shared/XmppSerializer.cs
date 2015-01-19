@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -90,6 +91,8 @@ namespace Conversa.Net.Xmpp.Shared
         /// </summary>
         static XmppSerializer()
         {
+            var watch = Stopwatch.StartNew();
+
             var resource = "Conversa.Net.Xmpp.Shared.Serializers.xml";
             var document = new XmlDocument();
 
@@ -124,6 +127,9 @@ namespace Conversa.Net.Xmpp.Shared
               , NamespaceHandling  = NamespaceHandling.Default
               , OmitXmlDeclaration = true
             };
+
+            watch.Stop();
+            Debug.WriteLine(String.Format("XmppSerializer static constructor elapsed time: {0}", watch.Elapsed.ToString()));
         }
 
         /// <summary>

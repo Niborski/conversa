@@ -96,7 +96,7 @@ namespace Conversa.Net.Xmpp.Core
         }
 
         /// <remarks/>
-        [XmlIgnoreAttribute()]
+        [XmlIgnoreAttribute]
         public bool TypeSpecified
         {
             get;

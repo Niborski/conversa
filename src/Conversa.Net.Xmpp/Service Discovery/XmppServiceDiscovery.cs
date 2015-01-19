@@ -146,7 +146,7 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
 
             iq.ServiceItem = new ServiceItem();
 
-            await this.SendMessageAsync(iq);
+            await this.SendAsync(iq);
         }
 
         private bool SupportsFeature(string featureName)

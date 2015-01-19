@@ -16,10 +16,6 @@ namespace Conversa.Net.Xmpp.AdHocCommands
     [XmlRootAttribute("actions", Namespace = "http://jabber.org/protocol/commands", IsNullable = false)]
     public partial class CommandActions
     {
-        private Empty? prev;
-        private Empty? next;
-        private Empty? complete;
-
         [XmlAttribute("type")]
         public CommandActionsType Type
         {
@@ -30,91 +26,43 @@ namespace Conversa.Net.Xmpp.AdHocCommands
         [XmlElementAttribute("prev", Namespace = "http://jabber.org/protocol/commands")]
         public Empty Prev
         {
-            get
-            {
-                if (this.prev.HasValue)
-                {
-                    return this.prev.Value;
-                }
-                else
-                {
-                    return default(Empty);
-                }
-            }
-            set { this.prev = value; }
+            get;
+            set;
         }
 
         [XmlIgnore]
         public bool PrevSpecified
         {
-            get { return this.prev.HasValue; }
-            set
-            {
-                if (!value)
-                {
-                    this.prev = null;
-                }
-            }
+            get;
+            set;
         }
 
         [XmlElementAttribute("next", Namespace = "http://jabber.org/protocol/commands")]
         public Empty Next
         {
-            get
-            {
-                if (this.next.HasValue)
-                {
-                    return this.next.Value;
-                }
-                else
-                {
-                    return default(Empty);
-                }
-            }
-            set { this.next = value; }
+            get;
+            set;
         }
 
         [XmlIgnore]
         public bool NextSpecified
         {
-            get { return this.next.HasValue; }
-            set
-            {
-                if (!value)
-                {
-                    this.next = null;
-                }
-            }
+            get;
+            set;
         }
 
         [XmlElementAttribute("complete", Namespace = "http://jabber.org/protocol/commands")]
         public Empty Complete
         {
-            get
-            {
-                if (this.complete.HasValue)
-                {
-                    return this.complete.Value;
-                }
-                else
-                {
-                    return default(Empty);
-                }
-            }
-            set { this.complete = value; }
+            get;
+            set;
         }
 
         [XmlIgnore]
         public bool CompleteSpecified
         {
-            get { return this.complete.HasValue; }
-            set
-            {
-                if (!value)
-                {
-                    this.complete = null;
-                }
-            }
+            get;
+            set;
         }
     }
 }

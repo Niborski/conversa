@@ -17,9 +17,6 @@ namespace Conversa.Net.Xmpp.AdHocCommands
     [XmlRootAttribute("command", Namespace = "http://jabber.org/protocol/commands", IsNullable = false)]
     public partial class Command
     {
-        private CommandActionType? action;
-        private CommandStatus?     status;
-
         [XmlAnyElementAttribute]
         [XmlElementAttribute("actions", typeof(CommandActions))]
         [XmlElementAttribute("note", typeof(CommandNote))]
@@ -53,61 +50,29 @@ namespace Conversa.Net.Xmpp.AdHocCommands
         [XmlAttribute("action")]
         public CommandActionType Action
         {
-            get
-            {
-                if (this.action.HasValue)
-                {
-                    return this.action.Value;
-                }
-                else
-                {
-                    return default(CommandActionType);
-                }
-            }
-            set { this.action = value; }
+            get;
+            set;
         }
 
         [XmlIgnore]
         public bool ActionSpecified
         {
-            get { return this.action.HasValue; }
-            set
-            {
-                if (!value)
-                {
-                    this.action = null;
-                }
-            }
+            get;
+            set;
         }
 
-        [XmlAttribute("Status")]
+        [XmlAttribute("status")]
         public CommandStatus Status
         {
-            get
-            {
-                if (this.status.HasValue)
-                {
-                    return this.status.Value;
-                }
-                else
-                {
-                    return default(CommandStatus);
-                }
-            }
-            set { this.status = value; }
+            get;
+            set;
         }
 
         [XmlIgnore]
         public bool StatusSpecified
         {
-            get { return this.status.HasValue; }
-            set
-            {
-                if (!value)
-                {
-                    this.status = null;
-                }
-            }
+            get;
+            set;
         }
 
         public Command()

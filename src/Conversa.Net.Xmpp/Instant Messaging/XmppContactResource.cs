@@ -97,7 +97,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             return this.address;
         }
 
-        internal void Update(Presence presence)
+        internal async Task UpdateAsync(Presence presence)
         {
             this.Presence.Update(presence);
 
@@ -121,42 +121,41 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             {
                 if (item is VCardAvatar)
                 {
-                    this.UpdateVCardAvatar(item as VCardAvatar);
+                    await this.UpdateVCardAvatarAsync(item as VCardAvatar);
                 }
                 else if (item is EntityCapabilities)
                 {
-                    this.UpdateCapabilitiesAsync(item as EntityCapabilities);
+                    await this.UpdateCapabilitiesAsync(item as EntityCapabilities).ConfigureAwait(false);
                 }
             }
         }
 
-        private void UpdateVCardAvatar(VCardAvatar vcard)
+        private async Task UpdateVCardAvatarAsync(VCardAvatar vcard)
         {
-            if (vcard.Photo != null && vcard.Photo.Length > 0)
+            if (String.IsNullOrEmpty(vcard.Photo) && vcard.Photo.Length == 0)
             {
-                if (!String.IsNullOrEmpty(vcard.Photo))
-                {
-                    // Check if we have the avatar cached
-                    string cachedHash = this.Client.AvatarStorage.GetAvatarHash(this.address.BareAddress);
+                return;
+            }
 
-                    if (cachedHash == vcard.Photo)
-                    {
-                        // Dispose Avatar Streams
-                        this.DisposeAvatarStream();
+            // Check if we have the avatar cached
+            string cachedHash = this.Client.AvatarStorage.GetAvatarHash(this.address.BareAddress);
 
-                        // Update the avatar hash and file Paths
-                        this.avatarHash = vcard.Photo;
-                        this.Avatar     = this.Client.AvatarStorage.ReadAvatar(this.address.BareAddress);
-                    }
-                    else
-                    {
-                        // Update the avatar hash
-                        this.avatarHash = vcard.Photo;
+            if (cachedHash == vcard.Photo)
+            {
+                // Dispose Avatar Streams
+                this.DisposeAvatarStream();
 
-                        // Avatar is not cached request the new avatar information
-                        this.RequestAvatarAsync();
-                    }
-                }
+                // Update the avatar hash and file Paths
+                this.avatarHash = vcard.Photo;
+                this.Avatar     = this.Client.AvatarStorage.ReadAvatar(this.address.BareAddress);
+            }
+            else
+            {
+                // Update the avatar hash
+                this.avatarHash = vcard.Photo;
+
+                // Avatar is not cached request the new avatar information
+                await this.RequestAvatarAsync().ConfigureAwait(false);
             }
         }
 
@@ -193,7 +192,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
             iq.ServiceInfo = new ServiceInfo { Node = this.Capabilities.DiscoveryInfoNode };
 
-            await this.SendMessageAsync(iq);
+            await this.SendAsync(iq).ConfigureAwait(false);
         }
 
         private async Task RequestAvatarAsync()
@@ -211,7 +210,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
             iq.VCardData = new VCardData();
 
-            await this.SendMessageAsync(iq);
+            await this.SendAsync(iq).ConfigureAwait(false);
         }
 
         private void DisposeAvatarStream()

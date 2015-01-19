@@ -24,7 +24,7 @@ namespace Conversa.Net.Xmpp.PublishSubscribe
         }
 
         /// <remarks/>
-        [XmlAttributeAttribute()]
+        [XmlAttributeAttribute]
         public string Node
         {
             get;
@@ -32,7 +32,7 @@ namespace Conversa.Net.Xmpp.PublishSubscribe
         }
 
         /// <remarks/>
-        [XmlTextAttribute()]
+        [XmlTextAttribute]
         public string Value
         {
             get;
