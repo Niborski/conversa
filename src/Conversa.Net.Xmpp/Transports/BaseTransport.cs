@@ -133,7 +133,7 @@ namespace Conversa.Net.Xmpp.Transports
             {
                 if (disposing)
                 {
-                    this.CloseAsync().Wait();
+                    this.Close();
                 }
 
                 this.connectionString = null;
@@ -170,10 +170,8 @@ namespace Conversa.Net.Xmpp.Transports
 
         public abstract Task ResetStreamAsync();
 
-        public virtual async Task CloseAsync()
+        public virtual void Close()
         {
-            await this.InternalCloseAsync().ConfigureAwait(false);
-
             if (this.messageStream != null)
             {
                 this.messageStream.Dispose();
@@ -187,11 +185,6 @@ namespace Conversa.Net.Xmpp.Transports
 			}
 
             this.connectionString = null;
-        }
-
-        protected virtual async Task InternalCloseAsync()
-        {
-            throw new InvalidOperationException();
         }
 
         protected void PublishMessage(XmppStreamElement message)

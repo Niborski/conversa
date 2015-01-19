@@ -68,56 +68,50 @@ namespace Conversa.Net.Xmpp.Client
             await this.SendAsync(presence).ConfigureAwait(false);
         }
 
-        protected override void OnResponseMessage(Presence presence)
-        {
-        }
-
-#warning TODO : Add Subscription
-        protected override void OnResponseMessage(InfoQuery message)
+        protected override async void OnResponseMessage(InfoQuery message)
         {
             // Answers to Entity Capabilities and service discovery info requests
-            if (message.Type == InfoQueryType.Get)
+            if (message.Type != InfoQueryType.Get || message.ServiceInfo == null)
             {
-                if (message.ServiceInfo != null)
-                {
-                    var query   = message.ServiceInfo;
-                    var service = new ServiceInfo()
-                    {
-                        Node = ((!String.IsNullOrEmpty(query.Node)) ? this.caps.DiscoveryInfoNode : null)
-                    };
-
-                    foreach (XmppServiceIdentity identity in this.caps.Identities)
-                    {
-                        var supportedIdentity = new ServiceIdentity
-                        {
-                            Name        = identity.Name,
-                            Category    = identity.Category.ToString().ToLower(),
-                            Type        = identity.Type
-                        };
-
-                        service.Identities.Add(supportedIdentity);
-                    }
-
-                    foreach (XmppServiceFeature supportedFeature in this.caps.Features)
-                    {
-                        ServiceFeature feature = new ServiceFeature
-                        {
-                            Name = supportedFeature.Name
-                        };
-
-                        service.Features.Add(feature);
-                    }
-
-                    var response = InfoQuery.Create()
-                                            .ResponseTo(message.Id)
-                                            .ToAddress(message.From);
-
-                    response.ServiceInfo = service;
-
-
-                    this.Client.SendAsync(response);
-                }
+                return;
             }
+
+            var query   = message.ServiceInfo;
+            var service = new ServiceInfo()
+            {
+                Node = ((!String.IsNullOrEmpty(query.Node)) ? this.caps.DiscoveryInfoNode : null)
+            };
+
+            foreach (XmppServiceIdentity identity in this.caps.Identities)
+            {
+                var supportedIdentity = new ServiceIdentity
+                {
+                    Name        = identity.Name,
+                    Category    = identity.Category.ToString().ToLower(),
+                    Type        = identity.Type
+                };
+
+                service.Identities.Add(supportedIdentity);
+            }
+
+            foreach (XmppServiceFeature supportedFeature in this.caps.Features)
+            {
+                ServiceFeature feature = new ServiceFeature
+                {
+                    Name = supportedFeature.Name
+                };
+
+                service.Features.Add(feature);
+            }
+
+            var response = InfoQuery.Create()
+                                    .ResponseTo(message.Id)
+                                    .ToAddress(message.From);
+
+            response.ServiceInfo = service;
+
+
+            await this.Client.SendAsync(response).ConfigureAwait(false);
         }
 
         private EntityCapabilities GetEntityCapabilities()

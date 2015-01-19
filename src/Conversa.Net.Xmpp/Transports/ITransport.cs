@@ -94,13 +94,13 @@ namespace Conversa.Net.Xmpp.Transports
         Task SendAsync(byte[] value);
 
         /// <summary>
-        /// Closes the transport connection
-        /// </summary>
-        Task CloseAsync();
-
-        /// <summary>
         /// Resets the transport and sends the XMPP stream initialization
         /// </summary>
         Task ResetStreamAsync();
+
+        /// <summary>
+        /// Closes the transport connection
+        /// </summary>
+        void Close();
     }
 }

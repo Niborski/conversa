@@ -60,8 +60,7 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
             this.features   = new List<XmppServiceFeature>();
             this.items      = new List<XmppServiceItem>();
 
-            this.RequestServiceInfoAsync();
-            this.RequestServiceFeaturesAsync();
+            this.RequestInfo();
         }
 
         /// <summary>
@@ -133,6 +132,12 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
             }
 
             base.OnResponseMessage(response);
+        }
+
+        private async void RequestInfo()
+        {
+            await this.RequestServiceInfoAsync().ConfigureAwait(false);
+            await this.RequestServiceFeaturesAsync().ConfigureAwait(false);
         }
 
         private void OnServiceItem(ServiceItem serviceItem)

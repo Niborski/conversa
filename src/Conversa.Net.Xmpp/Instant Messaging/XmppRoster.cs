@@ -174,11 +174,11 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             this.contacts.Add(contact);
         }
 
-        protected override void OnClientConnected()
+        protected override async void OnClientConnected()
         {
             this.Subscribe();
             this.AddSelfContact();
-            this.RequestRosterAsync();
+            await this.RequestRosterAsync();
 
             base.OnClientConnected();
         }
@@ -201,7 +201,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                                      .Subscribe(message => this.OnRosterMessage(message.Roster)));
         }
 
-        private void OnRosterMessage(Roster message)
+        private async void OnRosterMessage(Roster message)
         {
             // It's a roster management related message
             foreach (RosterItem item in message.Items)
@@ -243,7 +243,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
             if (resource.Presence.IsOffline)
             {
-                resource.Presence.SetDefaultPresenceAsync();
+                await resource.Presence.SetDefaultPresenceAsync();
             }
 
             this.rosterStream.OnNext(this);

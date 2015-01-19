@@ -272,7 +272,7 @@ namespace Conversa.Net.Xmpp.Client
                 if (disposing)
                 {
                     // Release managed resources here
-                    this.CloseAsync().Wait();
+                    this.Close();
                 }
 
                 // Call the appropriate methods to clean up
@@ -320,9 +320,34 @@ namespace Conversa.Net.Xmpp.Client
         }
 
         /// <summary>
-        /// Closes the connection
+        /// Sends a new message.
         /// </summary>
-        public async Task CloseAsync()
+        public async Task SendAsync<T>()
+            where T: class, new()
+        {
+            await this.SendAsync<T>(new T()).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Sends a new message.
+        /// </summary>
+        /// <param name="message">The message to be sent</param>
+        public async Task SendAsync<T>(T message)
+            where T: class
+        {
+            await this.transport.SendAsync(XmppSerializer.Serialize(message)).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Sends a new message.
+        /// </summary>
+        /// <param name="message">The message to be sent</param>
+        public async Task SendAsync(object message)
+        {
+            await this.transport.SendAsync(XmppSerializer.Serialize(message)).ConfigureAwait(false);
+        }
+
+        private async void Close()
         {
             if (this.isDisposed || this.State == XmppClientState.Closed || this.State == XmppClientState.Closing)
             {
@@ -359,32 +384,13 @@ namespace Conversa.Net.Xmpp.Client
             }
         }
 
-        /// <summary>
-        /// Sends a new message.
-        /// </summary>
-        public async Task SendAsync<T>()
-            where T: class, new()
+        private void CloseTransport()
         {
-            await this.SendAsync<T>(new T()).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Sends a new message.
-        /// </summary>
-        /// <param name="message">The message to be sent</param>
-        public async Task SendAsync<T>(T message)
-            where T: class
-        {
-            await this.transport.SendAsync(XmppSerializer.Serialize(message)).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Sends a new message.
-        /// </summary>
-        /// <param name="message">The message to be sent</param>
-        public async Task SendAsync(object message)
-        {
-            await this.transport.SendAsync(XmppSerializer.Serialize(message)).ConfigureAwait(false);
+            if (this.transport != null)
+            {
+                this.transport.Dispose();
+                this.transport = null;
+            }
         }
 
         private async Task CloseStreamAsync()
@@ -439,15 +445,6 @@ namespace Conversa.Net.Xmpp.Client
             {
                 this.presenceStream.Dispose();
                 this.presenceStream = null;
-            }
-        }
-
-        private void CloseTransport()
-        {
-            if (this.transport != null)
-            {
-                this.transport.Dispose();
-                this.transport = null;
             }
         }
 
@@ -518,7 +515,7 @@ namespace Conversa.Net.Xmpp.Client
             }
             else if (fragment is SaslFailure)
             {
-                await this.OnAuthenticationFailedAsync(fragment as SaslFailure).ConfigureAwait(false);
+                this.OnAuthenticationFailed(fragment as SaslFailure);
             }
         }
 
@@ -676,7 +673,7 @@ namespace Conversa.Net.Xmpp.Client
             await this.transport.ResetStreamAsync().ConfigureAwait(false);
         }
 
-        private async Task OnAuthenticationFailedAsync(SaslFailure failure)
+        private void OnAuthenticationFailed(SaslFailure failure)
         {
             var errorMessage = "Authentication failed (" + failure.GetErrorMessage() + ")";
 
@@ -684,7 +681,7 @@ namespace Conversa.Net.Xmpp.Client
 
             this.State = XmppClientState.AuthenticationFailure;
 
-            await this.CloseAsync().ConfigureAwait(false);
+            this.Close();
         }
 
         private async Task OnBindResourceAsync()

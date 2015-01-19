@@ -39,7 +39,7 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
         /// <summary>
         /// Sets the initial presence agains the XMPP Service.
         /// </summary>
-        public async Task SetDefaultPresenceAsync()
+        public Task SetDefaultPresenceAsync()
         {
 #warning TODO: Reimplement
             throw new NotImplementedException();

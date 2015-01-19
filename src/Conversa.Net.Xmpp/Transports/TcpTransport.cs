@@ -179,28 +179,12 @@ namespace Conversa.Net.Xmpp.Transports
             await this.SendAsync(xml).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Closes the connection
-        /// </summary>
-        protected override async Task InternalCloseAsync()
+        public override void Close()
         {
             try
             {
                 this.PublishStateChange(TransportState.Closing);
                 this.StopAsyncReads();
-            }
-            catch
-            {
-            }
-            finally
-            {
-                this.PublishStateChange(TransportState.Closed);
-
-                if (this.ignorableServerCertificateErrors != null)
-                {
-                    this.ignorableServerCertificateErrors.Clear();
-                    this.ignorableServerCertificateErrors = null;
-                }
 
                 if (this.reader != null)
                 {
@@ -222,6 +206,19 @@ namespace Conversa.Net.Xmpp.Transports
                     this.parser.Dispose();
                     this.parser = null;
                 }
+
+                if (this.ignorableServerCertificateErrors != null)
+                {
+                    this.ignorableServerCertificateErrors.Clear();
+                    this.ignorableServerCertificateErrors = null;
+                }
+            }
+            catch
+            {
+            }
+            finally
+            {
+                this.PublishStateChange(TransportState.Closed);
             }
         }
 
