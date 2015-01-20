@@ -26,13 +26,7 @@ namespace Conversa.Net.Xmpp.PersonalEventing
         /// </summary>
         public IEnumerable<string> Features
         {
-            get
-            {
-                foreach (string feature in this.features)
-                {
-                    yield return feature;
-                }
-            }
+            get { return this.features.AsEnumerable(); }
         }
 
         /// <summary>
@@ -77,14 +71,13 @@ namespace Conversa.Net.Xmpp.PersonalEventing
         /// <returns></returns>
         internal async Task DiscoverSupportAsync()
         {
-            var iq = InfoQuery.Create()
-                              .FromAddress(this.Client.UserAddress)
-                              .ToAddress(this.Client.UserAddress.BareAddress)
-                              .ForRequest();
-
-            iq.ServiceItem = new ServiceItem();
-
-            this.features.Clear();
+            var iq = new InfoQuery
+            {
+                Type        = InfoQueryType.Get
+              , From        = this.Client.UserAddress
+              , To          = this.Client.UserAddress.BareAddress
+              , ServiceItem = new ServiceItem()
+            };
 
             await this.SendAsync(iq);
         }
@@ -100,13 +93,12 @@ namespace Conversa.Net.Xmpp.PersonalEventing
 
         protected override void OnResponseMessage(InfoQuery response)
         {
+            this.features.Clear();
+
             foreach (var details in response.ServiceItem.Items)
             {
                 this.features.Add(details.Node);
             }
-
-            //this.NotifyPropertyChanged(() => SupportsUserTune);
-            //this.NotifyPropertyChanged(() => SupportsUserMood);
 
             if (this.SupportsUserTune)
             {

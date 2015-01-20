@@ -18,12 +18,12 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     public sealed class XmppContact
         : XmppMessageProcessor
     {
-        private string                       name;
-        private string                       displayName;
-        private XmppAddress                  address;
-        private RosterSubscriptionType       subscription;
-        private List<XmppContactResource>    resources;
-        private List<string>                 groups;
+        private string                    name;
+        private string                    displayName;
+        private XmppAddress               address;
+        private RosterSubscriptionType    subscription;
+        private List<XmppContactResource> resources;
+        private List<string>              groups;
 
         /// <summary>
         /// Gets the contact address.
@@ -45,15 +45,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
-        /// Gets the contact groups.
-        /// </summary>
-        /// <value>The groups.</value>
-        public IEnumerable<string> Groups
-        {
-            get { return this.groups.AsEnumerable(); }
-        }
-
-        /// <summary>
         /// Gets the contact Display Name
         /// </summary>
         public string DisplayName
@@ -63,18 +54,21 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
+        /// Gets the contact groups.
+        /// </summary>
+        /// <value>The groups.</value>
+        public IEnumerable<string> Groups
+        {
+            get { return this.groups.AsEnumerable(); }
+        }
+
+        /// <summary>
         /// Gets the list available resources.
         /// </summary>
         /// <value>The resources.</value>
         public IEnumerable<XmppContactResource> Resources
         {
-            get
-            {
-                foreach (XmppContactResource resource in this.resources)
-                {
-                    yield return resource;
-                }
-            }
+            get { return this.resources.AsEnumerable(); }
         }
 
         /// <summary>
@@ -94,20 +88,20 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         {
             get { throw new NotImplementedException(); }
         }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="T:XmppContact"/> class.
         /// </summary>
         /// <param name="client">The XMPP client instance.</param>
         /// <param name="address">The contact address.</param>
-        /// <param name="name">The name.</param>
-        /// <param name="subscription">The subscription.</param>
-        /// <param name="groups">The groups.</param>
+        /// <param name="name">The contact name.</param>
+        /// <param name="subscription">The contact subscription mode.</param>
+        /// <param name="groups">The contact groups.</param>
         internal XmppContact(XmppClient             client
                            , XmppAddress            address
                            , string                 name
                            , RosterSubscriptionType subscription
-                           , IList<string>          groups)
+                           , IEnumerable<string>    groups)
             : base(client)
         {
             this.address   = address.BareAddress;
@@ -130,27 +124,18 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <param name="groupName">Name of the group.</param>
         public async Task AddToGroupAsync(string groupName)
         {
-            var roster = new Roster();
-            var item   = new RosterItem 
-            { 
-                Jid          = this.Address.BareAddress
-              , Name         = this.Name
-              , Subscription = this.Subscription 
+            if (this.groups.Contains(groupName))
+            {
+                return;
+            }
+
+            var iq = new InfoQuery
+            {
+                Type   = InfoQueryType.Set
+              , Roster = new Roster(new RosterItem(this.Address, this.Name, this.Subscription, groupName))
             };
 
-            item.Groups.Add(groupName);
-
-            roster.Items.Add(item);
-
-            var iq = InfoQuery.Create()
-                              .ForUpdate();
-
-            iq.Roster = roster;
-
-            if (!this.groups.Contains(groupName))
-            {
-                this.groups.Add(groupName);
-            }
+            this.groups.Add(groupName);
 
             await this.Client.SendAsync(iq);
         }
@@ -160,22 +145,11 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public async Task UpdateAsync()
         {
-            var roster = new Roster();
-            var item   = new RosterItem
+            var iq = new InfoQuery
             {
-                Jid          = this.Address.BareAddress
-              , Name         = this.Name
-              , Subscription = this.Subscription
+                Type   = InfoQueryType.Set
+              , Roster = new Roster(new RosterItem(this.Address, this.Name, this.Subscription, this.groups))
             };
-
-            item.Groups.AddRange(this.groups);
-
-            roster.Items.Add(item);
-
-            var iq = InfoQuery.Create()
-                              .ForUpdate();
-
-            iq.Roster = roster;
 
             await this.Client.SendAsync(iq);
         }
@@ -190,15 +164,12 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 return;
             }
 
-            var block = new Block();
-
-            block.Items.Add(new BlockItem { Jid = this.Address.BareAddress });
-
-            var iq = InfoQuery.Create()
-                              .ForUpdate()
-                              .FromAddress(this.Client.UserAddress);
-
-            iq.Block = block;
+            var iq = new InfoQuery
+            {
+                From  = this.Client.UserAddress
+              , Type  = InfoQueryType.Set
+              , Block = new Block(this.Address)
+            };
 
             await this.Client.SendAsync(iq);
         }
@@ -213,15 +184,12 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 return;
             }
 
-            var unblock = new Unblock();
-
-            unblock.Items.Add(new BlockItem { Jid = this.Address.BareAddress });
-
-            var iq = InfoQuery.Create()
-                              .ForUpdate()
-                              .FromAddress(this.Client.UserAddress);
-
-            iq.Unblock = unblock;
+            var iq = new InfoQuery
+            {
+                From    = this.Client.UserAddress
+              , Type    = InfoQueryType.Set
+              , Unblock = new Unblock(this.Address)
+            };
 
             await this.Client.SendAsync(iq);
         }
@@ -288,7 +256,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 }
             }
         }
-        
+
         private async Task UpdateResourceAsync(XmppContactResource resource, Presence message)
         {
             await resource.UpdateAsync(message).ConfigureAwait(false);
@@ -300,22 +268,13 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             }
         }
 
-        internal void RefreshData(string name, RosterSubscriptionType subscription, IList<string> groups)
+        internal void RefreshData(string name, RosterSubscriptionType subscription, IEnumerable<string> groups)
         {
-            this.Name = ((name == null) ? String.Empty : name);
+            this.name         = ((name == null) ? String.Empty : name);
+            this.displayName  = (!String.IsNullOrEmpty(this.name) ? this.name : this.address.UserName);
+            this.subscription = subscription;
 
-            if (!String.IsNullOrEmpty(this.Name))
-            {
-                this.displayName = this.name;
-            }
-            else
-            {
-                this.displayName = this.address.UserName;
-            }
-
-            this.Subscription   = subscription;
-            
-            if (groups != null && groups.Count > 0)
+            if (groups != null && groups.Count() > 0)
             {
                 this.groups.AddRange(groups);
             }
@@ -323,9 +282,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             {
                 this.groups.Add("Contacts");
             }
-
-            //this.NotifyPropertyChanged(() => DisplayName);
-            //this.NotifyPropertyChanged(() => Groups);
         }
     }
 }

@@ -71,12 +71,13 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
             this.features.Clear();
 
             // Get Service Info
-            var iq = InfoQuery.Create()
-                              .ForRequest()
-                              .FromAddress(this.Client.UserAddress)
-                              .ToAddress(this.Address);
-
-            iq.ServiceInfo = new ServiceInfo();
+            var iq = new InfoQuery
+            {
+                Type        = InfoQueryType.Get
+              , From        = this.Client.UserAddress
+              , To          = this.Address
+              , ServiceInfo = new ServiceInfo()
+            };
 
             await this.SendAsync(iq);
         }
@@ -89,12 +90,13 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
             this.items.Clear();
 
             // Get Service Details
-            var iq = InfoQuery.Create()
-                              .ForRequest()
-                              .FromAddress(this.Client.UserAddress)
-                              .ToAddress(this.Address);
-
-            iq.ServiceItem = new ServiceItem();
+            var iq = new InfoQuery
+            {
+                Type        = InfoQueryType.Get
+              , From        = this.Client.UserAddress
+              , To          = this.Address
+              , ServiceItem = new ServiceItem()
+            };
 
             await this.SendAsync(iq);
         }

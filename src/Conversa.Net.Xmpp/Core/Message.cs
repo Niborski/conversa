@@ -3,14 +3,16 @@
 
 namespace Conversa.Net.Xmpp.Core
 {
-    using Conversa.Net.Xmpp.InstantMessaging;
-    using Conversa.Net.Xmpp.MultiUserChat;
-    using Conversa.Net.Xmpp.PublishSubscribe;
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Xml.Schema;
-    using System.Xml.Serialization;
+    using Conversa.Net.Xmpp.DataForms;
+using Conversa.Net.Xmpp.DelayedDelivery;
+using Conversa.Net.Xmpp.InstantMessaging;
+using Conversa.Net.Xmpp.MultiUserChat;
+using Conversa.Net.Xmpp.PublishSubscribe;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 
     /// <summary>
     /// Message Stanza
@@ -46,6 +48,42 @@ namespace Conversa.Net.Xmpp.Core
             set;
         }
 
+        /// <summary>
+        /// enables mediated invitations to multi user chat rooms
+        /// </summary>
+        /// <remarks>
+        /// XEP-0045
+        /// </remarks>
+        [XmlElementAttribute("x", Namespace = "http://jabber.org/protocol/muc#user")]
+        public MucUser MucUser
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Delayed delivery timestamp
+        /// </summary>
+        [XmlElementAttribute("delay", Namespace = "urn:xmpp:delay")]
+        public Delay Delay
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Allows to send voice requests to multi user chat rooms
+        /// </summary>
+        /// <remarks>
+        /// XEP-0045
+        /// </remarks>
+        [XmlElementAttribute("x", Namespace = "jabber:x:data")]
+        public DataForm MucRequests
+        {
+            get;
+            set;
+        }
+
         /// <remarks/>
         [XmlElementAttribute("active", typeof(ChatStateActive), Namespace = "http://jabber.org/protocol/chatstates")]
         [XmlElementAttribute("composing", typeof(ChatStateComposing), Namespace = "http://jabber.org/protocol/chatstates")]
@@ -53,7 +91,6 @@ namespace Conversa.Net.Xmpp.Core
         [XmlElementAttribute("inactive", typeof(ChatStateInactive), Namespace = "http://jabber.org/protocol/chatstates")]
         [XmlElementAttribute("paused", typeof(ChatStatePaused), Namespace = "http://jabber.org/protocol/chatstates")]
         [XmlElementAttribute("event", typeof(PubSubEvent), Namespace = "http://jabber.org/protocol/pubsub#event")]
-        [XmlElementAttribute("x", Type = typeof(MucUser), Namespace = "http://jabber.org/protocol/muc#user")]
         public List<Object> Items
         {
             get;

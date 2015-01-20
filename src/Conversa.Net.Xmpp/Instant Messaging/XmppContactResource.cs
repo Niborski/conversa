@@ -117,16 +117,13 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 }
             }
 
-            foreach (object item in presence.Items)
+            if (presence.VCardAvatar != null)
             {
-                if (item is VCardAvatar)
-                {
-                    await this.UpdateVCardAvatarAsync(item as VCardAvatar);
-                }
-                else if (item is EntityCapabilities)
-                {
-                    await this.UpdateCapabilitiesAsync(item as EntityCapabilities).ConfigureAwait(false);
-                }
+                await this.UpdateVCardAvatarAsync(presence.VCardAvatar).ConfigureAwait(false);
+            }
+            if (presence.Capabilities != null)
+            {
+                await this.UpdateCapabilitiesAsync(presence.Capabilities).ConfigureAwait(false);
             }
         }
 
@@ -185,12 +182,13 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
         private async Task DiscoverCapabilitiesAsync()
         {
-            var iq = InfoQuery.Create()
-                              .FromAddress(this.Client.UserAddress)
-                              .ToAddress(this.Address)
-                              .ForRequest();
-
-            iq.ServiceInfo = new ServiceInfo { Node = this.Capabilities.DiscoveryInfoNode };
+            var iq = new InfoQuery
+            {
+                From        = this.Client.UserAddress
+              , To          = this.Address
+              , Type        = InfoQueryType.Get
+              , ServiceInfo = new ServiceInfo { Node = this.Capabilities.DiscoveryInfoNode }
+            };
 
             await this.SendAsync(iq).ConfigureAwait(false);
         }
@@ -203,12 +201,13 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 return;
             }
 
-            var iq = InfoQuery.Create()
-                              .FromAddress(this.Client.UserAddress)
-                              .ToAddress(this.Address)
-                              .ForRequest();
-
-            iq.VCardData = new VCardData();
+            var iq = new InfoQuery
+            {
+                From      = this.Client.UserAddress
+              , To        = this.Address
+              , Type      = InfoQueryType.Get
+              , VCardData = new VCardData()
+            };
 
             await this.SendAsync(iq).ConfigureAwait(false);
         }

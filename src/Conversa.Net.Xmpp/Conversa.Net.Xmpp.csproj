@@ -156,7 +156,6 @@
     <Compile Include="Core\Stream.cs" />
     <Compile Include="Core\StreamCompressed.cs" />
     <Compile Include="Core\StreamCompression.cs" />
-    <Compile Include="Core\StreamCompression.Custom.cs" />
     <Compile Include="Core\StreamCompressionFeature.cs" />
     <Compile Include="Core\StreamError.cs" />
     <Compile Include="Core\StreamError.Custom.cs" />
@@ -248,7 +247,7 @@
     <Compile Include="Personal Eventing\XmppUserEvent.cs" />
     <Compile Include="Personal Eventing\XmppUserMoodEvent.cs" />
     <Compile Include="Personal Eventing\XmppUserTuneEvent.cs" />
-    <Compile Include="Ping\ping.cs" />
+    <Compile Include="Ping\Ping.cs" />
     <Compile Include="Privacy\PrivacyAction.cs" />
     <Compile Include="Privacy\PrivacyActive.cs" />
     <Compile Include="Privacy\PrivacyDefault.cs" />

@@ -36,5 +36,16 @@ namespace Conversa.Net.Xmpp.Core
         {
             this.Items = new List<RosterItem>();
         }
+
+        public Roster(RosterItem item)
+            : this()
+        {
+            this.Items.Add(item);
+        }
+
+        public Roster(IEnumerable<RosterItem> items)
+        {
+            this.Items.AddRange(items);
+        }
     }
 }

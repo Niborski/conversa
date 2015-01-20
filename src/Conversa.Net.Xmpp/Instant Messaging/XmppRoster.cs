@@ -85,20 +85,19 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public async Task RemoveContactAsync(XmppAddress address)
         {
-            var roster = new Roster();
-            var item   = new RosterItem
+            var iq = new InfoQuery
+            {
+                Type   = InfoQueryType.Set
+              , From   = this.Client.UserAddress
+              , Roster = new Roster()
+            };
+            var item = new RosterItem
             {
                 Jid          = address.BareAddress
               , Subscription = RosterSubscriptionType.Remove
             };
 
-            roster.Items.Add(item);
-
-            var iq = InfoQuery.Create()
-                              .ForUpdate()
-                              .FromAddress(this.Client.UserAddress);
-
-            iq.Roster = roster;
+            iq.Roster.Items.Add(item);
 
             await this.SendAsync(iq).ConfigureAwait(false);
         }
@@ -108,9 +107,12 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public async Task RequestRosterAsync()
         {
-            var iq = InfoQuery.Create().ForRequest().FromAddress(this.Client.UserAddress);
-
-            iq.Roster = new Roster();
+            var iq = new InfoQuery
+            {
+                Type   = InfoQueryType.Get
+              , From   = this.Client.UserAddress
+              , Roster = new Roster()
+            };
 
             await this.SendAsync(iq).ConfigureAwait(false);
         }
@@ -127,9 +129,11 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 return;
             }
 
-            var iq = InfoQuery.Create().ForRequest();
-
-            iq.BlockList = new BlockList();
+            var iq = new InfoQuery
+            {
+                Type      = InfoQueryType.Get
+              , BlockList = new BlockList()
+            };
 
             await this.SendAsync(iq).ConfigureAwait(false);
         }
@@ -144,11 +148,12 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 return;
             }
 
-            var iq = InfoQuery.Create()
-                              .ForUpdate()
-                              .FromAddress(this.Client.UserAddress);
-
-            iq.Unblock = new Unblock();
+            var iq = new InfoQuery
+            {
+                Type    = InfoQueryType.Set
+              , From    = this.Client.UserAddress
+              , Unblock = new Unblock()
+            };
 
             await this.SendAsync(iq).ConfigureAwait(false);
         }

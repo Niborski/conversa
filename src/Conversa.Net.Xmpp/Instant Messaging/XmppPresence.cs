@@ -16,7 +16,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     public sealed class XmppPresence
         : XmppMessageProcessor
     {
-        private static int DefaultPresencePriorityValue = -200;
+        private static sbyte DefaultPresencePriorityValue = -128;
 
         private Subject<XmppContactResource> presenceStream;
         private XmppContactResource          resource;
@@ -62,26 +62,41 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             set { this.statusMessage = value; }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the presence status is online
+        /// </summary>
         public bool IsOnline
         {
             get { return this.ShowAs == ShowType.Online; }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the presence status is away
+        /// </summary>
         public bool IsAway
         {
             get { return this.ShowAs == ShowType.Away; }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the presence status is busy
+        /// </summary>
         public bool IsBusy
         {
             get { return this.ShowAs == ShowType.Busy; }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the presence status is extended away
+        /// </summary>
         public bool IsExtendedAway
         {
             get { return this.ShowAs == ShowType.ExtendedAway; }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the presence status is offline
+        /// </summary>
         public bool IsOffline
         {
             get { return this.ShowAs == ShowType.Offline; }
@@ -106,10 +121,13 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <param name="address">User address</param>
         public async Task GetPresenceAsync()
         {
-            var presence = Presence.Create()
-                                   .AsProbe()
-                                   .FromAddress(this.Client.UserAddress)
-                                   .ToAddress(this.resource.Address);
+            var presence = new Presence
+            {
+                From          = this.Client.UserAddress
+              , To            = this.resource.Address
+              , Type          = PresenceType.Probe
+              , TypeSpecified = true
+            };
 
             await this.Client.SendAsync(presence);
         }
@@ -120,10 +138,13 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <param name="target">XMPP Address of the target user.</param>
         public async Task SetDefaultPresenceAsync()
         {
-            var presence = Presence.Create()
-                                   .ToAddress(this.resource.Address.BareAddress)
-                                   .ShowAs(ShowType.Online)
-                                   .WithPriority(DefaultPresencePriorityValue);
+            var presence = new Presence
+            {
+                From     = this.Client.UserAddress
+              , To       = this.resource.Address
+              , Show     = ShowType.Online
+              , Priority = DefaultPresencePriorityValue
+            };
 
             await this.Client.SendAsync(presence);
         }
@@ -141,7 +162,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public async Task SetUnavailableAsync()
         {
-            await this.Client.SendAsync(Presence.Create().AsUnavailable());
+            await this.Client.SendAsync(new Presence().AsUnavailable());
         }
 
         /// <summary>
@@ -171,10 +192,12 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <param name="priority"></param>
         public async Task SetPresenceAsync(ShowType showAs, string statusMessage, int priority)
         {
-            var presence = Presence.Create()
-                                   .ShowAs(showAs)
-                                   .WithStatus(statusMessage)
-                                   .WithPriority(priority);
+            var presence = new Presence
+            {
+                Show     = ShowType.Online
+              , Status   = new Status { Value = statusMessage }
+              , Priority = DefaultPresencePriorityValue
+            };
 
             await this.Client.SendAsync(presence);
         }
@@ -184,7 +207,12 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public async Task RequestSubscriptionAsync()
         {
-            var presence = Presence.Create().AsSubscribe().ToAddress(this.resource.Address);
+            var presence = new Presence
+            {
+                To            = this.resource.Address
+              , Type          = PresenceType.Subscribe
+              , TypeSpecified = true
+            };
 
             await this.Client.SendAsync(presence);
         }
@@ -194,7 +222,27 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public async Task SubscribedAsync()
         {
-            var presence = Presence.Create().AsSubscribed().ToAddress(this.resource.Address);
+            var presence = new Presence
+            {
+                To            = this.resource.Address
+              , Type          = PresenceType.Subscribed
+              , TypeSpecified = true
+            };
+
+            await this.Client.SendAsync(presence);
+        }
+
+        /// <summary>
+        /// Subscribes to presence updates of the current user
+        /// </summary>
+        public async Task UnsuscribeAsync()
+        {
+            var presence = new Presence
+            {
+                To            = this.resource.Address
+              , Type          = PresenceType.Unsubscribe
+              , TypeSpecified = true
+            };
 
             await this.Client.SendAsync(presence);
         }
@@ -204,7 +252,12 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public async Task UnsuscribedAsync()
         {
-            var presence = Presence.Create().AsUnsubscribed().ToAddress(this.resource.Address);
+            var presence = new Presence
+            {
+                To            = this.resource.Address
+              , Type          = PresenceType.Unsubscribed
+              , TypeSpecified = true
+            };
 
             await this.Client.SendAsync(presence);
         }

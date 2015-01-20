@@ -5,7 +5,7 @@ using Conversa.Net.Xmpp.Client;
 using Conversa.Net.Xmpp.Core;
 using Conversa.Net.Xmpp.Registry;
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,22 +20,14 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
         private string domainName;
         private bool   supportsServiceDiscovery;
 
-        private ObservableCollection<XmppService> services;
+        private List<XmppService> services;
 
         /// <summary>
         /// Gets the collection of discovered services
         /// </summary>
-        public ObservableCollection<XmppService> Services
+        public IEnumerable<XmppService> Services
         {
-            get
-            {
-                if (this.services == null)
-                {
-                    this.services = new ObservableCollection<XmppService>();
-                }
-
-                return this.services;
-            }
+            get { return this.services; }
         }
 
         /// <summary>
@@ -104,6 +96,7 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
         internal XmppServiceDiscovery(XmppClient client)
             : base(client)
         {
+            this.services = new List<XmppService>();
         }
 
         /// <summary>
@@ -121,7 +114,7 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
         /// </summary>
         public void Clear()
         {
-            this.Services.Clear();
+            this.services.Clear();
         }
 
         public XmppService GetService(XmppServiceCategory category)
@@ -139,12 +132,13 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
         {
             this.Clear();
 
-            var iq = InfoQuery.Create()
-                              .FromAddress(this.Client.UserAddress)
-                              .ToAddress(this.DomainName)
-                              .ForRequest();
-
-            iq.ServiceItem = new ServiceItem();
+            var iq = new InfoQuery
+            {
+                From        = this.Client.UserAddress
+              , To          = this.DomainName
+              , Type        = InfoQueryType.Get
+              , ServiceItem = new ServiceItem()
+            };
 
             await this.SendAsync(iq);
         }

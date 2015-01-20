@@ -3,7 +3,6 @@
 
 namespace Conversa.Net.Xmpp.Core
 {
-
     /// <summary>
     /// Info/Query (IQ)
     /// <remarks>
@@ -12,52 +11,11 @@ namespace Conversa.Net.Xmpp.Core
     /// </remarks>
     public partial class InfoQuery
 	{
-        public static InfoQuery Create()
-        {
-            return new InfoQuery
-            {
-                Id   = IdentifierGenerator.Generate()
-              , Type = InfoQueryType.Get
-            };
-        }
-
-		public InfoQuery ResponseTo(string messageId)
-		{
-            this.Id   = messageId;
-            this.Type = InfoQueryType.Result;
-
-			return this;
-		}
-
-        public InfoQuery ForRequest()
-        {
-            this.Type = InfoQueryType.Get;
-
-            return this;
-        }
-
-		public InfoQuery ForUpdate()
-		{
-            this.Type = InfoQueryType.Set;
-
-			return this;
-		}
-
-        public InfoQuery FromAddress(XmppAddress from)
-		{
-			this.From = from;
-
-			return this;
-		}
-
-        public InfoQuery ToAddress(XmppAddress to)
-		{
-			this.To = to;
-
-			return this;
-		}
-
-		public InfoQuery AsReponse()
+        /// <summary>
+        /// Returns a new IQ Stanza configured as a response to the current IQ
+        /// </summary>
+        /// <returns>The IQ response</returns>
+		public InfoQuery AsResponse()
 		{
             return new InfoQuery
             {

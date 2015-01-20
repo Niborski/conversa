@@ -13,7 +13,7 @@ namespace Conversa.Net.Xmpp.DelayedDelivery
     /// </remarks>
     [XmlTypeAttribute(AnonymousType = true, Namespace = "urn:xmpp:delay")]
     [XmlRootAttribute("delay", Namespace = "urn:xmpp:delay", IsNullable = false)]
-    public partial class DelayedDelivery
+    public partial class Delay
     {
         [XmlAttribute("from")]
         public string From
@@ -36,7 +36,7 @@ namespace Conversa.Net.Xmpp.DelayedDelivery
             set;
         }
 
-        public DelayedDelivery()
+        public Delay()
         {
         }
     }

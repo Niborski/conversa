@@ -53,12 +53,13 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
         /// <param name="password"></param>
         public async Task RegisterAsync(string username, string password)
         {
-            var iq = InfoQuery.Create()
-                              .ForUpdate()
-                              .FromAddress(this.Client.UserAddress)
-                              .ToAddress(this.Address);
-
-            iq.Register = new Register { UserName = username, Password = password };
+            var iq = new InfoQuery
+            {
+                Type     = InfoQueryType.Set
+              , From     = this.Client.UserAddress
+              , To       = this.Address
+              , Register = new Register { UserName = username, Password = password }
+            };
 
             await this.Client.SendAsync(iq);
         }
@@ -68,12 +69,13 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
         /// </summary>
         public async Task UnregisterAsync()
         {
-            var iq = InfoQuery.Create()
-                              .ForUpdate()
-                              .FromAddress(this.Client.UserAddress)
-                              .ToAddress(this.Address);
-
-            iq.Register = new Register { Remove = String.Empty };
+            var iq = new InfoQuery 
+            {
+                Type     = InfoQueryType.Set
+              , From     = this.Client.UserAddress
+              , To       = this.Address
+              , Register = new Register { Remove = String.Empty }
+            };
 
             await this.Client.SendAsync(iq);
         }

@@ -11,14 +11,13 @@ namespace Conversa.Net.Xmpp.PersonalEventing
     public sealed class XmppMessageEvent
         : XmppEvent
     {
-        private Message message;
-
         /// <summary>
         /// Gets the message information
         /// </summary>
         public Message Message
         {
-            get { return this.message; }
+            get;
+            private set;
         }
 
         /// <summary>
@@ -27,7 +26,7 @@ namespace Conversa.Net.Xmpp.PersonalEventing
         /// <param name="message">The message information</param>
         public XmppMessageEvent(Message message)
         {
-            this.message = message;
+            this.Message = message;
         }
     }
 }

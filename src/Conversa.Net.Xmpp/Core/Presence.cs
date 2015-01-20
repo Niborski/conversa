@@ -45,14 +45,45 @@ namespace Conversa.Net.Xmpp.Core
         }
 
         /// <remarks/>
-        [XmlElementAttribute("c", Type = typeof(EntityCapabilities), Namespace = "http://jabber.org/protocol/caps")]
-        [XmlElementAttribute("x", Type = typeof(VCardAvatar), Namespace = "vcard-temp:x:update")]
-        [XmlElementAttribute("x", Type = typeof(Muc), Namespace = "http://jabber.org/protocol/muc")]
-        [XmlElementAttribute("x", Type = typeof(MucUser), Namespace = "http://jabber.org/protocol/muc#user")]
-        public List<object> Items
+        [XmlElementAttribute("c", Namespace = "http://jabber.org/protocol/caps")]
+        public EntityCapabilities Capabilities
         {
             get;
-            private set;
+            set;
+        }
+
+        /// <summary>
+        /// enables interaction with multi user chat rooms
+        /// </summary>
+        /// <remarks>
+        /// XEP-0045
+        /// </remarks>
+        [XmlElementAttribute("x", Namespace = "http://jabber.org/protocol/muc")]
+        public Muc Muc
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// enables interaction with multi user chat rooms
+        /// </summary>
+        /// <remarks>
+        /// XEP-0045
+        /// </remarks>
+        [XmlElementAttribute("x", Namespace = "http://jabber.org/protocol/muc#user")]
+        public MucUser MucUser
+        {
+            get;
+            set;
+        }
+
+        /// <remarks/>
+        [XmlElementAttribute("x", Namespace = "vcard-temp:x:update")]
+        public VCardAvatar VCardAvatar
+        {
+            get;
+            set;
         }
 
         /// <remarks/>
@@ -113,8 +144,7 @@ namespace Conversa.Net.Xmpp.Core
 
         public Presence()
         {
-            this.Id    = IdentifierGenerator.Generate();
-            this.Items = new List<object>();
+            this.Id = IdentifierGenerator.Generate();
         }
     }
 }

@@ -559,7 +559,7 @@ namespace Conversa.Net.Xmpp.Client
             }
 
             // Send the "pong" response
-            await this.SendAsync(ping.AsReponse()).ConfigureAwait(false);
+            await this.SendAsync(ping.AsResponse()).ConfigureAwait(false);
         }
 
         private async Task OnUpgradeToSsl()
@@ -691,9 +691,11 @@ namespace Conversa.Net.Xmpp.Client
                 return;
             }
 
-            var iq = InfoQuery.Create().ForUpdate();
-
-            iq.Bind = Bind.WithResource(this.connectionString.Resource);
+            var iq = new InfoQuery
+            {
+                Type = InfoQueryType.Set
+              , Bind = Bind.WithResource(this.connectionString.Resource)
+            };
 
             await this.SendAsync(iq).ConfigureAwait(false);
         }

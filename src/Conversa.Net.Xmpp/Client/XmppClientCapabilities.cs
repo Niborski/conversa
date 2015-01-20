@@ -61,9 +61,7 @@ namespace Conversa.Net.Xmpp.Client
 
         public async Task AdvertiseCapabilitiesAsync()
         {
-            var presence = Presence.Create();
-
-            presence.Items.Add(this.GetEntityCapabilities());
+            var presence = new Presence { Capabilities = this.GetEntityCapabilities() };
 
             await this.SendAsync(presence).ConfigureAwait(false);
         }
@@ -76,42 +74,35 @@ namespace Conversa.Net.Xmpp.Client
                 return;
             }
 
-            var query   = message.ServiceInfo;
-            var service = new ServiceInfo()
+            var iq = new InfoQuery
             {
-                Node = ((!String.IsNullOrEmpty(query.Node)) ? this.caps.DiscoveryInfoNode : null)
+                Id          = message.Id
+              , Type        = InfoQueryType.Result
+              , To          = message.From
+              , ServiceInfo =  new ServiceInfo
+                {
+                    Node = ((!String.IsNullOrEmpty(message.ServiceInfo.Node)) ? this.caps.DiscoveryInfoNode : null)
+                }
             };
 
-            foreach (XmppServiceIdentity identity in this.caps.Identities)
+            foreach (var identity in this.caps.Identities)
             {
                 var supportedIdentity = new ServiceIdentity
                 {
-                    Name        = identity.Name,
-                    Category    = identity.Category.ToString().ToLower(),
-                    Type        = identity.Type
+                    Name     = identity.Name,
+                    Category = identity.Category.ToString().ToLower(),
+                    Type     = identity.Type
                 };
 
-                service.Identities.Add(supportedIdentity);
+                iq.ServiceInfo.Identities.Add(supportedIdentity);
             }
 
-            foreach (XmppServiceFeature supportedFeature in this.caps.Features)
+            foreach (var supportedFeature in this.caps.Features)
             {
-                ServiceFeature feature = new ServiceFeature
-                {
-                    Name = supportedFeature.Name
-                };
-
-                service.Features.Add(feature);
+                iq.ServiceInfo.Features.Add(new ServiceFeature { Name = supportedFeature.Name });
             }
 
-            var response = InfoQuery.Create()
-                                    .ResponseTo(message.Id)
-                                    .ToAddress(message.From);
-
-            response.ServiceInfo = service;
-
-
-            await this.Client.SendAsync(response).ConfigureAwait(false);
+            await this.Client.SendAsync(iq).ConfigureAwait(false);
         }
 
         private EntityCapabilities GetEntityCapabilities()

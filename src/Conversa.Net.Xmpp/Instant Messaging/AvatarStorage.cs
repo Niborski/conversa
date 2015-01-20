@@ -16,9 +16,9 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     [XmlRootAttribute("storage", Namespace = "", IsNullable = false)]
     public sealed class AvatarStorage
     {
-        private static XmlSerializer    Serializer          = new XmlSerializer(typeof(AvatarStorage));
-        private static readonly string  AvatarsDirectory    = "Avatars";
-        private static readonly string  AvatarsFile         = "Avatars.xml";
+        private static XmlSerializer   Serializer       = new XmlSerializer(typeof(AvatarStorage));
+        private static readonly string AvatarsDirectory = "Avatars";
+        private static readonly string AvatarsFile      = "Avatars.xml";
 
         private static bool ExistsAvatar(string file)
         {

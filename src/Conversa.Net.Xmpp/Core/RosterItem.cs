@@ -85,5 +85,28 @@ namespace Conversa.Net.Xmpp.Core
             this.Subscription = RosterSubscriptionType.None;
             this.Groups       = new List<string>();
         }
+
+        public RosterItem(XmppAddress address, string name, RosterSubscriptionType subscription)
+            : this()
+        {
+            this.Jid          = address.BareAddress;
+            this.Name         = name;
+            this.Subscription = subscription;
+        }
+
+        public RosterItem(XmppAddress address, string name, RosterSubscriptionType subscription, string group)
+            : this(address, name, subscription)
+        {
+            this.Groups.Add(group);
+        }
+
+        public RosterItem(XmppAddress            address
+                        , string                 name
+                        , RosterSubscriptionType subscription
+                        , IEnumerable<string>    groups)
+            : this(address, name, subscription)
+        {
+            this.Groups.AddRange(groups);
+        }
     }
 }

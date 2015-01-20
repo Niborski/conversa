@@ -73,17 +73,13 @@ namespace Conversa.Net.Xmpp.Shared
 
         static string ReadResource(Assembly assembly, string resource)
         {
-            string xml;
-            
             using (var stream = assembly.GetManifestResourceStream(resource))
             {
                 using (var reader = new StreamReader(stream))
                 {
-                    xml = reader.ReadToEnd();
+                    return reader.ReadToEnd();
                 }
             }
-
-            return xml;
         }
 
         /// <summary>
@@ -93,10 +89,11 @@ namespace Conversa.Net.Xmpp.Shared
         {
             var watch = Stopwatch.StartNew();
 
+            var assembly = typeof(XmppSerializer).GetTypeInfo().Assembly;
             var resource = "Conversa.Net.Xmpp.Shared.Serializers.xml";
             var document = new XmlDocument();
 
-            document.LoadXml(ReadResource(typeof(XmppSerializer).GetTypeInfo().Assembly, resource));
+            document.LoadXml(ReadResource(assembly, resource));
 
             var list = document.SelectNodes("/serializers/serializer");
 
@@ -105,12 +102,13 @@ namespace Conversa.Net.Xmpp.Shared
             foreach (IXmlNode serializer in list)
             {
                 var node = serializer.SelectSingleNode("namespace");
-    
+
                 string ename  = serializer.Attributes.Single(a => a.NodeName == "elementname").NodeValue.ToString();
                 string prefix = node.SelectSingleNode("prefix").InnerText;
                 string nsName = node.SelectSingleNode("namespace").InnerText;
-                Type   type   = Type.GetType(serializer.SelectSingleNode("serializertype").InnerText);
-    
+                string tName  = serializer.SelectSingleNode("serializertype").InnerText;
+                Type   type   = assembly.ExportedTypes.SingleOrDefault(x => x.FullName == tName);
+
                 Serializers.Add(new XmppSerializer(ename, prefix, nsName, type));
             }
 
@@ -129,7 +127,8 @@ namespace Conversa.Net.Xmpp.Shared
             };
 
             watch.Stop();
-            Debug.WriteLine(String.Format("XmppSerializer static constructor elapsed time: {0}", watch.Elapsed.ToString()));
+
+            Debug.WriteLine(String.Format("XmppSerializer static constructor elapsed time: {0}", watch.Elapsed));
         }
 
         /// <summary>
@@ -163,18 +162,18 @@ namespace Conversa.Net.Xmpp.Shared
         private readonly XmlParserContext        context;
 
         /// <summary>
-        /// Gets the name of the element.
+        /// Gets the name of the XML element.
         /// </summary>
-        /// <value>The name of the element.</value>
+        /// <value>The name of the XML element.</value>
         public string ElementName
         {
             get { return this.elementName; }
         }
 
         /// <summary>
-        /// Gets the prefix.
+        /// Gets the namespace prefix.
         /// </summary>
-        /// <value>The prefix.</value>
+        /// <value>The namespace prefix.</value>
         public string Prefix
         {
             get { return this.prefix; }
@@ -198,13 +197,6 @@ namespace Conversa.Net.Xmpp.Shared
             get { return this.serializerType; }
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="XmppSerializer"/> class.
-        /// </summary>
-        /// <param name="elementName">Name of the element.</param>
-        /// <param name="prefix">The prefix.</param>
-        /// <param name="defaultNamespace">The default namespace.</param>
-        /// <param name="serializerType">Type of the serializer.</param>
         private XmppSerializer(string elementName, string prefix, string defaultNamespace, Type serializerType)
         {
             this.elementName	  = elementName;
@@ -225,12 +217,6 @@ namespace Conversa.Net.Xmpp.Shared
             }
         }
 
-        /// <summary>
-        /// Serializes the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="prefix">The prefix.</param>
-        /// <returns></returns>
         private byte[] SerializeObject(object value, string prefix)
         {
             using (var buffer = new MemoryStream())
@@ -244,11 +230,6 @@ namespace Conversa.Net.Xmpp.Shared
             }
         }
 
-        /// <summary>
-        /// Deserializes the specified XML.
-        /// </summary>
-        /// <param name="xml">The XML.</param>
-        /// <returns></returns>
         private object Deserialize(string xml)
         {
             using (var reader = new StringReader(xml))

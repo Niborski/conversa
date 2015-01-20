@@ -3,6 +3,7 @@
 
 namespace Conversa.Net.Xmpp.Blocking
 {
+    using Conversa.Net.Xmpp.Core;
     using System.Collections.Generic;
     using System.Xml.Serialization;
 
@@ -26,6 +27,24 @@ namespace Conversa.Net.Xmpp.Blocking
         public Block()
         {
             this.Items = new List<BlockItem>();
+        }
+
+        public Block(XmppAddress address)
+            : this()
+        {
+            this.Items.Add(new BlockItem { Jid = address.BareAddress });
+        }
+
+        public Block(BlockItem item)
+            : this()
+        {
+            this.Items.Add(item);
+        }
+
+        public Block(BlockItem[] items)
+            : this()
+        {
+            this.Items.AddRange(items);
         }
     }
 }

@@ -7,6 +7,7 @@ namespace Conversa.Net.Xmpp.Core
     using Conversa.Net.Xmpp.Blocking;
     using Conversa.Net.Xmpp.InBandRegistration;
     using Conversa.Net.Xmpp.InstantMessaging;
+    using Conversa.Net.Xmpp.MultiUserChat;
     using Conversa.Net.Xmpp.PublishSubscribe;
     using Conversa.Net.Xmpp.ServiceDiscovery;
     using Conversa.Net.Xmpp.XmppPing;
@@ -62,7 +63,18 @@ namespace Conversa.Net.Xmpp.Core
             set;
         }
 
-#warning TODO : Add Muc here
+        /// <summary>
+        /// enables administration of multi user chat rooms
+        /// </summary>
+        /// <remarks>
+        /// XEP-0045
+        /// </remarks>
+        [XmlElementAttribute("query", Namespace = "http://jabber.org/protocol/muc#admin")]
+        public MucAdmin MucAdmin
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// enables interaction with a publish-subscribe service
