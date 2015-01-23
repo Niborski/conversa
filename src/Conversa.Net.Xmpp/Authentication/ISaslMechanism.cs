@@ -13,5 +13,6 @@ namespace Conversa.Net.Xmpp.Authentication
         SaslAuth StartSaslNegotiation();
         SaslResponse ProcessChallenge(SaslChallenge challenge);
         SaslResponse ProcessResponse(SaslResponse response);
+        bool ProcessSuccess(SaslSuccess success);
     }
 }

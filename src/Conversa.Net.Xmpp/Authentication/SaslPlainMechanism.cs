@@ -50,5 +50,10 @@ namespace Conversa.Net.Xmpp.Authentication
         {
             return null;
         }
+
+        public bool ProcessSuccess(SaslSuccess success)
+        {
+            return true;
+        }
     }
 }

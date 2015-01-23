@@ -493,7 +493,7 @@ namespace Conversa.Net.Xmpp.Client
             }
             else if (fragment is SaslSuccess)
             {
-                await this.OnSaslSuccessAsync().ConfigureAwait(false);
+                await this.OnSaslSuccessAsync(fragment as SaslSuccess).ConfigureAwait(false);
             }
             else if (fragment is SaslFailure)
             {
@@ -655,12 +655,15 @@ namespace Conversa.Net.Xmpp.Client
             await this.SendAsync(this.saslMechanism.StartSaslNegotiation()).ConfigureAwait(false);
         }
 
-        private async Task OnSaslSuccessAsync()
+        private async Task OnSaslSuccessAsync(SaslSuccess success)
         {
-            this.State         = XmppClientState.Authenticated;
-            this.saslMechanism = null;
+            if (this.saslMechanism.ProcessSuccess(success))
+            {
+                this.State         = XmppClientState.Authenticated;
+                this.saslMechanism = null;
 
-            await this.transport.ResetStreamAsync().ConfigureAwait(false);
+                await this.transport.ResetStreamAsync().ConfigureAwait(false);
+            }
         }
 
         private void OnSaslFailure(SaslFailure failure)

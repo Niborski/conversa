@@ -16,7 +16,7 @@ namespace Conversa.Net.Xmpp.Authentication
     /// </summary>
     /// <remarks>
     /// References:
-    ///     http://www.ietf.org/rfc/rfc4616.txt
+    ///     https://tools.ietf.org/html/rfc5802
     /// </remarks>
     internal sealed class SaslScramSha1Mechanism
         : ISaslMechanism
@@ -28,7 +28,7 @@ namespace Conversa.Net.Xmpp.Authentication
 
         private static byte[] GenerateRandomBytes()
         {
-            return CryptographicBuffer.GenerateRandom(25).ToArray();
+            return CryptographicBuffer.GenerateRandom(32).ToArray();
         }
 
         public static string ToBase64String(string source)
@@ -96,16 +96,24 @@ namespace Conversa.Net.Xmpp.Authentication
 
         public SaslResponse ProcessResponse(SaslResponse response)
         {
+            return null;
+        }
+
+        public bool ProcessSuccess(SaslSuccess success)
+        {
             // The server verifies the nonce and the proof, verifies that the
             // authorization identity (if supplied by the client in the first
             // message) is authorized to act as the authentication identity, and,
             // finally, it responds with a "server-final-message", concluding the
             // authentication exchange.
-
-            // S: v=rmF9pqV8S7suAoZWja4dJRkFsKQ=
 #warning TODO: Verify server response
 
-            return null;
+            var decoded            = Convert.FromBase64String(success.Value);
+            var serverFinalMessage = XmppEncoding.Utf8.GetString(decoded, 0, decoded.Length);
+            var tokens             = SaslTokenizer.ToDictionary(serverFinalMessage);
+            var signature          = Convert.FromBase64String(tokens["v"]);
+
+            return true;
         }
     }
 }

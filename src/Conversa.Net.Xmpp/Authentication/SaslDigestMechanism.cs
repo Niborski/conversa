@@ -119,6 +119,11 @@ namespace Conversa.Net.Xmpp.Authentication
             return new SaslResponse { Value = this.BuildDigestRespose() };
         }
 
+        public bool ProcessSuccess(SaslSuccess success)
+        {
+            return true;
+        }
+
         private string BuildDigestRespose()
         {
             var response  = new StringBuilder();

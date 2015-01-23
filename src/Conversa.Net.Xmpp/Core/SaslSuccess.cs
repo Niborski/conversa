@@ -15,6 +15,13 @@ namespace Conversa.Net.Xmpp.Core
     [XmlRootAttribute("success", Namespace = "urn:ietf:params:xml:ns:xmpp-sasl", IsNullable = false)]
     public partial class SaslSuccess
     {
+        [XmlTextAttribute]
+        public string Value
+        {
+            get;
+            set;
+        }
+
         public SaslSuccess()
         {
         }
