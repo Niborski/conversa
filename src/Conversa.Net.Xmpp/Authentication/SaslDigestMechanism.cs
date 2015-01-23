@@ -62,7 +62,7 @@ namespace Conversa.Net.Xmpp.Authentication
 
         private XmppConnectionString       connectionString;
         private Dictionary<string, string> digestChallenge;
-        private string			           cnonce;
+        private string                     cnonce;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:SaslDigestMechanism"/> class.
@@ -153,10 +153,10 @@ namespace Conversa.Net.Xmpp.Authentication
             string hostname  = this.connectionString.HostName;
             string username  = this.connectionString.UserAddress.UserName;
             string password  = this.connectionString.UserPassword;
-            string realm	 = ((this.digestChallenge.ContainsKey("realm")) ? this.digestChallenge["realm"] : hostname);
-            string nonce	 = this.digestChallenge["nonce"].ToString();
+            string realm     = ((this.digestChallenge.ContainsKey("realm")) ? this.digestChallenge["realm"] : hostname);
+            string nonce     = this.digestChallenge["nonce"].ToString();
             string digestURI = String.Format("xmpp/{0}", realm);
-            string quop		 = this.SelectProtectionQuality();
+            string quop      = this.SelectProtectionQuality();
 
             /*
             If authzid is specified, then A1 is

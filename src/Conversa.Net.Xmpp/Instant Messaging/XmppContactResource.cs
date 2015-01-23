@@ -16,10 +16,10 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         : XmppMessageProcessor
     {
         private XmppContact            contact;
-        private XmppAddress			   address;
+        private XmppAddress            address;
         private XmppPresence           presence;
         private XmppEntityCapabilities capabilities;
-        private string				   avatarHash;
+        private string                 avatarHash;
         private System.IO.Stream       avatar;
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         {
             this.contact      = contact;
             this.address      = address;
-            this.presence	  = new XmppPresence(this.Client, this);
+            this.presence     = new XmppPresence(this.Client, this);
             this.capabilities = new XmppEntityCapabilities(client, this.Address);
         }
 
