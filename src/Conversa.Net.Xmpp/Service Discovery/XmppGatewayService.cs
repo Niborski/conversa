@@ -13,8 +13,9 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
     /// XMPP Gateway service
     /// </summary>
     public class XmppGatewayService
-        : XmppService
     {
+        private XmppClient      Client;
+        private XmppAddress     Address;
         private XmppGatewayType type;
 
         /// <summary>
@@ -22,7 +23,7 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
         /// </summary>
         public XmppGatewayType Type
         {
-            get { return this.type; }
+            get { return type;  }
         }
 
         /// <summary>
@@ -30,20 +31,19 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
         /// </summary>
         /// <param name="session"></param>
         /// <param name="serviceId"></param>
-        public XmppGatewayService(XmppClient client, string  addresss)
-            : base(client, addresss)
+        public XmppGatewayService(XmppClient client, string address)
         {
-            this.InferGatewayType();
+            this.Client  = client;
+            this.Address = address;
+            this.SetGatewayType();
         }
 
         /// <summary>
         /// Sets the initial presence agains the XMPP Service.
         /// </summary>
-        public Task SetDefaultPresenceAsync()
+        public async Task SetDefaultPresenceAsync()
         {
-#warning TODO: Reimplement
-            throw new NotImplementedException();
-            // await this.Client.Presence.SetDefaultPresence(this.Address);
+            // await this.Client.Presence.SetDefaultPresenceAsync(this.Address);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
         /// </summary>
         public async Task UnregisterAsync()
         {
-            var iq = new InfoQuery 
+            var iq = new InfoQuery
             {
                 Type     = InfoQueryType.Set
               , From     = this.Client.UserAddress
@@ -80,7 +80,7 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
             await this.Client.SendAsync(iq);
         }
 
-        private void InferGatewayType()
+        private void SetGatewayType()
         {
             if (this.Address.BareAddress.StartsWith("aim"))
             {

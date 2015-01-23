@@ -4,7 +4,7 @@
 namespace Conversa.Net.Xmpp.ServiceDiscovery
 {
     /// <summary>
-    /// Service Categories enumeration
+    /// Service category enumeration
     /// </summary>
     public enum XmppServiceCategory
     {

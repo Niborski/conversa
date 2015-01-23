@@ -1,6 +1,7 @@
 // Copyright (c) Carlos Guzm�n �lvarez. All rights reserved.
 // Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
 
+using Conversa.Net.Xmpp.Core;
 using Conversa.Net.Xmpp.Shared;
 using System;
 using System.IO;

@@ -12,15 +12,15 @@ using System.Text.RegularExpressions;
 namespace Conversa.Net.Xmpp.Authentication
 {
     /// <summary>
-    /// <see cref="XmppAuthenticator" /> implementation for the SASL Digest Authentication mechanism.
+    /// SASL Digest authentication mechanism.
     /// </summary>
     /// <remarks>
     /// References:
     ///     http://www.ietf.org/html.charters/sasl-charter.html
     ///     http://www.ietf.org/internet-drafts/draft-ietf-sasl-rfc2831bis-09.txt
     /// </remarks>
-    internal sealed class XmppSaslDigestAuthenticator
-        : IXmppAuthenticator
+    internal sealed class SaslDigestMechanism
+        : ISaslMechanism
     {
         private static Dictionary<string, string> DecodeDigestChallenge(SaslChallenge challenge)
         {
@@ -60,46 +60,39 @@ namespace Conversa.Net.Xmpp.Authentication
             return table;
         }
 
+        private XmppConnectionString       connectionString;
         private Dictionary<string, string> digestChallenge;
         private string			           cnonce;
-        private XmppConnectionString       connectionString;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:XmppSaslDigestAuthenticator"/> class.
+        /// Initializes a new instance of the <see cref="T:SaslDigestMechanism"/> class.
         /// </summary>
-        public XmppSaslDigestAuthenticator(XmppConnectionString connectionString)
+        public SaslDigestMechanism(XmppConnectionString connectionString)
         {
             this.connectionString = connectionString;
         }
 
-        public object StartSaslNegotiation()
+        public SaslAuth StartSaslNegotiation()
         {
             this.cnonce = Convert.ToBase64String(Encoding.UTF8.GetBytes(IdentifierGenerator.Generate()));
 
-            // Send authentication mechanism
-            var auth = new SaslAuth
-            {
-                Mechanism = XmppCodes.SaslDigestMD5Mechanism
-            };
-
-            return auth;
+            return new SaslAuth { Mechanism = XmppCodes.SaslDigestMD5Mechanism };
         }
 
-        public object ContinueNegotiationWith(object message)
+        public SaslResponse ProcessChallenge(SaslChallenge challenge)
         {
-            if (message is SaslResponse)
+            // Response to teh Authentication Information Request
+            this.digestChallenge = DecodeDigestChallenge(challenge);
+
+            if (this.digestChallenge.ContainsKey("rspauth"))
             {
-                return this.SendDigestResponse(message as SaslResponse);
-            }
-            else if (message is SaslChallenge)
-            {
-                return this.SendChallengeResponse(message as SaslChallenge);
+                return new SaslResponse();
             }
 
             return null;
         }
 
-        private object SendDigestResponse(SaslResponse message)
+        public SaslResponse ProcessResponse(SaslResponse response)
         {
             // Verify received Digest-Challenge
 
@@ -123,26 +116,7 @@ namespace Conversa.Net.Xmpp.Authentication
                 throw new XmppException("SASL Authrization failed. Incorrect challenge received from server");
             }
 
-            // Send the Digest-Reponse
-            var digestResponse = new SaslResponse
-            {
-                Value = this.BuildDigestRespose()
-            };
-
-            return digestResponse;
-        }
-
-        private object SendChallengeResponse(SaslChallenge message)
-        {
-            // Response to teh Authentication Information Request
-            this.digestChallenge = DecodeDigestChallenge(message);
-
-            if (this.digestChallenge.ContainsKey("rspauth"))
-            {
-                return new SaslResponse();
-            }
-
-            return null;
+            return new SaslResponse { Value = this.BuildDigestRespose() };
         }
 
         private string BuildDigestRespose()
@@ -222,14 +196,6 @@ namespace Conversa.Net.Xmpp.Authentication
                      { nonce-value, ":" nc-value, ":",
                        cnonce-value, ":", qop-value, ":", HEX(H(A2)) }))
                 */
-                /*
-                return XmppSaslDigestAuthenticator.ConvertToHex(
-                        XmppSaslDigestAuthenticator.ComputeHash(
-                            XmppSaslDigestAuthenticator.ConvertToHex(XmppSaslDigestAuthenticator.ComputeHash(a1.ToArray())), ":",
-                            nonce, ":", "00000001", ":", cnonce, ":", quop, ":",
-                            XmppSaslDigestAuthenticator.ConvertToHex(XmppSaslDigestAuthenticator.ComputeHash(a2)))
-                            );
-                 */
 
                 string hexA1 = a1.ToArray().ComputeMD5Hash().ToHexString();
                 string hexA2 = (new string[] { a2 }).ComputeMD5Hash().ToHexString();

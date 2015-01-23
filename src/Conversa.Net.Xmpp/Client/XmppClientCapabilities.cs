@@ -19,21 +19,14 @@ namespace Conversa.Net.Xmpp.Client
     {
         private const string DefaultHashAlgorithmName = "sha-1";
 
-        private const string Uri      = "http://Conversa.codeplex.com";
+        private const string Uri      = "https://github.com/carlosga/conversa";
         private const string Category = "client";
         private const string Type     = "pc";
-        private const string Name     = "babel im";
+        private const string Name     = "conversa";
         private const string Version  = "0.1";
 
-        private XmppEntityCapabilities caps;
-
-        /// <summary>
-        /// Gets the service discovery name
-        /// </summary>
-        public string ServiceDiscoveryName
-        {
-            get { return Name + " " + Version; }
-        }
+        private EntityCapabilities   caps;
+        private XmppServiceDiscovery disco;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="XmppClientCapabilities"/> class.
@@ -41,83 +34,45 @@ namespace Conversa.Net.Xmpp.Client
         internal XmppClientCapabilities(XmppClient client)
             : base(client)
         {
-            this.caps = new XmppEntityCapabilities();
+            this.disco = new XmppServiceDiscovery(this.Client, Name + " " + Version);
+
+            // Identities 
+            this.disco.AddIdentity(Category, Name, Type);
 
             // Supported features
-            this.caps.Features.Add(new XmppServiceFeature(XmppFeatures.ServiceDiscoveryInfo));
-            this.caps.Features.Add(new XmppServiceFeature(XmppFeatures.ServiceDiscoveryItems));
-            this.caps.Features.Add(new XmppServiceFeature(XmppFeatures.EntityCapabilities));
-            this.caps.Features.Add(new XmppServiceFeature(XmppFeatures.BidirectionalStreamsOverSynchronousHTTP));
-            this.caps.Features.Add(new XmppServiceFeature(XmppFeatures.ChatStateNotifications));
-            this.caps.Features.Add(new XmppServiceFeature(XmppFeatures.MultiUserChat));
-            this.caps.Features.Add(new XmppServiceFeature(XmppFeatures.MultiUserChatUser));
-            this.caps.Features.Add(new XmppServiceFeature(XmppFeatures.UserMood));
-            this.caps.Features.Add(new XmppServiceFeature(XmppFeatures.UserMoodWithNotify));
-            this.caps.Features.Add(new XmppServiceFeature(XmppFeatures.UserTune));
-            this.caps.Features.Add(new XmppServiceFeature(XmppFeatures.UserTuneWithNotify));
-            this.caps.Features.Add(new XmppServiceFeature(XmppFeatures.XmppPing));
-            this.caps.Features.Add(new XmppServiceFeature(XmppFeatures.DnsSrvLookups));
+            this.disco.AddFeature(XmppFeatures.ServiceDiscoveryInfo);
+            this.disco.AddFeature(XmppFeatures.ServiceDiscoveryItems);
+            this.disco.AddFeature(XmppFeatures.EntityCapabilities);
+            this.disco.AddFeature(XmppFeatures.BidirectionalStreamsOverSynchronousHTTP);
+            this.disco.AddFeature(XmppFeatures.ChatStateNotifications);
+            this.disco.AddFeature(XmppFeatures.MultiUserChat);
+            this.disco.AddFeature(XmppFeatures.MultiUserChatUser);
+            this.disco.AddFeature(XmppFeatures.UserMood);
+            this.disco.AddFeature(XmppFeatures.UserMoodWithNotify);
+            this.disco.AddFeature(XmppFeatures.UserTune);
+            this.disco.AddFeature(XmppFeatures.UserTuneWithNotify);
+            this.disco.AddFeature(XmppFeatures.XmppPing);
+            this.disco.AddFeature(XmppFeatures.DnsSrvLookups);
+
+            // Build Entity Capabilities information
+            this.caps = new EntityCapabilities
+            {
+                HashAlgorithmName  = DefaultHashAlgorithmName
+              , Node               = this.disco.Node
+              , VerificationString = this.BuildVerificationString()
+            };
         }
 
         public async Task AdvertiseCapabilitiesAsync()
         {
-            var presence = new Presence { Capabilities = this.GetEntityCapabilities() };
+            var presence = new Presence { Capabilities = this.caps };
 
             await this.SendAsync(presence).ConfigureAwait(false);
         }
 
         protected override async void OnResponseMessage(InfoQuery message)
         {
-            // Answers to Entity Capabilities and service discovery info requests
-            if (message.Type != InfoQueryType.Get || message.ServiceInfo == null)
-            {
-                return;
-            }
-
-            var iq = new InfoQuery
-            {
-                Id          = message.Id
-              , Type        = InfoQueryType.Result
-              , To          = message.From
-              , ServiceInfo =  new ServiceInfo
-                {
-                    Node = ((!String.IsNullOrEmpty(message.ServiceInfo.Node)) ? this.caps.DiscoveryInfoNode : null)
-                }
-            };
-
-            foreach (var identity in this.caps.Identities)
-            {
-                var supportedIdentity = new ServiceIdentity
-                {
-                    Name     = identity.Name,
-                    Category = identity.Category.ToString().ToLower(),
-                    Type     = identity.Type
-                };
-
-                iq.ServiceInfo.Identities.Add(supportedIdentity);
-            }
-
-            foreach (var supportedFeature in this.caps.Features)
-            {
-                iq.ServiceInfo.Features.Add(new ServiceFeature { Name = supportedFeature.Name });
-            }
-
-            await this.Client.SendAsync(iq).ConfigureAwait(false);
-        }
-
-        private EntityCapabilities GetEntityCapabilities()
-        {
-            var capabilities = new EntityCapabilities
-            {
-                HashAlgorithmName  = DefaultHashAlgorithmName
-              , Node               = this.caps.Node
-              , VerificationString = this.BuildVerificationString()
-            };
-
-            // Update the Verification String
-            this.caps.VerificationString = capabilities.VerificationString;
-
-            return capabilities;
+            await this.disco.SendAsnwerTo(message.Id, message.From);
         }
 
         /// <summary>
@@ -165,12 +120,12 @@ namespace Conversa.Net.Xmpp.Client
         {
             var builder = new StringBuilder();
 
-            foreach (XmppServiceIdentity identity in this.caps.Identities)
+            foreach (var identity in this.disco.Identities)
             {
-                builder.AppendFormat("{0}/{1}//{2}<", identity.Category, identity.Type, this.ServiceDiscoveryName);
+                builder.AppendFormat("{0}/{1}//{2}<", identity.Category, identity.Type, this.disco.Node);
             }
 
-            foreach (XmppServiceFeature supportedFeature in this.caps.Features)
+            foreach (var supportedFeature in this.disco.Features)
             {
                 builder.AppendFormat("{0}<", supportedFeature.Name);
             }

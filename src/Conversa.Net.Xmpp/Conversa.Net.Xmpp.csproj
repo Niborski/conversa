@@ -63,10 +63,6 @@
     <None Include="XMPP Registry\xdv-prefixes.xml" />
   </ItemGroup>
   <ItemGroup>
-    <TargetPlatform Include="WindowsPhoneApp, Version=8.1" />
-    <TargetPlatform Include="Windows, Version=8.1" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Ad-Hoc Commands\Command.cs" />
     <Compile Include="Ad-Hoc Commands\CommandActions.cs" />
     <Compile Include="Ad-Hoc Commands\CommandActionsType.cs" />
@@ -81,10 +77,13 @@
     <Compile Include="Advanced Message Processing\AmpRule.cs" />
     <Compile Include="Advanced Message Processing\AmpUnsupportedActions.cs" />
     <Compile Include="Advanced Message Processing\AmpUnsupportedConditions.cs" />
-    <Compile Include="Authentication\XmppAuthenticationFailure.cs" />
-    <Compile Include="Authentication\XmppAuthenticator.cs" />
-    <Compile Include="Authentication\XmppSaslDigestAuthenticator.cs" />
-    <Compile Include="Authentication\XmppSaslPlainAuthenticator.cs" />
+    <Compile Include="Authentication\Saslprep.cs" />
+    <Compile Include="Authentication\SaslTokenizer.cs" />
+    <Compile Include="Authentication\SaslAuthenticationFailure.cs" />
+    <Compile Include="Authentication\ISaslMechanism.cs" />
+    <Compile Include="Authentication\SaslDigestMechanism.cs" />
+    <Compile Include="Authentication\SaslPlainMechanism.cs" />
+    <Compile Include="Authentication\SaslScramSha1Mechanism.cs" />
     <Compile Include="Blocking Command\Block.cs" />
     <Compile Include="Blocking Command\BlockingErrors.cs" />
     <Compile Include="Blocking Command\BlockItem.cs" />
@@ -97,12 +96,11 @@
     <Compile Include="BOSH\HttpBindType.cs" />
     <Compile Include="BOSH\HttpBind.cs" />
     <Compile Include="Capabilities\EntityCapabilities.cs" />
-    <Compile Include="Capabilities\XmppCapabilitiesStorage.cs" />
     <Compile Include="Capabilities\XmppEntityCapabilities.cs" />
     <Compile Include="Client\XmppClient.cs" />
     <Compile Include="Client\XmppClientCapabilities.cs" />
     <Compile Include="Client\XmppClientState.cs" />
-    <Compile Include="Client\XmppCodes.cs" />
+    <Compile Include="Core\XmppCodes.cs" />
     <Compile Include="Client\XmppConnectionString.cs" />
     <Compile Include="Client\XmppConnectionStringBuilder.cs" />
     <Compile Include="Client\XmppConnectionStringKeywords.cs" />
@@ -289,6 +287,7 @@
     <Compile Include="Publish-Subscribe\PubSubUnsubscribe.cs" />
     <Compile Include="Service Discovery\ServiceFeature.cs" />
     <Compile Include="Service Discovery\ServiceIdentity.cs" />
+    <Compile Include="Service Discovery\ServiceIdentity.Custom.cs" />
     <Compile Include="Service Discovery\ServiceInfo.cs" />
     <Compile Include="Service Discovery\ServiceItem.cs" />
     <Compile Include="Service Discovery\ServiceItemDetail.cs" />
@@ -297,10 +296,6 @@
     <Compile Include="Service Discovery\XmppService.cs" />
     <Compile Include="Service Discovery\XmppServiceCategory.cs" />
     <Compile Include="Service Discovery\XmppServiceDiscovery.cs" />
-    <Compile Include="Service Discovery\XmppServiceDiscoveryObject.cs" />
-    <Compile Include="Service Discovery\XmppServiceFeature.cs" />
-    <Compile Include="Service Discovery\XmppServiceIdentity.cs" />
-    <Compile Include="Service Discovery\XmppServiceItem.cs" />
     <Compile Include="Shared\Empty.cs" />
     <Compile Include="Shared\Text.cs" />
     <Compile Include="Shared\XmppSerializer.cs" />
@@ -468,13 +463,13 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <TargetPlatform Include="Windows, Version=8.1" />
+    <TargetPlatform Include="WindowsPhoneApp, Version=8.1" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="AMIPClientWrapper">
       <HintPath>..\..\lib\AMIP\AMIPClientWrapper.dll</HintPath>
-    </Reference>
-    <Reference Include="PCLCrypto">
-      <HintPath>..\..\packages\PCLCrypto.1.0.0-beta2\lib\portable-net40+sl50+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\PCLCrypto.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Core">
       <HintPath>..\..\packages\Rx-Core.2.2.5\lib\portable-win81+wpa81\System.Reactive.Core.dll</HintPath>
@@ -487,9 +482,6 @@
     </Reference>
     <Reference Include="System.Reactive.PlatformServices">
       <HintPath>..\..\packages\Rx-PlatformServices.2.2.5\lib\portable-win81+wpa81\System.Reactive.PlatformServices.dll</HintPath>
-    </Reference>
-    <Reference Include="Validation">
-      <HintPath>..\..\packages\Validation.2.0.6.15003\lib\portable-net40+sl50+win+wpa81+wp80+Xamarin.iOS10+MonoAndroid10+MonoTouch10\Validation.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

@@ -20,28 +20,32 @@ namespace Conversa.Net.Xmpp.Client
         /// </summary>
         SecureConnection	= 1,
         /// <summary>
-        /// SASL X-OAUTH-2
+        /// SASL Plain authentication mechanism.
         /// </summary>
-        SaslXOAuth2         = 2,
+        SaslPlain			= 2,
         /// <summary>
-        /// SASL Digest Authentication Mechanism.
+        /// SASL Digest authentication mechanism.
         /// </summary>
         SaslDigestMD5		= 4,
         /// <summary>
-        /// SASL Plaint Authentication Mechanism.
+        /// SASL SCRAM-SHA-1 authentication mechanism.
         /// </summary>
-        SaslPlain			= 8,
+        SaslScramSha1       = 8,
+        /// <summary>
+        /// Google SASL X-OAUTH-2 authentication mechanism.
+        /// </summary>
+        SaslGoogleXOAuth2   = 16,
         /// <summary>
         /// Resource binding.
         /// </summary>
-        ResourceBinding		= 16,
+        ResourceBinding		= 32,
         /// <summary>
         /// Session Binding
         /// </summary>
-        Sessions			= 32,
+        Sessions			= 64,
         /// <summary>
         /// In-Band registration of users.
         /// </summary>
-        InBandRegistration	= 64
+        InBandRegistration	= 128
     }
 }

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Carlos Guzmán Álvarez. All rights reserved.
 // Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
 
-namespace Conversa.Net.Xmpp.Client
+namespace Conversa.Net.Xmpp.Core
 {
     /// <summary>
     /// Internal constants
@@ -39,14 +39,19 @@ namespace Conversa.Net.Xmpp.Client
         internal const string EndStream = "</stream:stream>";
 
         /// <summary>
+        /// Code for the SASL PLAIN authentication mechanism
+        /// </summary>
+        internal const string SaslPlainMechanism = "PLAIN";
+
+        /// <summary>
         /// Code for the SASL Digest authentication mechanism
         /// </summary>
         internal const string SaslDigestMD5Mechanism = "DIGEST-MD5";
 
         /// <summary>
-        /// Code for the SASL PLAIN authentication mechanism
+        /// Code for the SCRAM-SHA1 authentication mechanism
         /// </summary>
-        internal const string SaslPlainMechanism = "PLAIN";
+        internal const string SaslScramSha1Mechanism = "SCRAM-SHA-1";
 
         /// <summary>
         /// Code for the Google SASL X-OAUTH-2 authentication mechanism

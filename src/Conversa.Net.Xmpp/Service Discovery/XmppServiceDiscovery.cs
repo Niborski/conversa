@@ -4,47 +4,50 @@
 using Conversa.Net.Xmpp.Client;
 using Conversa.Net.Xmpp.Core;
 using Conversa.Net.Xmpp.Registry;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Conversa.Net.Xmpp.ServiceDiscovery
 {
-    /// <summary>
-    /// XMPP Service Discovery
-    /// </summary>
     public sealed class XmppServiceDiscovery
         : XmppMessageProcessor
     {
-        private string domainName;
-        private bool   supportsServiceDiscovery;
+        private string                node;
+        private List<ServiceIdentity> identities;
+        private List<ServiceFeature>  features;
+        private List<XmppService>     services;
 
-        private List<XmppService> services;
+        /// <summary>
+        /// Gets the service discover node
+        /// </summary>
+        public string Node
+        {
+            get { return this.node; }
+        }
+
+        /// <summary>
+        /// Gets the object identity.
+        /// </summary>
+        public IEnumerable<ServiceIdentity> Identities
+        {
+            get { return this.identities.AsEnumerable(); }
+        }
+
+        /// <summary>
+        /// Gets the list of features supported by the XMPP Service
+        /// </summary>
+        public IEnumerable<ServiceFeature> Features
+        {
+            get { return this.features.AsEnumerable(); }
+        }
 
         /// <summary>
         /// Gets the collection of discovered services
         /// </summary>
         public IEnumerable<XmppService> Services
         {
-            get { return this.services; }
-        }
-
-        /// <summary>
-        /// Gets a value that indicates if it supports multi user chat
-        /// </summary>
-        public bool SupportsMultiuserChat
-        {
-            get { return this.SupportsFeature(XmppFeatures.MultiUserChat); }
-        }
-
-        /// <summary>
-        /// Gets a value that indicates whether service discovery is supported
-        /// </summary>
-        public bool SupportsServiceDiscovery
-        {
-            get { return this.supportsServiceDiscovery; }
-            private set { this.supportsServiceDiscovery = value; }
+            get { return this.services.AsEnumerable(); }
         }
 
         /// <summary>
@@ -72,98 +75,171 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
         }
 
         /// <summary>
-        /// Gets the service discovery domain name
+        /// Gets a value that indicates if the contact supports MUC
         /// </summary>
-        private string DomainName
+        public bool SupportsConference
         {
-            get
-            {
-                if (String.IsNullOrEmpty(this.domainName))
-                {
-                    return this.Client.UserAddress.DomainName;
-                }
-                else
-                {
-                    return this.domainName;
-                }
-            }
+            get { return this.SupportsFeature(XmppFeatures.MultiUserChat); }
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:XmppServiceDiscovery"/> class.
+        /// Gets a value that indicates if the contact supports chat state notifications
         /// </summary>
-        /// <param name="session">The session.</param>
-        internal XmppServiceDiscovery(XmppClient client)
+        public bool SupportsChatStateNotifications
+        {
+            get { return this.SupportsFeature(XmppFeatures.ChatStateNotifications); }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="XmppServiceDiscoveryObject"/> class.
+        /// </summary>
+        public XmppServiceDiscovery(XmppClient client, string node)
             : base(client)
         {
-            this.services = new List<XmppService>();
+            this.node       = node;
+            this.identities = new List<ServiceIdentity>();
+            this.features   = new List<ServiceFeature>();
+            this.services   = new List<XmppService>();
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:XmppServiceDiscovery"/> class.
-        /// </summary>
-        /// <param name="session">The session.</param>
-        internal XmppServiceDiscovery(XmppClient client, string domainName)
-            : this(client)
+        public ServiceFeature AddFeature(string featureName)
         {
-            this.domainName = domainName;
+            var feature = new ServiceFeature { Name = featureName };
+
+            this.features.Add(feature);
+
+            return feature;
         }
 
-        /// <summary>
-        /// Clears service discovery data
-        /// </summary>
-        public void Clear()
+        public ServiceIdentity AddIdentity(string category, string name, string type)
         {
-            this.services.Clear();
+            var identity = new ServiceIdentity { Category = category, Name = name, Type = type };
+
+            this.identities.Add(identity);
+
+            return identity;
         }
 
-        public XmppService GetService(XmppServiceCategory category)
+        public async Task SendAsnwerTo(string messageId, XmppAddress to)
         {
-            return this.Services
-                       .Where(s => s.IsOnCategory(XmppServiceCategory.Conference))
-                       .FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Discover existing services provided by the XMPP Server
-        /// </summary>
-        /// <returns></returns>
-        public async Task DiscoverServicesAsync()
-        {
-            this.Clear();
-
             var iq = new InfoQuery
             {
-                From        = this.Client.UserAddress
-              , To          = this.DomainName
-              , Type        = InfoQueryType.Get
+                Id          = messageId
+              , Type        = InfoQueryType.Result
+              , To          = to
+              , ServiceInfo = new ServiceInfo
+                {
+                    Node = this.node
+                }
+            };
+
+            foreach (var identity in this.Identities)
+            {
+                iq.ServiceInfo.Identities.Add(identity);
+            }
+
+            foreach (var feature in this.Features)
+            {
+                iq.ServiceInfo.Features.Add(feature);
+            }
+
+            await this.Client.SendAsync(iq).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Discover item features
+        /// </summary>
+        public async Task DiscoverServicesAsync()
+        {
+            // Get Service Info
+            var iq = new InfoQuery
+            {
+                Type        = InfoQueryType.Get
+              , From        = this.Client.UserAddress
+              , To          = this.Node
+              , ServiceInfo = new ServiceInfo()
+            };
+
+            await this.SendAsync(iq).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Discover item items.
+        /// </summary>
+        public async Task DiscoverFeaturesAsync()
+        {
+            // Get Service Details
+            var iq = new InfoQuery
+            {
+                Type        = InfoQueryType.Get
+              , From        = this.Client.UserAddress
+              , To          = this.Node
               , ServiceItem = new ServiceItem()
             };
 
-            await this.SendAsync(iq);
+            await this.SendAsync(iq).ConfigureAwait(false);
         }
 
-        private bool SupportsFeature(string featureName)
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
+        public override string ToString()
         {
-            var q = from service in this.Services
-                    where service.Features.Where(f => f.Name == featureName).Count() > 0
-                    select service;
-
-            return (q.Count() > 0);
+            return this.Node;
         }
 
         protected override void OnResponseMessage(InfoQuery response)
         {
-            this.SupportsServiceDiscovery = true;
-
             if (response.ServiceItem != null)
             {
-                // List of available services
-                foreach (var itemDetail in response.ServiceItem.Items.OfType<ServiceItemDetail>())
-                {
-                    this.services.Add(new XmppService(this.Client, itemDetail.Jid));
-                }
+                this.OnServiceItem(response.ServiceItem);
             }
+            if (response.ServiceInfo != null)
+            {
+                this.OnServiceInfo(response.ServiceInfo);
+            }
+
+            base.OnResponseMessage(response);
+        }
+       
+        private void OnServiceInfo(ServiceInfo service)
+        {
+            this.features.Clear();
+            this.identities.Clear();
+
+            foreach (var identity in service.Identities)
+            {
+                this.AddIdentity(identity.Category, identity.Name, identity.Type);
+            }
+
+            foreach (var feature in service.Features)
+            {
+                this.AddFeature(feature.Name);
+            }
+        }
+
+        private void OnServiceItem(ServiceItem serviceItem)
+        {
+            this.services.Clear();
+
+            foreach (var itemDetail in serviceItem.Items)
+            {
+                this.services.Add(new XmppService(this.Client, itemDetail.Jid));
+            }
+        }
+
+        private bool SupportsFeature(string featureName)
+        {
+#warning TODO: Implement
+            return false;
+            //var q = from service in this.Services
+            //        where service.Features.Where(f => f.Name == featureName).Count() > 0
+            //        select service;
+            
+            //return (q.Count() > 0);
         }
     }
 }

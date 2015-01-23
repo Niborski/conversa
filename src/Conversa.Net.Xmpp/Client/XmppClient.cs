@@ -2,13 +2,11 @@
 // Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
 
 using Conversa.Net.Xmpp.Authentication;
-using Conversa.Net.Xmpp.Caps;
 using Conversa.Net.Xmpp.Core;
 using Conversa.Net.Xmpp.InstantMessaging;
 using Conversa.Net.Xmpp.PersonalEventing;
 using Conversa.Net.Xmpp.ServiceDiscovery;
 using Conversa.Net.Xmpp.Shared;
-using Conversa.Net.Xmpp.Storage;
 using Conversa.Net.Xmpp.Transports;
 using System;
 using System.Collections.Generic;
@@ -31,7 +29,7 @@ namespace Conversa.Net.Xmpp.Client
         private Subject<XmppClientState> stateChanged;
 
         // Authentication Subjects
-        private Subject<XmppAuthenticationFailure> authenticationFailed;
+        private Subject<SaslAuthenticationFailure> authenticationFailed;
 
         // Messaging Subjects
         private Subject<InfoQuery> infoQueryStream;
@@ -39,21 +37,19 @@ namespace Conversa.Net.Xmpp.Client
         private Subject<Presence>  presenceStream;
 
         // Private members
-        private XmppConnectionString    connectionString;
-        private XmppAddress             userAddress;
-        private XmppStreamFeatures      streamFeatures;
-        private XmppClientState         state;
-        private ITransport              transport;
-        private IXmppAuthenticator      authenticator;
-        private CompositeDisposable     subscriptions;
-        private XmppRoster              roster;
-        private XmppActivity            activity;
-        private XmppClientCapabilities  capabilities;
-        private XmppCapabilitiesStorage capabilitiesStorage;
-        private XmppServiceDiscovery    serviceDiscovery;
-        private XmppPersonalEventing    personalEventing;
-        private AvatarStorage           avatarStorage;
-        private bool                    isDisposed;
+        private XmppConnectionString   connectionString;
+        private XmppAddress            userAddress;
+        private XmppStreamFeatures     streamFeatures;
+        private XmppClientState        state;
+        private ITransport             transport;
+        private ISaslMechanism         saslMechanism;
+        private CompositeDisposable    subscriptions;
+        private XmppRoster             roster;
+        private XmppActivity           activity;
+        private XmppClientCapabilities capabilities;
+        private XmppServiceDiscovery   serviceDiscovery;
+        private XmppPersonalEventing   personalEventing;
+        private bool                   isDisposed;
 
         /// <summary>
         /// Get a vector of SSL server errors to ignore when making an secure connection.
@@ -76,7 +72,7 @@ namespace Conversa.Net.Xmpp.Client
         /// <summary>
         /// Occurs when the authentication process fails
         /// </summary>
-        public IObservable<XmppAuthenticationFailure> AuthenticationFailed
+        public IObservable<SaslAuthenticationFailure> AuthenticationFailed
         {
             get { return this.authenticationFailed.AsObservable(); }
         }
@@ -130,27 +126,11 @@ namespace Conversa.Net.Xmpp.Client
         }
 
         /// <summary>
-        /// Gets the capabilities storage manager
-        /// </summary>
-        public XmppCapabilitiesStorage CapabilitiesStorage
-        {
-            get { return this.capabilitiesStorage; }
-        }
-
-        /// <summary>
         /// Gets the <see cref="XmppSession">service discovery </see> instance associated to the session
         /// </summary>
         public XmppServiceDiscovery ServiceDiscovery
         {
             get { return this.serviceDiscovery; }
-        }
-
-        /// <summary>
-        /// Gets the avatar storage
-        /// </summary>
-        public AvatarStorage AvatarStorage
-        {
-            get { return this.avatarStorage; }
         }
 
         /// <summary>
@@ -213,7 +193,7 @@ namespace Conversa.Net.Xmpp.Client
         {
             this.connectionString     = connectionString;
             this.stateChanged         = new Subject<XmppClientState>();
-            this.authenticationFailed = new Subject<XmppAuthenticationFailure>();
+            this.authenticationFailed = new Subject<SaslAuthenticationFailure>();
             this.infoQueryStream      = new Subject<InfoQuery>();
             this.messageStream        = new Subject<Message>();
             this.presenceStream       = new Subject<Presence>();
@@ -221,17 +201,11 @@ namespace Conversa.Net.Xmpp.Client
             this.roster               = new XmppRoster(this);
             this.activity             = new XmppActivity(this);
             this.capabilities         = new XmppClientCapabilities(this);
-            this.serviceDiscovery     = new XmppServiceDiscovery(this);
+            this.serviceDiscovery     = new XmppServiceDiscovery(this, this.connectionString.UserAddress.DomainName);
             this.personalEventing     = new XmppPersonalEventing(this);
             this.userAddress          = new XmppAddress(this.connectionString.UserAddress.UserName
                                                       , this.connectionString.UserAddress.DomainName
                                                       , this.connectionString.Resource);
-
-            // Avatar storage initialization
-            this.avatarStorage = new AvatarStorage();
-
-            // Capabilities Storage initialization
-            this.capabilitiesStorage = new XmppCapabilitiesStorage(StorageFolderType.Roaming, "ClientCapabilities.xml");
         }
 
         /// <summary>
@@ -281,7 +255,7 @@ namespace Conversa.Net.Xmpp.Client
                 // only the following code is executed.
                 this.connectionString = null;
                 this.userAddress      = null;
-                this.authenticator    = null;
+                this.saslMechanism    = null;
                 this.streamFeatures   = XmppStreamFeatures.None;
                 this.state            = XmppClientState.Closed;
 
@@ -374,7 +348,7 @@ namespace Conversa.Net.Xmpp.Client
                 this.ReleaseSubscriptions();
 
                 this.transport        = null;
-                this.authenticator    = null;
+                this.saslMechanism    = null;
                 this.connectionString = null;
                 this.userAddress      = null;
                 this.streamFeatures   = XmppStreamFeatures.None;
@@ -448,20 +422,24 @@ namespace Conversa.Net.Xmpp.Client
             }
         }
 
-        private IXmppAuthenticator CreateAuthenticator()
+        private ISaslMechanism CreateSaslMechanism()
         {
-            IXmppAuthenticator authenticator = null;
+            ISaslMechanism mechanism = null;
 
-            if (this.Supports(XmppStreamFeatures.SaslDigestMD5))
+            if (this.Supports(XmppStreamFeatures.SaslScramSha1))
             {
-                authenticator = new XmppSaslDigestAuthenticator(this.ConnectionString);
+                mechanism = new SaslScramSha1Mechanism(this.ConnectionString);
+            }
+            else if (this.Supports(XmppStreamFeatures.SaslDigestMD5))
+            {
+                mechanism = new SaslDigestMechanism(this.ConnectionString);
             }
             else if (this.Supports(XmppStreamFeatures.SaslPlain))
             {
-                authenticator = new XmppSaslPlainAuthenticator(this.ConnectionString);
+                mechanism = new SaslPlainMechanism(this.ConnectionString);
             }
 
-            return authenticator;
+            return mechanism;
         }
 
         private async void OnMessageReceivedAsync(XmppStreamElement xmlMessage)
@@ -505,17 +483,21 @@ namespace Conversa.Net.Xmpp.Client
             {
                 await this.OnUpgradeToSsl().ConfigureAwait(false);
             }
-            else if (fragment is SaslChallenge || fragment is SaslResponse)
+            else if (fragment is SaslChallenge)
             {
-                await this.SendAsync(this.authenticator.ContinueNegotiationWith(fragment)).ConfigureAwait(false);
+                await this.SendAsync(this.saslMechanism.ProcessChallenge(fragment as SaslChallenge)).ConfigureAwait(false);
+            }
+            else if (fragment is SaslResponse)
+            {
+                await this.SendAsync(this.saslMechanism.ProcessResponse(fragment as SaslResponse)).ConfigureAwait(false);
             }
             else if (fragment is SaslSuccess)
             {
-                await this.OnAuthenticationSuccessAsync().ConfigureAwait(false);
+                await this.OnSaslSuccessAsync().ConfigureAwait(false);
             }
             else if (fragment is SaslFailure)
             {
-                this.OnAuthenticationFailed(fragment as SaslFailure);
+                this.OnSaslFailure(fragment as SaslFailure);
             }
         }
 
@@ -608,7 +590,11 @@ namespace Conversa.Net.Xmpp.Client
                 switch (mechanism)
                 {
                     case XmppCodes.SaslGoogleXOAuth2Authenticator:
-                        mechanisms |= XmppStreamFeatures.SaslXOAuth2;
+                        mechanisms |= XmppStreamFeatures.SaslGoogleXOAuth2;
+                        break;
+
+                    case XmppCodes.SaslScramSha1Mechanism:
+                        mechanisms |= XmppStreamFeatures.SaslScramSha1;
                         break;
 
                     case XmppCodes.SaslDigestMD5Mechanism:
@@ -630,7 +616,8 @@ namespace Conversa.Net.Xmpp.Client
             {
                 await this.OpenSecureConnectionAsync().ConfigureAwait(false);
             }
-            else if (this.Supports(XmppStreamFeatures.SaslXOAuth2)
+            else if (this.Supports(XmppStreamFeatures.SaslGoogleXOAuth2)
+                  || this.Supports(XmppStreamFeatures.SaslScramSha1)
                   || this.Supports(XmppStreamFeatures.SaslDigestMD5)
                   || this.Supports(XmppStreamFeatures.SaslPlain))
             {
@@ -649,6 +636,9 @@ namespace Conversa.Net.Xmpp.Client
             {
                 // No more features for negotiation set state as Open
                 this.State = XmppClientState.Open;
+
+                await this.ServiceDiscovery.DiscoverServicesAsync();
+                await this.ServiceDiscovery.DiscoverFeaturesAsync();
             }
         }
 
@@ -660,24 +650,24 @@ namespace Conversa.Net.Xmpp.Client
         private async Task OnStartSaslNegotiationAsync()
         {
             this.State         = XmppClientState.Authenticating;
-            this.authenticator = this.CreateAuthenticator();
+            this.saslMechanism = this.CreateSaslMechanism();
 
-            await this.SendAsync(this.authenticator.StartSaslNegotiation()).ConfigureAwait(false);
+            await this.SendAsync(this.saslMechanism.StartSaslNegotiation()).ConfigureAwait(false);
         }
 
-        private async Task OnAuthenticationSuccessAsync()
+        private async Task OnSaslSuccessAsync()
         {
             this.State         = XmppClientState.Authenticated;
-            this.authenticator = null;
+            this.saslMechanism = null;
 
             await this.transport.ResetStreamAsync().ConfigureAwait(false);
         }
 
-        private void OnAuthenticationFailed(SaslFailure failure)
+        private void OnSaslFailure(SaslFailure failure)
         {
             var errorMessage = "Authentication failed (" + failure.GetErrorMessage() + ")";
 
-            this.authenticationFailed.OnNext(new XmppAuthenticationFailure(errorMessage));
+            this.authenticationFailed.OnNext(new SaslAuthenticationFailure(errorMessage));
 
             this.State = XmppClientState.AuthenticationFailure;
 
@@ -719,7 +709,7 @@ namespace Conversa.Net.Xmpp.Client
                 return;
             }
 
-            var iq = new InfoQuery 
+            var iq = new InfoQuery
             {
                 Type    = InfoQueryType.Set
               , Session = new Session()

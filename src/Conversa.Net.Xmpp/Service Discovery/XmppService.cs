@@ -9,10 +9,8 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
     /// Represents a XMPP Service
     /// </summary>
     public class XmppService
-        : XmppServiceDiscoveryObject
     {
         internal XmppService(XmppClient client, string address)
-            : base(client, address)
         {
         }
     }

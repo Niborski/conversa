@@ -43,7 +43,7 @@ namespace Gnu.Inet.Encoding
 	/// Note that this implementation only supports 16-bit Unicode code
 	/// points.
 	/// </summary>
-	public class Stringprep
+	public static class Stringprep
 	{
 		/// <summary> Preps a name according to the Stringprep profile defined in
 		/// RFC3491. Unassigned code points are not allowed.

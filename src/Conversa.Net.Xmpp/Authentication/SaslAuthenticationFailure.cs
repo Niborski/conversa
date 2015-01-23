@@ -1,13 +1,12 @@
 ﻿// Copyright (c) Carlos Guzmán Álvarez. All rights reserved.
 // Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
 
-
 namespace Conversa.Net.Xmpp.Authentication
 {
     /// <summary>
-    /// EventArgs for the <see cref="XmppClient.AuthenticationFailiure"/> event.
+    /// SASL Authentication failure
     /// </summary>
-    public sealed class XmppAuthenticationFailure
+    public sealed class SaslAuthenticationFailure
     {
         /// <summary>
         /// Gets the authentication failiure message.
@@ -20,10 +19,10 @@ namespace Conversa.Net.Xmpp.Authentication
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="XmppAuthenticationFailure"/> class.
+        /// Initializes a new instance of the <see cref="SaslAuthenticationFailure"/> class.
         /// </summary>
         /// <param name="message">The authentication failiure message.</param>
-        internal XmppAuthenticationFailure(string message)
+        internal SaslAuthenticationFailure(string message)
         {
             this.Message = message;
         }

@@ -2,6 +2,7 @@
 // Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
 
 using Conversa.Net.Xmpp.Client;
+using Conversa.Net.Xmpp.Core;
 using Conversa.Net.Xmpp.Shared;
 using System;
 using System.Collections.Generic;
