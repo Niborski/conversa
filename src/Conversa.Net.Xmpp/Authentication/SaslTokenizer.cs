@@ -18,8 +18,7 @@ namespace Conversa.Net.Xmpp.Authentication
         internal static Dictionary<string, string> ToDictionary(string value)
         {
             var kvp     = new Dictionary<string, string>();
-            var buffer  = Convert.FromBase64String(value);
-            var matches = SaslRegex.Matches(Encoding.UTF8.GetString(buffer, 0, buffer.Length));
+            var matches = SaslRegex.Matches(value);
 
             if (matches.Count > 0)
             {

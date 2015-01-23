@@ -28,7 +28,7 @@ namespace Conversa.Net.Xmpp.Authentication
 
         private static byte[] GenerateRandomBytes()
         {
-            return CryptographicBuffer.GenerateRandom(40).ToArray();
+            return CryptographicBuffer.GenerateRandom(25).ToArray();
         }
 
         public static string ToBase64String(string source)
@@ -91,7 +91,7 @@ namespace Conversa.Net.Xmpp.Authentication
             var clientProof          = clientKey.Xor(clientSignature);
             var clientFinalMessage   = clientFinalMessageWP + ",p=" + clientProof.ToBase64String();
 
-            return new SaslResponse { Value = clientFinalMessage };
+            return new SaslResponse { Value = ToBase64String(clientFinalMessage) };
         }
 
         public SaslResponse ProcessResponse(SaslResponse response)
