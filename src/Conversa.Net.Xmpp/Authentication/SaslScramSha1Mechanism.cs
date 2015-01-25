@@ -73,13 +73,13 @@ namespace Conversa.Net.Xmpp.Authentication
         /// </summary>
         public SaslResponse ProcessChallenge(SaslChallenge challenge)
         {
-            var password             = Normalize(this.connectionString.UserPassword);
             var decoded              = Convert.FromBase64String(challenge.Value);
             var serverFirstMessage   = XmppEncoding.Utf8.GetString(decoded, 0, decoded.Length);
             var tokens               = SaslTokenizer.ToDictionary(serverFirstMessage);
             var snonce               = tokens["r"];
             var ssalt                = Convert.FromBase64String(tokens["s"]);
             var ssaltSize            = Convert.ToUInt32(tokens["i"]);
+            var password             = Normalize(this.connectionString.UserPassword);
             var saltedPassword       = password.Rfc2898DeriveBytes(ssalt, ssaltSize, 20);
             var clientKey            = saltedPassword.ComputeHmacSha1("Client Key");
             var storedKey            = clientKey.ComputeSHA1Hash();
