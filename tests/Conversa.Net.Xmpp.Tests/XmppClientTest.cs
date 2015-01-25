@@ -23,8 +23,8 @@ namespace Conversa.Net.Xmpp.Test
             {
                 HostName    = "jabber.at"
               , ServiceName = "5222"
-              , UserId      = "conversa@jabber.at"
-              , Password    = "6431238Kla"
+              , UserId      = ""
+              , Password    = ""
               , Resource    = "test"
             };
 
