@@ -11,15 +11,18 @@ using System.Threading.Tasks;
 namespace Conversa.Net.Xmpp.Caps
 {
     /// <summary>
-    /// Entity capabilities (XEP-0115)
+    /// Entity Capabilities
     /// </summary>
+    /// <remarks>
+    /// XEP-0115: Entity Capabilities
+    /// </remarks>
     public class XmppEntityCapabilities
         : XmppMessageProcessor
     {
         private XmppAddress        address;
         private EntityCapabilities caps;
         private ServiceInfo        info;
-        
+
         // private XmppCapabilitiesStorage capsStorage;
 
         /// <summary>

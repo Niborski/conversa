@@ -10,6 +10,12 @@ using System.Threading.Tasks;
 
 namespace Conversa.Net.Xmpp.ServiceDiscovery
 {
+    /// <summary>
+    /// Service Discovery
+    /// </summary>
+    /// <remarks>
+    /// XEP-0030: Service Discovery
+    /// </remarks>
     public sealed class XmppServiceDiscovery
         : XmppMessageProcessor
     {
@@ -24,6 +30,7 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
         public string Node
         {
             get { return this.node; }
+            set { this.node = value; }
         }
 
         /// <summary>
@@ -71,7 +78,7 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
         /// </summary>
         public bool SupportsBlocking
         {
-            get { return this.SupportsFeature(XmppFeatures.SimpleCommunicationsBlocking); }
+            get { return this.SupportsFeature(XmppFeatures.Blocking); }
         }
 
         /// <summary>
@@ -91,7 +98,15 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="XmppServiceDiscoveryObject"/> class.
+        /// Initializes a new instance of the <see cref="XmppServiceDiscovery"/> class.
+        /// </summary>
+        public XmppServiceDiscovery(XmppClient client)
+            : this(client, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="XmppServiceDiscovery"/> class.
         /// </summary>
         public XmppServiceDiscovery(XmppClient client, string node)
             : base(client)
@@ -204,7 +219,7 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
 
             base.OnResponseMessage(response);
         }
-       
+
         private void OnServiceInfo(ServiceInfo service)
         {
             this.features.Clear();
@@ -238,7 +253,7 @@ namespace Conversa.Net.Xmpp.ServiceDiscovery
             //var q = from service in this.Services
             //        where service.Features.Where(f => f.Name == featureName).Count() > 0
             //        select service;
-            
+
             //return (q.Count() > 0);
         }
     }

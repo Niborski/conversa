@@ -20,6 +20,7 @@ namespace Conversa.Net.Xmpp.Core
             this.Type          = PresenceType.Unavailable;
             this.TypeSpecified = true;
             this.Show          = ShowType.Offline;
+            this.ShowSpecified = true;
 
             return this;
         }

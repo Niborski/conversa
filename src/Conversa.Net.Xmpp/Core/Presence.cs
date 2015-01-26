@@ -28,6 +28,13 @@ namespace Conversa.Net.Xmpp.Core
             set;
         }
 
+        [XmlIgnoreAttribute]
+        public bool ShowSpecified
+        {
+            get;
+            set;
+        }
+
         /// <remarks/>
         [XmlElementAttribute("status")]
         public Status Status
@@ -39,6 +46,13 @@ namespace Conversa.Net.Xmpp.Core
         /// <remarks/>
         [XmlElementAttribute("priority")]
         public sbyte Priority
+        {
+            get;
+            set;
+        }
+
+        [XmlIgnoreAttribute]
+        public bool PrioritySpecified
         {
             get;
             set;

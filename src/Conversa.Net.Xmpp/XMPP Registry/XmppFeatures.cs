@@ -9,13 +9,23 @@ namespace Conversa.Net.Xmpp.Registry
     public static class XmppFeatures
     {
         /// <summary>
-        /// RFC 3920: XMPP Core, RFC 3921: XMPP IM. Support for DNS SRV lookups of XMPP services.
+        /// Support for DNS SRV lookups of XMPP services.
         /// </summary>
+        /// <remarks>
+        /// RFC 6120: XMPP Core, RFC 6121: XMPP IM
+        /// </remarks>
         public const string DnsSrvLookups = "dnssrv";
         /// <summary>
         /// Support for Unicode characters, including in displayed text, JIDs, and passwords.
         /// </summary>
         public const string FullUnicode = "fullunicode";
+        /// <summary>
+        /// Support for the "groupchat 1.0" protocol.
+        /// </summary>
+        /// <remarks>
+        /// XEP-0045: Multi-User Chat
+        /// </remarks>
+        public const string GroupChat10 = "gc-1.0";
         /// <summary>
         /// XEP-0108: User Activity
         /// </summary>
@@ -65,13 +75,13 @@ namespace Conversa.Net.Xmpp.Registry
         /// </summary>
         public const string UserGeolocation = "http://jabber.org/protocol/geoloc";
         /// <summary>
-        /// XEP-0072: SOAP Over XMPP
+        /// XEP-0072: SOAP Over XMPP Auth
         /// </summary>
-        public const string SoapOverXmppHttpAuth = "http://jabber.org/protocol/http-auth";
+        public const string SoapOverXmppAuth = "http://jabber.org/protocol/http-auth";
         /// <summary>
         /// XEP-0124: Bidirectional-streams Over Synchronous HTTP
         /// </summary>
-        public const string BidirectionalStreamsOverSynchronousHTTP = "http://jabber.org/protocol/httpbind";
+        public const string Bosh = "http://jabber.org/protocol/httpbind";
         /// <summary>
         /// XEP-0047: In-Band Bytestreams
         /// </summary>
@@ -81,17 +91,9 @@ namespace Conversa.Net.Xmpp.Registry
         /// </summary>
         public const string UserMood = "http://jabber.org/protocol/mood";
         /// <summary>
-        /// XEP-0107: User Mood
-        /// </summary>
-        public const string UserMoodWithNotify = "http://jabber.org/protocol/mood+notify";
-        /// <summary>
         /// XEP-0118: User Tune
         /// </summary>
         public const string UserTune = "http://jabber.org/protocol/tune";
-        /// <summary>
-        /// XEP-0118: User Tune
-        /// </summary>
-        public const string UserTuneWithNotify = "http://jabber.org/protocol/tune+notify";
         /// <summary>
         /// XEP-0045: Multi-User Chat
         /// </summary>
@@ -139,7 +141,7 @@ namespace Conversa.Net.Xmpp.Registry
         /// <summary>
         /// XEP-0072: SOAP Over XMPP
         /// </summary>
-        public const string SOAPOverXmppFaults = "http://jabber.org/protocol/soap#fault";
+        public const string SoapOverXmppFaults = "http://jabber.org/protocol/soap#fault";
         /// <summary>
         /// XEP-0130: Waiting Lists
         /// </summary>
@@ -207,7 +209,7 @@ namespace Conversa.Net.Xmpp.Registry
         /// <summary>
         /// XEP-0077: In-Band Registration
         /// </summary>
-        public const string InbandRegistration = "jabber:iq:register";
+        public const string InBandRegistration = "jabber:iq:register";
         /// <summary>
         /// RFC 3921: XMPP IM
         /// </summary>
@@ -225,7 +227,7 @@ namespace Conversa.Net.Xmpp.Registry
         /// </summary>
         public const string SoftwareVersion = "jabber:iq:version";
         /// <summary>
-        /// RFC 3921: XMPP IM
+        /// RFC 6121: XMPP IM
         /// </summary>
         public const string XmppImServer = "jabber:server";
         /// <summary>
@@ -257,73 +259,54 @@ namespace Conversa.Net.Xmpp.Registry
         /// </summary>
         public const string NestedRosterGroups = "roster:delimiter";
         /// <summary>
-        /// Application supports old-style (pre-TLS) SSL connections on a dedicated port.
+        /// Application supports the nameprep, nodeprep, and resourceprep profiles of stringprep.
         /// </summary>
-        public const string PreTlsConnections = "sslc2s";
+        /// <remarks>
+        /// RFC 6120: XMPP Core
+        /// </remarks>
+        public const string Stringprep = "stringprep";
         /// <summary>
-        /// RFC 3920: XMPP Core. Application supports the nameprep, nodeprep, and resourceprep profiles of stringprep.
+        /// RFC 6120: XMPP Core
         /// </summary>
-        public const string XmppCoreStringprep = "stringprep";
-        /// <summary>
-        /// RFC 3920: XMPP Core
-        /// </summary>
-        public const string XmppCoreBind = "urn:ietf:params:xml:ns:xmpp-bind";
+        public const string Bind = "urn:ietf:params:xml:ns:xmpp-bind";
         /// <summary>
         /// RFC 3923: XMPP E2E
         /// </summary>
-        public const string XmppE2E = "urn:ietf:params:xml:ns:xmpp-e2e";
+        public const string E2E = "urn:ietf:params:xml:ns:xmpp-e2e";
         /// <summary>
-        /// RFC 3920: XMPP Core
+        /// RFC 6120: XMPP Core
         /// </summary>
-        public const string XmppCoreSasl = "urn:ietf:params:xml:ns:xmpp-sasl";
+        public const string Sasl = "urn:ietf:params:xml:ns:xmpp-sasl";
         /// <summary>
-        /// RFC 3920: XMPP Core. Application supports client-to-server SASL.
+        /// Application supports client-to-server SASL.
         /// </summary>
-        public const string XmppCoreSaslC2S = "urn:ietf:params:xml:ns:xmpp-sasl#c2s";
+        /// <remarks>
+        /// RFC 6120: XMPP Core
+        /// </remarks>
+        public const string SaslC2S = "urn:ietf:params:xml:ns:xmpp-sasl#c2s";
         /// <summary>
-        /// RFC 3920: XMPP Core. Application supports server-to-server SASL.
+        /// RFC 6121: XMPP IM
         /// </summary>
-        public const string XmppCoreSaslS2S = "urn:ietf:params:xml:ns:xmpp-sasl#s2s";
+        public const string Session = "urn:ietf:params:xml:ns:xmpp-session";
         /// <summary>
-        /// RFC 3921: XMPP IM
+        /// RFC 6120: XMPP Core
         /// </summary>
-        public const string XmppImSession = "urn:ietf:params:xml:ns:xmpp-session";
+        public const string Stanzas = "urn:ietf:params:xml:ns:xmpp-stanzas";
         /// <summary>
-        /// RFC 3920: XMPP Core
+        /// RFC 6120: XMPP Core
         /// </summary>
-        public const string XmppCoreStanzas = "urn:ietf:params:xml:ns:xmpp-stanzas";
+        public const string Streams = "urn:ietf:params:xml:ns:xmpp-streams";
         /// <summary>
-        /// RFC 3920: XMPP Core
+        /// RFC 6120: XMPP Core
         /// </summary>
-        public const string XmppCoreStreams = "urn:ietf:params:xml:ns:xmpp-streams";
+        public const string Tls = "urn:ietf:params:xml:ns:xmpp-tls";
         /// <summary>
-        /// RFC 3920: XMPP Core
+        /// Application supports client-to-server TLS.
         /// </summary>
-        public const string XmppCoreTls = "urn:ietf:params:xml:ns:xmpp-tls";
-        /// <summary>
-        /// RFC 3920: XMPP Core. Application supports client-to-server TLS.
-        /// </summary>
-        public const string XmppCoreTlsC2S = "urn:ietf:params:xml:ns:xmpp-tls#c2s";
-        /// <summary>
-        /// RFC 3920: XMPP Core. Application supports server-to-server TLS.
-        /// </summary>
-        public const string XmppCoreTlsS2S = "urn:ietf:params:xml:ns:xmpp-tls#s2s";
-        /// <summary>
-        /// XEP-0136: Message Archiving
-        /// </summary>
-        public const string MessageArchiving = "urn:xmpp:archive:auto";
-        /// <summary>
-        /// XEP-0136: Message Archiving
-        /// </summary>
-        public const string MessageArchivingManage = "urn:xmpp:archive:manage";
-        /// <summary>
-        /// XEP-0136: Message Archiving
-        /// </summary>
-        public const string MessageArchivingManual = "urn:xmpp:archive:manual";
-        /// <summary>
-        /// XEP-0136: Message Archiving
-        /// </summary>
-        public const string MessageArchivingPreferences = "urn:xmpp:archive:pref";
+        /// <remarks>
+        /// RFC 6120: XMPP Core
+        /// </remarks>
+        public const string TlsC2S = "urn:ietf:params:xml:ns:xmpp-tls#c2s";
         /// <summary>
         /// XEP-0084: User Avatars
         /// </summary>
@@ -339,11 +322,11 @@ namespace Conversa.Net.Xmpp.Registry
         /// <summary>
         /// XEP-0199: XMPP Ping
         /// </summary>
-        public const string XmppPing = "urn:xmpp:ping";
+        public const string Ping = "urn:xmpp:ping";
         /// <summary>
-        /// XEP-0199: XMPP Ping
+        /// XEP-0184: Message Receipts
         /// </summary>
-        public const string XmppPingReceipts = "urn:xmpp:receipts";
+        public const string MessageReceipts = "urn:xmpp:receipts";
         /// <summary>
         /// XEP-0155: Stanza Session Negotiation
         /// </summary>
@@ -353,9 +336,12 @@ namespace Conversa.Net.Xmpp.Registry
         /// </summary>
         public const string EntityTime = "urn:xmpp:time";
         /// <summary>
-        /// RFC 3920: XMPP Core. Application supports the 'xml:lang' attribute as described in RFC 3920.
+        /// Application supports the 'xml:lang' attribute as described in RFC 6120.
         /// </summary>
-        public const string XMPPCore = "xmllang";
+        /// <remarks>
+        /// RFC 6120: XMPP Core
+        /// <remarks>
+        public const string XmlLang = "xmllang";
         /// <summary>
         /// See XEP-0054
         /// </summary>
@@ -363,6 +349,6 @@ namespace Conversa.Net.Xmpp.Registry
         /// <summary>
         /// XEP-0191: Simple Communications Blocking
         /// </summary>
-        public const string SimpleCommunicationsBlocking = "urn:xmpp:blocking";
+        public const string Blocking = "urn:xmpp:blocking";
     }
 }

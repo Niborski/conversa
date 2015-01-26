@@ -140,10 +140,12 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         {
             var presence = new Presence
             {
-                From     = this.Client.UserAddress
-              , To       = this.resource.Address
-              , Show     = ShowType.Online
-              , Priority = DefaultPresencePriorityValue
+                From              = this.Client.UserAddress
+              , To                = this.resource.Address
+              , Show              = ShowType.Online
+              , ShowSpecified     = true
+              , Priority          = DefaultPresencePriorityValue
+              , PrioritySpecified = true
             };
 
             await this.Client.SendAsync(presence);
@@ -194,9 +196,11 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         {
             var presence = new Presence
             {
-                Show     = ShowType.Online
-              , Status   = new Status { Value = statusMessage }
-              , Priority = DefaultPresencePriorityValue
+                Show              = ShowType.Online
+              , ShowSpecified     = true
+              , Status            = new Status { Value = statusMessage }
+              , Priority          = DefaultPresencePriorityValue
+              , PrioritySpecified = true
             };
 
             await this.Client.SendAsync(presence);
@@ -274,13 +278,16 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             {
                 this.ShowAs = ShowType.Offline;
             }
-            else
+            else if (presence.ShowSpecified)
             {
-                this.ShowAs = ShowType.Online;
+                this.ShowAs = presence.Show;
             }
 
-            this.Priority      = presence.Priority;
-            this.ShowAs        = presence.Show;
+            if (presence.PrioritySpecified)
+            {
+                this.Priority  = presence.Priority;
+            }
+
             this.StatusMessage = ((presence.Status == null) ? String.Empty : presence.Status.Value);
 
             this.presenceStream.OnNext(this.resource);

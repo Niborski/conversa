@@ -118,14 +118,6 @@ namespace Conversa.Net.Xmpp.Client
         }
 
         /// <summary>
-        /// Gets the client capabilities
-        /// </summary>
-        public XmppClientCapabilities Capabilities
-        {
-            get { return this.capabilities; }
-        }
-
-        /// <summary>
         /// Gets the <see cref="XmppSession">service discovery </see> instance associated to the session
         /// </summary>
         public XmppServiceDiscovery ServiceDiscovery
@@ -637,8 +629,8 @@ namespace Conversa.Net.Xmpp.Client
                 // No more features for negotiation set state as Open
                 this.State = XmppClientState.Open;
 
-                await this.ServiceDiscovery.DiscoverServicesAsync();
-                await this.ServiceDiscovery.DiscoverFeaturesAsync();
+                await this.DiscoverServerServicesAsync();
+                await this.capabilities.AdvertiseCapabilitiesAsync();
             }
         }
 
@@ -725,6 +717,12 @@ namespace Conversa.Net.Xmpp.Client
 
             // Continue feature negotiation
             await this.NegotiateStreamFeaturesAsync().ConfigureAwait(false);
+        }
+
+        private async Task DiscoverServerServicesAsync()
+        {
+            await this.ServiceDiscovery.DiscoverServicesAsync();
+            await this.ServiceDiscovery.DiscoverFeaturesAsync();
         }
     }
 }
