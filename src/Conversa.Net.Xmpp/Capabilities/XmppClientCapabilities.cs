@@ -1,7 +1,7 @@
 // Copyright (c) Carlos Guzmán Álvarez. All rights reserved.
 // Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
 
-using Conversa.Net.Xmpp.Caps;
+using Conversa.Net.Xmpp.Client;
 using Conversa.Net.Xmpp.Core;
 using Conversa.Net.Xmpp.Registry;
 using Conversa.Net.Xmpp.ServiceDiscovery;
@@ -9,7 +9,7 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Conversa.Net.Xmpp.Client
+namespace Conversa.Net.Xmpp.Caps
 {
     /// <summary>
     /// Client capabilities (XEP-0115)
@@ -66,7 +66,25 @@ namespace Conversa.Net.Xmpp.Client
             this.disco.Node += "#" + this.caps.VerificationString;
         }
 
-        public async Task AdvertiseCapabilitiesAsync()
+        protected async override void OnClientConnected()                    
+        {
+            await this.AdvertiseCapabilitiesAsync();
+        }
+
+        protected override async void OnResponseMessage(InfoQuery response)
+        {
+            await this.disco.SendAsnwerTo(response.Id, response.From);
+
+            base.OnResponseMessage(response);
+        }
+
+        protected override void OnResponseMessage(Presence response)
+        {
+            // Response to client capabilities advertising
+            base.OnResponseMessage(response);
+        }
+
+        private async Task AdvertiseCapabilitiesAsync()
         {
             var presence = new Presence
             {
@@ -74,11 +92,6 @@ namespace Conversa.Net.Xmpp.Client
             };
 
             await this.SendAsync(presence).ConfigureAwait(false);
-        }
-
-        protected override async void OnResponseMessage(InfoQuery message)
-        {
-            await this.disco.SendAsnwerTo(message.Id, message.From);
         }
 
         /// <summary>

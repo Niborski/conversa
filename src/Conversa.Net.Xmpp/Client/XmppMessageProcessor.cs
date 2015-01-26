@@ -68,15 +68,17 @@ namespace Conversa.Net.Xmpp.Client
             this.AddSubscription(presence.Id
                                , this.Client
                                      .PresenceStream
-                                     .Where(message => message.Id   == presence.Id
-                                                    && message.Type != PresenceType.Error)
+                                     .Where(message => message.Id == presence.Id
+                                                    && (message.Type != PresenceType.Error
+                                                     || !message.TypeSpecified))
                                      .Subscribe(messsage => this.OnResponseMessage(messsage)));
 
             this.AddSubscription(presence.Id
                                , this.Client
                                      .PresenceStream
                                      .Where(message => message.Id   == presence.Id
-                                                    && message.Type == PresenceType.Error)
+                                                    && message.Type == PresenceType.Error
+                                                    && message.TypeSpecified)
                                      .Subscribe(messsage => this.OnErrorMessage(messsage)));
 
             await this.Client.SendAsync(presence).ConfigureAwait(false);

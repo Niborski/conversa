@@ -2,6 +2,7 @@
 // Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
 
 using Conversa.Net.Xmpp.Authentication;
+using Conversa.Net.Xmpp.Caps;
 using Conversa.Net.Xmpp.Core;
 using Conversa.Net.Xmpp.InstantMessaging;
 using Conversa.Net.Xmpp.PersonalEventing;
@@ -630,7 +631,6 @@ namespace Conversa.Net.Xmpp.Client
                 this.State = XmppClientState.Open;
 
                 await this.DiscoverServerServicesAsync();
-                await this.capabilities.AdvertiseCapabilitiesAsync();
             }
         }
 
