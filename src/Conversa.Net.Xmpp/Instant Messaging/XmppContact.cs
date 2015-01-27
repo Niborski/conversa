@@ -191,7 +191,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , Unblock = new Unblock(this.Address)
             };
 
-            await this.Client.SendAsync(iq);
+            await this.SendAsync(iq).ConfigureAwait(false);
         }
 
         /// <summary>
