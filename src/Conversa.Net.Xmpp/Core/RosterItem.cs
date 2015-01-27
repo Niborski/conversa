@@ -12,8 +12,6 @@ namespace Conversa.Net.Xmpp.Core
     /// <remarks>
     /// RFC 6121:  Instant Messaging and Presence
     /// </remarks>
-    [XmlTypeAttribute(AnonymousType = true, Namespace = "jabber:iq:roster")]
-    [XmlRootAttribute("item", Namespace = "jabber:iq:roster", IsNullable = false)]
     public partial class RosterItem
     {
         /// <remarks/>

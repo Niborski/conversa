@@ -32,15 +32,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
-        /// Gets or sets the resource presence information.
-        /// </summary>
-        /// <value>The presence.</value>
-        public XmppPresence Presence
-        {
-            get { return this.presence; }
-        }
-
-        /// <summary>
         /// Gets or sets the resource capabilities.
         /// </summary>
         /// <value>The capabilities.</value>
@@ -58,6 +49,46 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
+        /// Gets a value indicating whether the presence status is online
+        /// </summary>
+        public bool IsOnline
+        {
+            get { return this.presence.ShowAs == ShowType.Online; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the presence status is away
+        /// </summary>
+        public bool IsAway
+        {
+            get { return this.presence.ShowAs == ShowType.Away; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the presence status is busy
+        /// </summary>
+        public bool IsBusy
+        {
+            get { return this.presence.ShowAs == ShowType.Busy; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the presence status is extended away
+        /// </summary>
+        public bool IsExtendedAway
+        {
+            get { return this.presence.ShowAs == ShowType.ExtendedAway; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the presence status is offline
+        /// </summary>
+        public bool IsOffline
+        {
+            get { return this.presence.ShowAs == ShowType.Offline; }
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="XmppContactResource"/> class.
         /// </summary>
         internal XmppContactResource(XmppClient client, XmppContact contact, XmppAddress address)
@@ -69,6 +100,16 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             this.capabilities = new XmppEntityCapabilities(client, this.Address);
         }
 
+        public async Task SetDefaultPresenceAsync()
+        {
+            if (!this.IsOffline)
+            {
+                return;
+            }
+
+            await this.presence.SetDefaultPresenceAsync().ConfigureAwait(false);
+        }
+
         public override string ToString()
         {
             return this.address;
@@ -76,7 +117,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
         internal async Task UpdateAsync(Presence presence)
         {
-            this.Presence.Update(presence);
+            this.presence.Update(presence);
 
 #warning TODO: Implement Avatar Storage
             //if (this.Presence.ShowAs == ShowType.Offline)

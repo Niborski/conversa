@@ -137,7 +137,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
             this.groups.Add(groupName);
 
-            await this.Client.SendAsync(iq);
+            await this.SendAsync(iq).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , Roster = new Roster(new RosterItem(this.Address, this.Name, this.Subscription, this.groups))
             };
 
-            await this.Client.SendAsync(iq);
+            await this.SendAsync(iq).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -171,7 +171,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , Block = new Block(this.Address)
             };
 
-            await this.Client.SendAsync(iq);
+            await this.SendAsync(iq).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -195,6 +195,36 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
+        /// Subscribes to presence updates of the current user
+        /// </summary>
+        public async Task AcceptSubscriptionAsync()
+        {
+            var presence = new Presence
+            {
+                To            = this.Address
+              , Type          = PresenceType.Subscribed
+              , TypeSpecified = true
+            };
+
+            await this.SendAsync(presence).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Unsubscribes from presence updates of the current user
+        /// </summary>
+        public async Task UnsuscribeAsync()
+        {
+            var presence = new Presence
+            {
+                To            = this.Address
+              , Type          = PresenceType.Unsubscribe
+              , TypeSpecified = true
+            };
+
+            await this.SendAsync(presence).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
         /// </summary>
         /// <returns>
@@ -211,6 +241,21 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                                      .PresenceStream
                                      .Where(message => ((XmppAddress)message.From).BareAddress == this.Address)
                                      .Subscribe(message => this.OnPresenceMessage(message)));
+        }
+
+        /// <summary>
+        /// Unsubscribes from presence updates of the current user
+        /// </summary>
+        private async Task UnsuscribedAsync()
+        {
+            var presence = new Presence
+            {
+                To            = this.Address
+              , Type          = PresenceType.Unsubscribed
+              , TypeSpecified = true
+            };
+
+            await this.SendAsync(presence).ConfigureAwait(false);
         }
 
         private async void OnPresenceMessage(Presence message)
@@ -238,7 +283,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
                         case PresenceType.Subscribe:
                             // auto-accept subscription requests
-                            await resource.Presence.SubscribedAsync().ConfigureAwait(false);
+                            await this.AcceptSubscriptionAsync().ConfigureAwait(false);
                             break;
 
                         case PresenceType.Unavailable:
@@ -246,7 +291,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                             break;
 
                         case PresenceType.Unsubscribe:
-                            await resource.Presence.UnsuscribedAsync().ConfigureAwait(false);
+                            await this.UnsuscribedAsync().ConfigureAwait(false);
                             break;
                     }
                 }
@@ -262,7 +307,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             await resource.UpdateAsync(message).ConfigureAwait(false);
 
             // Remove the resource information if the contact has gone offline
-            if (resource.Presence.ShowAs == ShowType.Offline)
+            if (resource.IsOffline)
             {
                 this.resources.Remove(resource);
             }

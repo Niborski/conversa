@@ -216,7 +216,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 if (contact == null)
                 {
                     // Create the new contact
-                    var newContact = new XmppContact
+                    contact = new XmppContact
                     (
                         this.Client
                       , item.Jid
@@ -226,30 +226,33 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                     );
 
                     // Add the contact to the roster
-                    this.contacts.Add(newContact);
+                    this.contacts.Add(contact);
                 }
-                else
-                {
-                    switch (item.Subscription)
-                    {
-                        case RosterSubscriptionType.Remove:
-                            this.contacts.Remove(contact);
-                            break;
 
-                        default:
-                            // Update contact data
-                            contact.RefreshData(item.Name, item.Subscription, item.Groups);
-                            break;
-                    }
+                switch (item.Subscription)
+                {
+                    case RosterSubscriptionType.Remove:
+                        this.contacts.Remove(contact);
+                        break;
+
+                    case RosterSubscriptionType.None:
+                        // auto-accept pending subscription requests
+                        if (item.IsPendingOut)
+                        {
+                            await contact.AcceptSubscriptionAsync().ConfigureAwait(false);
+                        }
+                        break;
+
+                    default:
+                        // Update contact data
+                        contact.RefreshData(item.Name, item.Subscription, item.Groups);
+                        break;
                 }
             }
 
             var resource = this[this.Client.UserAddress.BareAddress].Resources.First();
 
-            if (resource.Presence.IsOffline)
-            {
-                await resource.Presence.SetDefaultPresenceAsync();
-            }
+            await resource.SetDefaultPresenceAsync();
 
             this.rosterStream.OnNext(this);
         }

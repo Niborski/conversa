@@ -63,46 +63,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
-        /// Gets a value indicating whether the presence status is online
-        /// </summary>
-        public bool IsOnline
-        {
-            get { return this.ShowAs == ShowType.Online; }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether the presence status is away
-        /// </summary>
-        public bool IsAway
-        {
-            get { return this.ShowAs == ShowType.Away; }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether the presence status is busy
-        /// </summary>
-        public bool IsBusy
-        {
-            get { return this.ShowAs == ShowType.Busy; }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether the presence status is extended away
-        /// </summary>
-        public bool IsExtendedAway
-        {
-            get { return this.ShowAs == ShowType.ExtendedAway; }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether the presence status is offline
-        /// </summary>
-        public bool IsOffline
-        {
-            get { return this.ShowAs == ShowType.Offline; }
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="XmppPresence"/> class using
         /// the given session.
         /// </summary>

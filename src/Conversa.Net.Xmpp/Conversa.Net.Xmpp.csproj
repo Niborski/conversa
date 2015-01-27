@@ -118,6 +118,7 @@
     <Compile Include="Client\XmppClient.cs" />
     <Compile Include="Capabilities\XmppClientCapabilities.cs" />
     <Compile Include="Client\XmppClientState.cs" />
+    <Compile Include="Core\RosterItem.Custom.cs" />
     <Compile Include="Core\XmppCodes.cs" />
     <Compile Include="Client\XmppConnectionString.cs" />
     <Compile Include="Client\XmppConnectionStringBuilder.cs" />
