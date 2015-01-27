@@ -89,7 +89,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , TypeSpecified = true
             };
 
-            await this.Client.SendAsync(presence);
+            await this.SendAsync(presence).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , PrioritySpecified = true
             };
 
-            await this.Client.SendAsync(presence);
+            await this.SendAsync(presence).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public async Task SetOnlineAsync()
         {
-            await this.SetPresenceAsync(ShowType.Online);
+            await this.SetPresenceAsync(ShowType.Online).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public async Task SetUnavailableAsync()
         {
-            await this.Client.SendAsync(new Presence().AsUnavailable());
+            await this.SendAsync(new Presence().AsUnavailable()).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <param name="presenceState"></param>
         public async Task SetPresenceAsync(ShowType presenceState)
         {
-            await this.SetPresenceAsync(presenceState, null);
+            await this.SetPresenceAsync(presenceState, null).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <param name="statusMessage"></param>
         public async Task SetPresenceAsync(ShowType showAs, string statusMessage)
         {
-            await this.SetPresenceAsync(showAs, statusMessage, 0);
+            await this.SetPresenceAsync(showAs, statusMessage, 0).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , PrioritySpecified = true
             };
 
-            await this.Client.SendAsync(presence);
+            await this.SendAsync(presence).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -178,7 +178,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , TypeSpecified = true
             };
 
-            await this.Client.SendAsync(presence);
+            await this.SendAsync(presence).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -193,7 +193,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , TypeSpecified = true
             };
 
-            await this.Client.SendAsync(presence);
+            await this.SendAsync(presence);
         }
 
         /// <summary>
@@ -208,7 +208,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , TypeSpecified = true
             };
 
-            await this.Client.SendAsync(presence);
+            await this.SendAsync(presence);
         }
 
         /// <summary>
@@ -223,7 +223,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , TypeSpecified = true
             };
 
-            await this.Client.SendAsync(presence);
+            await this.SendAsync(presence);
         }
 
         protected override void OnClientDisconnected()
