@@ -38,6 +38,7 @@ namespace Conversa.Net.Xmpp.Authentication
 
         private XmppConnectionString connectionString;
         private string               clientFirstMessageBare;
+        private string               serverSignature;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:SaslScramSha1Mechanism"/> class.
@@ -80,17 +81,19 @@ namespace Conversa.Net.Xmpp.Authentication
             var snonce               = tokens["r"];
             var ssalt                = Convert.FromBase64String(tokens["s"]);
             var ssaltSize            = Convert.ToUInt32(tokens["i"]);
+            var clientFinalMessageWP = "c=" + XmppEncoding.Utf8.GetBytes("n,,").ToBase64String() + ",r=" + snonce;
             var saltedPassword       = password.Rfc2898DeriveBytes(ssalt, ssaltSize, 20);
             var clientKey            = saltedPassword.ComputeHmacSha1("Client Key");
             var storedKey            = clientKey.ComputeSHA1Hash();
-            var clientFinalMessageWP = "c=" + XmppEncoding.Utf8.GetBytes("n,,").ToBase64String() + ",r=" + snonce;
             var authMessage          = this.clientFirstMessageBare
                                      + "," + serverFirstMessage
                                      + "," + clientFinalMessageWP;
             var clientSignature      = storedKey.ComputeHmacSha1(authMessage);
             var clientProof          = clientKey.Xor(clientSignature);
             var clientFinalMessage   = clientFinalMessageWP + ",p=" + clientProof.ToBase64String();
-
+            var serverKey            = saltedPassword.ComputeHmacSha1("Server Key");
+            this.serverSignature     = serverKey.ComputeHmacSha1(authMessage).ToBase64String();
+            
             return new SaslResponse { Value = ToBase64String(clientFinalMessage) };
         }
 
@@ -106,14 +109,12 @@ namespace Conversa.Net.Xmpp.Authentication
             // message) is authorized to act as the authentication identity, and,
             // finally, it responds with a "server-final-message", concluding the
             // authentication exchange.
-#warning TODO: Verify server response
-
             var decoded            = Convert.FromBase64String(success.Value);
             var serverFinalMessage = XmppEncoding.Utf8.GetString(decoded, 0, decoded.Length);
             var tokens             = SaslTokenizer.ToDictionary(serverFinalMessage);
-            var signature          = Convert.FromBase64String(tokens["v"]);
+            var serverSignature    = tokens["v"];
 
-            return true;
+            return (serverSignature == this.serverSignature);
         }
     }
 }

@@ -656,11 +656,20 @@ namespace Conversa.Net.Xmpp.Client
 
                 await this.transport.ResetStreamAsync().ConfigureAwait(false);
             }
+            else
+            {
+                this.OnSaslFailure("Server reponse cannot be verified.");
+            }
         }
 
         private void OnSaslFailure(SaslFailure failure)
         {
-            var errorMessage = "Authentication failed (" + failure.GetErrorMessage() + ")";
+            this.OnSaslFailure(failure.GetErrorMessage());
+        }
+
+        private void OnSaslFailure(string message)
+        {
+            var errorMessage = "Authentication failed (" + message + ")";
 
             this.authenticationFailed.OnNext(new SaslAuthenticationFailure(errorMessage));
 
