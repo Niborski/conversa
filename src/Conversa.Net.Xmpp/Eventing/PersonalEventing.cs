@@ -82,19 +82,11 @@ namespace Conversa.Net.Xmpp.Eventing
               , ServiceItem = new ServiceItem()
             };
 
-            await this.SendAsync(iq);
+            await this.SendAsync(iq, r => this.OnDiscoverSupport(r), e => this.OnDiscoverError(e))
+                      .ConfigureAwait(false);
         }
 
-        private bool SupportsFeature(string featureName)
-        {
-            var q = from feature in this.features
-                    where feature == featureName
-                    select feature;
-
-            return (q.Count() > 0);
-        }
-
-        protected override void OnStanza(InfoQuery response)
+        private void OnDiscoverSupport(InfoQuery response)
         {
             this.features.Clear();
 
@@ -107,6 +99,19 @@ namespace Conversa.Net.Xmpp.Eventing
             {
                 this.nowPlayingListener.Start();
             }
+        }
+
+        private void OnDiscoverError(InfoQuery error)
+        {
+        }
+
+        private bool SupportsFeature(string featureName)
+        {
+            var q = from feature in this.features
+                    where feature == featureName
+                    select feature;
+
+            return (q.Count() > 0);
         }
     }
 }

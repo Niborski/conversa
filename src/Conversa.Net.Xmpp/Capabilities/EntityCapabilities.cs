@@ -98,7 +98,19 @@ namespace Conversa.Net.Xmpp.Capabilities
               , ServiceInfo = new ServiceInfo { Node = this.caps.Node }
             };
 
-            await this.SendAsync(iq).ConfigureAwait(false);
+            await this.SendAsync(iq, r => this.OnDiscoverResponse(r), r => this.OnDiscoverError(r))
+                      .ConfigureAwait(false);
+        }
+
+        private void OnDiscoverResponse(InfoQuery response)
+        {
+            this.info = response.ServiceInfo;
+
+#warning TODO: Update caps storage
+        }
+
+        private void OnDiscoverError(InfoQuery error)
+        {
         }
 
 //        private async Task UpdateCapabilitiesAsync(EntityCapabilities caps)
@@ -124,14 +136,5 @@ namespace Conversa.Net.Xmpp.Capabilities
 //                }
 //            }
 //        }
-
-        protected override void OnStanza(InfoQuery response)
-        {
-            this.info = response.ServiceInfo;
-
-#warning TODO: Update caps storage
-
-            base.OnStanza(response);
-        }
     }
 }

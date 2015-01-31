@@ -193,7 +193,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , TypeSpecified = true
             };
 
-            await this.SendAsync(presence);
+            await this.SendAsync(presence).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -208,7 +208,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , TypeSpecified = true
             };
 
-            await this.SendAsync(presence);
+            await this.SendAsync(presence).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -223,7 +223,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , TypeSpecified = true
             };
 
-            await this.SendAsync(presence);
+            await this.SendAsync(presence).ConfigureAwait(false);
         }
 
         protected override void OnDisconnected()

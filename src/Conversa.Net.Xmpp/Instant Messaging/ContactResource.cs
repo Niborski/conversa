@@ -187,26 +187,18 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , VCardData = new VCardData()
             };
 
-            await this.SendAsync(iq).ConfigureAwait(false);
+            await this.SendAsync(iq, r => this.OnAvatarResponse(r), e => this.OnError(e))
+                      .ConfigureAwait(false);
         }
 
-        private void DisposeAvatarStream()
+        private void OnAvatarResponse(InfoQuery response)
         {
-            if (this.avatar != null)
-            {
-                this.avatar.Dispose();
-                this.avatar = null;
-            }
+            this.OnVCardMessage(response.VCardData);
         }
 
-        protected override void OnStanza(InfoQuery response)
+        private void OnError(InfoQuery error)
         {
-            if (response.VCardData != null)
-            {
-                this.OnVCardMessage(response.VCardData);
-            }
 
-            base.OnStanza(response);
         }
 
         private void OnVCardMessage(VCardData vCard)
@@ -254,6 +246,15 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 //            }
 
 //            this.Client.AvatarStorage.Save();
+        }
+
+        private void DisposeAvatarStream()
+        {
+            if (this.avatar != null)
+            {
+                this.avatar.Dispose();
+                this.avatar = null;
+            }
         }
     }
 }

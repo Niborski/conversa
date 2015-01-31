@@ -18,19 +18,23 @@ namespace Conversa.Net.Xmpp.Client
 
         protected void AddSubscription(IDisposable onMessage)
         {
-            this.AddSubscription(Guid.NewGuid().ToString(), onMessage);
-        }
-
-        protected void AddSubscription(string messageId, IDisposable onMessage, IDisposable onError = null)
-        {
             var subscription = new CompositeDisposable();
 
             subscription.Add(onMessage);
 
-            if (onError != null)
-            {
-                subscription.Add(onError);
-            }
+            this.subscriptions.TryAdd(Guid.NewGuid().ToString(), subscription);
+        }
+
+        protected void AddSubscription(string      messageId
+                                     , IDisposable onResponse
+                                     , IDisposable onError
+                                     , IDisposable onDispose)
+        {
+            var subscription = new CompositeDisposable();
+
+            subscription.Add(onResponse);
+            subscription.Add(onError);
+            subscription.Add(onDispose);
 
             this.subscriptions.TryAdd(messageId, subscription);
         }

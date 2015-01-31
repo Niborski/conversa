@@ -162,28 +162,10 @@ namespace Conversa.Net.Xmpp.Discovery
         }
 
         /// <summary>
-        /// Discover item features
+        /// Discover services
         /// </summary>
         public async Task DiscoverServicesAsync()
         {
-            // Get Service Info
-            var iq = new InfoQuery
-            {
-                Type        = InfoQueryType.Get
-              , From        = this.Client.UserAddress
-              , To          = this.Node
-              , ServiceInfo = new ServiceInfo()
-            };
-
-            await this.SendAsync(iq).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Discover item items.
-        /// </summary>
-        public async Task DiscoverFeaturesAsync()
-        {
-            // Get Service Details
             var iq = new InfoQuery
             {
                 Type        = InfoQueryType.Get
@@ -192,7 +174,25 @@ namespace Conversa.Net.Xmpp.Discovery
               , ServiceItem = new ServiceItem()
             };
 
-            await this.SendAsync(iq).ConfigureAwait(false);
+            await this.SendAsync(iq, r => this.OnDiscoverServices(r), e => this.OnError(e))
+                      .ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Discover features.
+        /// </summary>
+        public async Task DiscoverFeaturesAsync()
+        {
+            var iq = new InfoQuery
+            {
+                Type        = InfoQueryType.Get
+              , From        = this.Client.UserAddress
+              , To          = this.Node
+              , ServiceInfo = new ServiceInfo()
+            };
+
+            await this.SendAsync(iq, r => this.OnDiscoverFeatures(r), e => this.OnError(e))
+                      .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -206,44 +206,34 @@ namespace Conversa.Net.Xmpp.Discovery
             return this.Node;
         }
 
-        protected override void OnStanza(InfoQuery response)
+        private void OnDiscoverServices(InfoQuery response)
         {
-            if (response.ServiceItem != null)
-            {
-                this.OnServiceItem(response.ServiceItem);
-            }
-            if (response.ServiceInfo != null)
-            {
-                this.OnServiceInfo(response.ServiceInfo);
-            }
+            this.services.Clear();
 
-            base.OnStanza(response);
+            foreach (var itemDetail in response.ServiceItem.Items)
+            {
+                this.services.Add(new Service(this.Client, itemDetail.Jid));
+            }
         }
 
-        private void OnServiceInfo(ServiceInfo service)
+        private void OnDiscoverFeatures(InfoQuery response)
         {
             this.features.Clear();
             this.identities.Clear();
 
-            foreach (var identity in service.Identities)
+            foreach (var identity in response.ServiceInfo.Identities)
             {
                 this.AddIdentity(identity.Category, identity.Name, identity.Type);
             }
 
-            foreach (var feature in service.Features)
+            foreach (var feature in response.ServiceInfo.Features)
             {
                 this.AddFeature(feature.Name);
             }
         }
 
-        private void OnServiceItem(ServiceItem serviceItem)
+        private void OnError(InfoQuery error)
         {
-            this.services.Clear();
-
-            foreach (var itemDetail in serviceItem.Items)
-            {
-                this.services.Add(new Service(this.Client, itemDetail.Jid));
-            }
         }
 
         private bool SupportsFeature(string featureName)

@@ -127,6 +127,8 @@
     <Compile Include="Client\XmppClientState.cs" />
     <Compile Include="Client\Hub.cs" />
     <Compile Include="Client\StanzaHub.cs" />
+    <Compile Include="Core\IStanza.cs" />
+    <Compile Include="Core\Messaage.Custom.cs" />
     <Compile Include="Core\RosterItem.Custom.cs" />
     <Compile Include="Core\XmppCodes.cs" />
     <Compile Include="Client\XmppConnectionString.cs" />

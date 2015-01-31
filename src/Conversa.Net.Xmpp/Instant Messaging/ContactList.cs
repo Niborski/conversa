@@ -77,7 +77,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 }
             };
 
-            await this.SendAsync(iq).ConfigureAwait(false);
+            await this.SendAsync(iq, r => this.OnAddContactResponse(r), e => this.OnAddContactError(e))
+                      .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -99,7 +100,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
             iq.Roster.Items.Add(item);
 
-            await this.SendAsync(iq).ConfigureAwait(false);
+            await this.SendAsync(iq, r => this.OnRemoveContactError(r), e => this.OnRemoveContactError(e))
+                      .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -114,7 +116,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , Roster = new Roster()
             };
 
-            await this.SendAsync(iq).ConfigureAwait(false);
+            await this.SendAsync(iq, r => this.OnUpdateRoster(r), e => this.OnRosterError(e))
+                      .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -135,7 +138,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , BlockList = new BlockList()
             };
 
-            await this.SendAsync(iq).ConfigureAwait(false);
+            await this.SendAsync(iq, r => this.OnBlockedContactsResponse(r), e => this.OnBlockedContactsError(e))
+                      .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -155,7 +159,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , Unblock = new Unblock()
             };
 
-            await this.SendAsync(iq).ConfigureAwait(false);
+            await this.SendAsync(iq, r => this.OnUnBlockAllResponse(r), e => this.OnUnBlockAllError(e))
+                      .ConfigureAwait(false);
         }
 
         IEnumerator<Contact> IEnumerable<Contact>.GetEnumerator()
@@ -181,7 +186,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
         protected override async void OnConnected()
         {
-            this.Subscribe();
             this.AddSelfContact();
             await this.RequestRosterAsync();
 
@@ -196,20 +200,28 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             base.OnDisconnected();
         }
 
-        private void Subscribe()
+        private void OnAddContactResponse(InfoQuery response)
         {
-            this.AddSubscription(this.Client
-                                     .InfoQueryStream
-                                     .Where(message => message.To     == this.Client.UserAddress
-                                                    && message.Type   == InfoQueryType.Result
-                                                    && message.Roster != null)
-                                     .Subscribe(message => this.OnRosterMessage(message.Roster)));
         }
 
-        private async void OnRosterMessage(Roster message)
+        private void OnAddContactError(InfoQuery error)
         {
+        }
+
+        private void OnRemoveContactResponse(InfoQuery response)
+        {
+        }
+
+        private void OnRemoveContactError(InfoQuery error)
+        {
+        }
+
+        private async void OnUpdateRoster(InfoQuery response)
+        {
+            var roster = response.Roster;
+
             // It's a roster management related message
-            foreach (RosterItem item in message.Items)
+            foreach (RosterItem item in roster.Items)
             {
                 var contact = this.contacts.FirstOrDefault(c => c.Address.BareAddress == item.Jid);
 
@@ -255,6 +267,26 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             await resource.SetDefaultPresenceAsync();
 
             this.rosterStream.OnNext(this);
+        }
+
+        private void OnRosterError(InfoQuery error)
+        {
+        }
+
+        private void OnBlockedContactsResponse(InfoQuery response)
+        {
+        }
+
+        private void OnBlockedContactsError(InfoQuery response)
+        {
+        }
+
+        private void OnUnBlockAllResponse(InfoQuery response)
+        {
+        }
+
+        private void OnUnBlockAllError(InfoQuery response)
+        {
         }
     }
 }

@@ -71,19 +71,6 @@ namespace Conversa.Net.Xmpp.Capabilities
             await this.AdvertiseCapabilitiesAsync();
         }
 
-        protected override async void OnStanza(InfoQuery response)
-        {
-            await this.disco.SendAsnwerTo(response.Id, response.From);
-
-            base.OnStanza(response);
-        }
-
-        protected override void OnStanza(Presence response)
-        {
-            // Response to client capabilities advertising
-            base.OnStanza(response);
-        }
-
         private async Task AdvertiseCapabilitiesAsync()
         {
             var presence = new Presence
@@ -91,7 +78,17 @@ namespace Conversa.Net.Xmpp.Capabilities
                 Capabilities = this.caps
             };
 
-            await this.SendAsync(presence).ConfigureAwait(false);
+            await this.SendAsync(presence, r => this.OnAdvertiseCapabilities(r), e => this.OnError(e))
+                      .ConfigureAwait(false);
+        }
+
+        private async void OnAdvertiseCapabilities(Presence response)
+        {
+            await this.disco.SendAsnwerTo(response.Id, response.From);
+        }
+
+        private void OnError(Presence error)
+        {
         }
 
         /// <summary>
