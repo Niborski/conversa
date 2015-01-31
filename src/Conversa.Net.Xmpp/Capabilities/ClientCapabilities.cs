@@ -8,6 +8,7 @@ using Conversa.Net.Xmpp.Registry;
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reactive.Linq;
 
 namespace Conversa.Net.Xmpp.Capabilities
 {
@@ -24,7 +25,7 @@ namespace Conversa.Net.Xmpp.Capabilities
         private const string Version  = "0.1";
         private const string HashName = "sha-1";
 
-        private Caps   caps;
+        private Caps             caps;
         private ServiceDiscovery disco;
 
         /// <summary>
@@ -64,11 +65,25 @@ namespace Conversa.Net.Xmpp.Capabilities
 
             // Append the verification string to the service discovery node
             this.disco.Node += "#" + this.caps.VerificationString;
+
+            // Subscribe to entity capabilities requests
+            this.SubscribeToCapabilitiesRequest();
         }
 
         protected async override void OnConnected()                    
         {
             await this.AdvertiseCapabilitiesAsync();
+        }
+
+        private void SubscribeToCapabilitiesRequest()
+        {
+            this.AddSubscription(this.Client
+                                     .InfoQueryStream
+                                     .Where(message => message.To == this.Client.UserAddress
+                                                    && message.IsRequest
+                                                    && message.ServiceInfo != null
+                                                    && message.ServiceInfo.Node == this.disco.Node)
+                                     .Subscribe(message => this.OnAdvertiseCapabilities(message)));
         }
 
         private async Task AdvertiseCapabilitiesAsync()
@@ -83,6 +98,14 @@ namespace Conversa.Net.Xmpp.Capabilities
         }
 
         private async void OnAdvertiseCapabilities(Presence response)
+        {
+            if (response.From != this.Client.UserAddress)
+            {
+                await this.disco.SendAsnwerTo(response.Id, response.From);
+            }
+        }
+
+        private async void OnAdvertiseCapabilities(InfoQuery response)
         {
             await this.disco.SendAsnwerTo(response.Id, response.From);
         }

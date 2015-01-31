@@ -137,6 +137,7 @@
     <Compile Include="Client\ConnectionStringSynonyms.cs" />
     <Compile Include="Client\XmppException.cs" />
     <Compile Include="Client\ClientHub.cs" />
+    <Compile Include="Extensions\ConcurrentBagExtensions.cs" />
     <Compile Include="Xml\StreamElement.cs" />
     <Compile Include="Client\ServerFeatures.cs" />
     <Compile Include="Xml\StreamParser.cs" />

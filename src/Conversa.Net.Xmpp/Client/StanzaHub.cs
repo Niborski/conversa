@@ -16,11 +16,6 @@ namespace Conversa.Net.Xmpp.Client
         {
         }
 
-        protected async virtual Task SendAsync(object request)
-        {
-            await this.Client.SendAsync(request);
-        }
-
         protected async virtual Task SendAsync(InfoQuery         request
                                              , Action<InfoQuery> onResponse
                                              , Action<InfoQuery> onError)
@@ -95,6 +90,11 @@ namespace Conversa.Net.Xmpp.Client
         {
             this.AddSubscription(request.Id, onResponse, onError, dispose);
 
+            await this.SendAsync(request).ConfigureAwait(false);
+        }
+
+        protected async virtual Task SendAsync(object request)
+        {
             await this.Client.SendAsync(request).ConfigureAwait(false);
         }
     }

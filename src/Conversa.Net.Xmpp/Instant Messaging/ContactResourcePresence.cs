@@ -234,6 +234,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
         internal void Update(Presence presence)
         {
+            this.ShowAs = ShowType.Online;
+
             if (presence.TypeSpecified && presence.Type == PresenceType.Unavailable)
             {
                 this.ShowAs = ShowType.Offline;

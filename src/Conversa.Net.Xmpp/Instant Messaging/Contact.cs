@@ -115,7 +115,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 this.resources.Add(new ContactResource(this.Client, this, address));
             }
 
-            this.Subscribe();
+            this.SubscribeToPresenceChanges();
         }
 
         /// <summary>
@@ -235,27 +235,29 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             return this.address.ToString();
         }
 
-        private void Subscribe()
+        internal void RefreshData(string name, RosterSubscriptionType subscription, IEnumerable<string> groups)
+        {
+            this.name         = ((name == null) ? String.Empty : name);
+            this.displayName  = (!String.IsNullOrEmpty(this.name) ? this.name : this.address.UserName);
+            this.subscription = subscription;
+
+            if (groups != null && groups.Count() > 0)
+            {
+                this.groups.AddRange(groups);
+            }
+            else
+            {
+                this.groups.Add("Contacts");
+            }
+        }
+
+        private void SubscribeToPresenceChanges()
         {
             this.AddSubscription(this.Client
                                      .PresenceStream
-                                     .Where(message => ((XmppAddress)message.From).BareAddress == this.Address)
+                                     .Where(message => ((XmppAddress)message.From).BareAddress == this.Address
+                                                    && !message.IsError)
                                      .Subscribe(message => this.OnPresenceMessage(message)));
-        }
-
-        /// <summary>
-        /// Unsubscribes from presence updates of the current user
-        /// </summary>
-        private async Task UnsuscribedAsync()
-        {
-            var presence = new Presence
-            {
-                To            = this.Address
-              , Type          = PresenceType.Unsubscribed
-              , TypeSpecified = true
-            };
-
-            await this.SendAsync(presence).ConfigureAwait(false);
         }
 
         private async void OnPresenceMessage(Presence message)
@@ -313,20 +315,16 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             }
         }
 
-        internal void RefreshData(string name, RosterSubscriptionType subscription, IEnumerable<string> groups)
+        private async Task UnsuscribedAsync()
         {
-            this.name         = ((name == null) ? String.Empty : name);
-            this.displayName  = (!String.IsNullOrEmpty(this.name) ? this.name : this.address.UserName);
-            this.subscription = subscription;
+            var presence = new Presence
+            {
+                To            = this.Address
+              , Type          = PresenceType.Unsubscribed
+              , TypeSpecified = true
+            };
 
-            if (groups != null && groups.Count() > 0)
-            {
-                this.groups.AddRange(groups);
-            }
-            else
-            {
-                this.groups.Add("Contacts");
-            }
+            await this.SendAsync(presence).ConfigureAwait(false);
         }
     }
 }

@@ -6,8 +6,8 @@ using Conversa.Net.Xmpp.Client;
 using Conversa.Net.Xmpp.Core;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -21,8 +21,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     public sealed class ContactList
         : StanzaHub, IEnumerable<Contact>
     {
-        private Subject<ContactList> rosterStream;
-        private IList<Contact>  contacts;
+        private Subject<ContactList>   rosterStream;
+        private ConcurrentBag<Contact> contacts;
 
         /// <summary>
         /// Gets the contact with the given bare address
@@ -48,7 +48,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         internal ContactList(XmppClient client)
             : base(client)
         {
-            this.contacts     = new ObservableCollection<Contact>();
+            this.contacts     = new ConcurrentBag<Contact>();
             this.rosterStream = new Subject<ContactList>();
         }
 
@@ -126,7 +126,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <returns></returns>
         public async Task RefreshBlockedContactsAsync()
         {
-#warning TODO: Check if contact list should be stored in a separated collection or the information should be injected into XmppContact class
+#warning TODO: Check if blocked contact list should be stored in a separated collection or the information should be injected into XmppContact class
             if (!this.Client.ServiceDiscovery.SupportsBlocking)
             {
                 return;
@@ -173,7 +173,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             return this.contacts.GetEnumerator();
         }
 
-        private void AddSelfContact()
+        private async void AddSelfContact()
         {
             var contact = new Contact(this.Client
                                         , this.Client.UserAddress
@@ -182,6 +182,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                                         , new List<string>(new string[] { "Buddies" }));
 
             this.contacts.Add(contact);
+
+            await contact.Resources.First().SetDefaultPresenceAsync().ConfigureAwait(false);
         }
 
         protected override async void OnConnected()
@@ -244,7 +246,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 switch (item.Subscription)
                 {
                     case RosterSubscriptionType.Remove:
-                        this.contacts.Remove(contact);
+                        this.contacts.TryTake(out contact);
                         break;
 
                     case RosterSubscriptionType.None:
@@ -261,10 +263,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                         break;
                 }
             }
-
-            var resource = this[this.Client.UserAddress.BareAddress].Resources.First();
-
-            await resource.SetDefaultPresenceAsync();
 
             this.rosterStream.OnNext(this);
         }
