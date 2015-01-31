@@ -50,6 +50,7 @@ namespace Conversa.Net.Xmpp.Client
         private ClientCapabilities   capabilities;
         private ServiceDiscovery     serviceDiscovery;
         private PersonalEventing     personalEventing;
+        private XmppClientPresence   presence;
         private bool                 isDisposed;
 
         /// <summary>
@@ -103,7 +104,7 @@ namespace Conversa.Net.Xmpp.Client
         }
 
         /// <summary>
-        /// Gets the session <see cref="ContactList">Roster</see>
+        /// Gets the roster instance associated to the client.
         /// </summary>
         public ContactList Roster
         {
@@ -111,7 +112,7 @@ namespace Conversa.Net.Xmpp.Client
         }
 
         /// <summary>
-        /// Gets the list of <see cref="Activity">activities</see>
+        /// Gets the user activity instance associated to the client.
         /// </summary>
         public Activity Activity
         {
@@ -119,7 +120,7 @@ namespace Conversa.Net.Xmpp.Client
         }
 
         /// <summary>
-        /// Gets the <see cref="XmppSession">service discovery </see> instance associated to the session
+        /// Gets the service discovery instance associated to the client.
         /// </summary>
         public ServiceDiscovery ServiceDiscovery
         {
@@ -127,11 +128,19 @@ namespace Conversa.Net.Xmpp.Client
         }
 
         /// <summary>
-        /// Gets the <see cref="PersonalEventing">personal eventing</see> instance associated to the session
+        /// Gets the personal eventing instance associated to the client.
         /// </summary>
         public PersonalEventing PersonalEventing
         {
             get { return this.personalEventing; }
+        }
+
+        /// <summary>
+        /// Gets the presence instance associated to the client.
+        /// </summary>
+        public XmppClientPresence Presence
+        {
+            get { return this.presence; }
         }
 
         /// <summary>
@@ -196,6 +205,7 @@ namespace Conversa.Net.Xmpp.Client
             this.capabilities         = new ClientCapabilities(this);
             this.serviceDiscovery     = new ServiceDiscovery(this, this.connectionString.UserAddress.DomainName);
             this.personalEventing     = new PersonalEventing(this);
+            this.presence             = new XmppClientPresence(this);
             this.userAddress          = new XmppAddress(this.connectionString.UserAddress.UserName
                                                       , this.connectionString.UserAddress.DomainName
                                                       , this.connectionString.Resource);

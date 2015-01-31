@@ -125,6 +125,7 @@
     <Compile Include="ChatStates\PausedChatState.cs" />
     <Compile Include="Client\XmppClient.cs" />
     <Compile Include="Capabilities\ClientCapabilities.cs" />
+    <Compile Include="Client\XmppClientPresence.cs" />
     <Compile Include="Client\XmppClientState.cs" />
     <Compile Include="Client\Hub.cs" />
     <Compile Include="Client\StanzaHub.cs" />

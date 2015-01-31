@@ -16,7 +16,7 @@ namespace Conversa.Net.Xmpp.Capabilities
     /// <remarks>
     /// XEP-0115: Entity Capabilities
     /// </remarks>
-    public class EntityCapabilities
+    public sealed class EntityCapabilities
         : StanzaHub
     {
         private XmppAddress address;

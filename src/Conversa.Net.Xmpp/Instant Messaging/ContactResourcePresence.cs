@@ -37,7 +37,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public int Priority
         {
             get { return this.priority; }
-            set { this.priority = value; }
         }
 
         /// <summary>
@@ -47,7 +46,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public ShowType ShowAs
         {
             get { return this.showAs; }
-            set { this.showAs = value; }
         }
 
         /// <summary>
@@ -57,7 +55,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public string StatusMessage
         {
             get { return this.statusMessage; }
-            set { this.statusMessage = value; }
         }
 
         /// <summary>
@@ -74,7 +71,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
-        /// Gets the presence of the given user.
+        /// Gets the presence information for the current contact resource.
         /// </summary>
         /// <param name="address">User address</param>
         public async Task GetPresenceAsync()
@@ -91,62 +88,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
-        /// Set the presence as <see cref="XmppPresenceState.Available"/>
-        /// </summary>
-        public async Task SetOnlineAsync()
-        {
-            await this.SetPresenceAsync(ShowType.Online).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Sets the presence as Unavailable
-        /// </summary>
-        public async Task SetUnavailableAsync()
-        {
-            await this.SendAsync(new Presence().AsUnavailable()).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Sets the presense state.
-        /// </summary>
-        /// <param name="presenceState"></param>
-        public async Task SetPresenceAsync(ShowType presenceState)
-        {
-            await this.SetPresenceAsync(presenceState, null).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Sets the presence state with the given state and status message
-        /// </summary>
-        /// <param name="showAs"></param>
-        /// <param name="statusMessage"></param>
-        public async Task SetPresenceAsync(ShowType showAs, string statusMessage)
-        {
-            await this.SetPresenceAsync(showAs, statusMessage, 0).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Sets the presence state with the given state, status message and priority
-        /// </summary>
-        /// <param name="showAs"></param>
-        /// <param name="statusMessage"></param>
-        /// <param name="priority"></param>
-        public async Task SetPresenceAsync(ShowType showAs, string statusMessage, int priority)
-        {
-            var presence = new Presence
-            {
-                Show              = ShowType.Online
-              , ShowSpecified     = true
-              , Status            = new Status { Value = statusMessage }
-              , Priority          = (sbyte)priority
-              , PrioritySpecified = true
-            };
-
-            await this.SendAsync(presence).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Request subscription to the given user
+        /// Request subscription to the current contact resource
         /// </summary>
         public async Task RequestSubscriptionAsync()
         {
@@ -161,7 +103,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
-        /// Subscribes to presence updates of the current user
+        /// Subscribes to presence updates of the current contact resource
         /// </summary>
         public async Task SubscribedAsync()
         {
@@ -176,7 +118,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
-        /// Subscribes to presence updates of the current user
+        /// Subscribes to presence updates of the current contact resource
         /// </summary>
         public async Task UnsuscribeAsync()
         {
@@ -191,7 +133,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
-        /// Subscribes to presence updates of the current user
+        /// Subscribes to presence updates of the current contact resource
         /// </summary>
         public async Task UnsuscribedAsync()
         {
@@ -213,23 +155,23 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
         internal void Update(Presence presence)
         {
-            this.ShowAs = ShowType.Online;
+            this.showAs = ShowType.Online;
 
             if (presence.TypeSpecified && presence.Type == PresenceType.Unavailable)
             {
-                this.ShowAs = ShowType.Offline;
+                this.showAs = ShowType.Offline;
             }
             else if (presence.ShowSpecified)
             {
-                this.ShowAs = presence.Show;
+                this.showAs = presence.Show;
             }
 
             if (presence.PrioritySpecified)
             {
-                this.Priority = presence.Priority;
+                this.priority = presence.Priority;
             }
 
-            this.StatusMessage = ((presence.Status == null) ? String.Empty : presence.Status.Value);
+            this.statusMessage = ((presence.Status == null) ? String.Empty : presence.Status.Value);
 
             this.presenceStream.OnNext(this.resource);
         }

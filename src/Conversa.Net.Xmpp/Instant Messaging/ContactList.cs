@@ -176,7 +176,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         protected override async void OnConnected()
         {
             await this.RequestRosterAsync().ConfigureAwait(false);
-            await this.SetDefaultPresenceAsync().ConfigureAwait(false);
+            await this.Client.Presence.SetInitialPresenceAsync().ConfigureAwait(false);
 
             base.OnConnected();
         }
@@ -265,18 +265,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
         private void OnUnBlockAllError(InfoQuery response)
         {
-        }
-
-        private async Task SetDefaultPresenceAsync()
-        {
-            var presence = new Presence
-            {
-                From          = this.Client.UserAddress
-              , Show          = ShowType.Online
-              , ShowSpecified = true
-            };
-
-            await this.SendAsync(presence).ConfigureAwait(false);
         }
     }
 }
