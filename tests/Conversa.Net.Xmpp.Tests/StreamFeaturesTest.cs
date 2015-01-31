@@ -3,6 +3,7 @@
 
 using Conversa.Net.Xmpp.Core;
 using Conversa.Net.Xmpp.Shared;
+using Conversa.Net.Xmpp.Xml;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -46,7 +47,7 @@ namespace Conversa.Net.Xmpp.Test
             };
 
             var buffer = XmppSerializer.Serialize(features);
-            var xml    = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+            var xml    = XmppEncoding.Utf8.GetString(buffer, 0, buffer.Length);
 
             Assert.True(exp.CultureAwareCompare(xml));
         }
@@ -89,7 +90,7 @@ namespace Conversa.Net.Xmpp.Test
             };
 
             var buffer = XmppSerializer.Serialize(features);
-            var xml    = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+            var xml    = XmppEncoding.Utf8.GetString(buffer, 0, buffer.Length);
 
             Assert.True(exp.CultureAwareCompare(xml));
         }
@@ -120,7 +121,7 @@ namespace Conversa.Net.Xmpp.Test
             };
 
             var buffer = XmppSerializer.Serialize(features);
-            var xml    = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+            var xml    = XmppEncoding.Utf8.GetString(buffer, 0, buffer.Length);
 
             Assert.True(exp.CultureAwareCompare(xml));
         }

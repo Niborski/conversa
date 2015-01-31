@@ -47,56 +47,56 @@ namespace Conversa.Net.Xmpp.Client
         {
             var synonyms = new Dictionary<string, string>();
 
-            synonyms.Add(XmppConnectionStringSynonyms.Server
-                       , XmppConnectionStringKeywords.Server);
+            synonyms.Add(ConnectionStringSynonyms.Server
+                       , ConnectionStringKeywords.Server);
 
-            synonyms.Add(XmppConnectionStringSynonyms.ServiceName
-                       , XmppConnectionStringKeywords.ServiceName);
+            synonyms.Add(ConnectionStringSynonyms.ServiceName
+                       , ConnectionStringKeywords.ServiceName);
 
-            synonyms.Add(XmppConnectionStringSynonyms.UserId
-                       , XmppConnectionStringKeywords.UserId);
+            synonyms.Add(ConnectionStringSynonyms.UserId
+                       , ConnectionStringKeywords.UserId);
 
-            synonyms.Add(XmppConnectionStringSynonyms.UserAddress
-                       , XmppConnectionStringKeywords.UserId);
+            synonyms.Add(ConnectionStringSynonyms.UserAddress
+                       , ConnectionStringKeywords.UserId);
 
-            synonyms.Add(XmppConnectionStringSynonyms.UID
-                       , XmppConnectionStringKeywords.UserId);
+            synonyms.Add(ConnectionStringSynonyms.UID
+                       , ConnectionStringKeywords.UserId);
 
-            synonyms.Add(XmppConnectionStringSynonyms.UserPassword
-                       , XmppConnectionStringKeywords.UserPassword);
+            synonyms.Add(ConnectionStringSynonyms.UserPassword
+                       , ConnectionStringKeywords.UserPassword);
 
-            synonyms.Add(XmppConnectionStringSynonyms.Resource
-                       , XmppConnectionStringKeywords.Resource);
+            synonyms.Add(ConnectionStringSynonyms.Resource
+                       , ConnectionStringKeywords.Resource);
 
-            synonyms.Add(XmppConnectionStringSynonyms.ConnectionTimeout
-                       , XmppConnectionStringKeywords.ConnectionTimeout);
+            synonyms.Add(ConnectionStringSynonyms.ConnectionTimeout
+                       , ConnectionStringKeywords.ConnectionTimeout);
 
-            synonyms.Add(XmppConnectionStringSynonyms.UseProxy
-                       , XmppConnectionStringKeywords.UseProxy);
+            synonyms.Add(ConnectionStringSynonyms.UseProxy
+                       , ConnectionStringKeywords.UseProxy);
 
-            synonyms.Add(XmppConnectionStringSynonyms.ProxyType
-                       , XmppConnectionStringKeywords.ProxyType);
+            synonyms.Add(ConnectionStringSynonyms.ProxyType
+                       , ConnectionStringKeywords.ProxyType);
 
-            synonyms.Add(XmppConnectionStringSynonyms.ProxyServer
-                       , XmppConnectionStringKeywords.ProxyServer);
+            synonyms.Add(ConnectionStringSynonyms.ProxyServer
+                       , ConnectionStringKeywords.ProxyServer);
 
-            synonyms.Add(XmppConnectionStringSynonyms.ProxyPortNumber
-                       , XmppConnectionStringKeywords.ProxyPortNumber);
+            synonyms.Add(ConnectionStringSynonyms.ProxyPortNumber
+                       , ConnectionStringKeywords.ProxyPortNumber);
 
-            synonyms.Add(XmppConnectionStringSynonyms.ProxyUserName
-                       , XmppConnectionStringKeywords.ProxyUserName);
+            synonyms.Add(ConnectionStringSynonyms.ProxyUserName
+                       , ConnectionStringKeywords.ProxyUserName);
 
-            synonyms.Add(XmppConnectionStringSynonyms.ProxyPassword
-                       , XmppConnectionStringKeywords.ProxyPassword);
+            synonyms.Add(ConnectionStringSynonyms.ProxyPassword
+                       , ConnectionStringKeywords.ProxyPassword);
 
-            synonyms.Add(XmppConnectionStringSynonyms.HttpBinding
-                       , XmppConnectionStringKeywords.HttpBinding);
+            synonyms.Add(ConnectionStringSynonyms.HttpBinding
+                       , ConnectionStringKeywords.HttpBinding);
 
-            synonyms.Add(XmppConnectionStringSynonyms.ResolveHostName
-                       , XmppConnectionStringKeywords.ResolveHostName);
+            synonyms.Add(ConnectionStringSynonyms.ResolveHostName
+                       , ConnectionStringKeywords.ResolveHostName);
 
-            synonyms.Add(XmppConnectionStringSynonyms.PacketSize
-                       , XmppConnectionStringKeywords.PacketSize);
+            synonyms.Add(ConnectionStringSynonyms.PacketSize
+                       , ConnectionStringKeywords.PacketSize);
 
             return synonyms;
         }
@@ -109,7 +109,7 @@ namespace Conversa.Net.Xmpp.Client
         /// <value>The server.</value>
         public string HostName
         {
-            get { return this.GetString(XmppConnectionStringKeywords.Server); }
+            get { return this.GetString(ConnectionStringKeywords.Server); }
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace Conversa.Net.Xmpp.Client
         /// </value>
         public bool ResolveHostName
         {
-            get { return this.GetBoolean(XmppConnectionStringKeywords.ResolveHostName); }
+            get { return this.GetBoolean(ConnectionStringKeywords.ResolveHostName); }
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace Conversa.Net.Xmpp.Client
         /// <value>The port.</value>
         public string ServiceName
         {
-            get { return this.GetString(XmppConnectionStringKeywords.ServiceName); }
+            get { return this.GetString(ConnectionStringKeywords.ServiceName); }
         }
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace Conversa.Net.Xmpp.Client
         /// <value>The user id.</value>
         public XmppAddress UserAddress
         {
-            get { return this.GetString(XmppConnectionStringKeywords.UserId); }
+            get { return this.GetString(ConnectionStringKeywords.UserId); }
         }
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace Conversa.Net.Xmpp.Client
         /// <value>The password.</value>
         public string UserPassword
         {
-            get { return this.GetString(XmppConnectionStringKeywords.UserPassword); }
+            get { return this.GetString(ConnectionStringKeywords.UserPassword); }
         }
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace Conversa.Net.Xmpp.Client
         /// </summary>
         public string Resource
         {
-            get { return this.GetString(XmppConnectionStringKeywords.Resource); }
+            get { return this.GetString(ConnectionStringKeywords.Resource); }
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace Conversa.Net.Xmpp.Client
         /// <value>The connection timeout.</value>
         public int ConnectionTimeout
         {
-            get { return this.GetInt32(XmppConnectionStringKeywords.ConnectionTimeout); }
+            get { return this.GetInt32(ConnectionStringKeywords.ConnectionTimeout); }
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace Conversa.Net.Xmpp.Client
         /// </summary>
         public bool UseProxy
         {
-            get { return this.GetBoolean(XmppConnectionStringKeywords.UseProxy); }
+            get { return this.GetBoolean(ConnectionStringKeywords.UseProxy); }
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace Conversa.Net.Xmpp.Client
         /// </summary>
         public string ProxyType
         {
-            get { return this.GetString(XmppConnectionStringKeywords.ProxyType); }
+            get { return this.GetString(ConnectionStringKeywords.ProxyType); }
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace Conversa.Net.Xmpp.Client
         /// </summary>
         public string ProxyServer
         {
-            get { return this.GetString(XmppConnectionStringKeywords.ProxyServer); }
+            get { return this.GetString(ConnectionStringKeywords.ProxyServer); }
         }
 
         /// <summary>
@@ -196,7 +196,7 @@ namespace Conversa.Net.Xmpp.Client
         /// </summary>
         public int ProxyPortNumber
         {
-            get { return this.GetInt32(XmppConnectionStringKeywords.ProxyPortNumber); }
+            get { return this.GetInt32(ConnectionStringKeywords.ProxyPortNumber); }
         }
 
         /// <summary>
@@ -204,7 +204,7 @@ namespace Conversa.Net.Xmpp.Client
         /// </summary>
         public string ProxyUserName
         {
-            get { return this.GetString(XmppConnectionStringKeywords.ProxyUserName); }
+            get { return this.GetString(ConnectionStringKeywords.ProxyUserName); }
         }
 
         /// <summary>
@@ -212,7 +212,7 @@ namespace Conversa.Net.Xmpp.Client
         /// </summary>
         public string ProxyPassword
         {
-            get { return this.GetString(XmppConnectionStringKeywords.ProxyPassword); }
+            get { return this.GetString(ConnectionStringKeywords.ProxyPassword); }
         }
 
         /// <summary>
@@ -220,7 +220,7 @@ namespace Conversa.Net.Xmpp.Client
         /// </summary>
         public bool UseHttpBinding
         {
-            get { return this.GetBoolean(XmppConnectionStringKeywords.HttpBinding); }
+            get { return this.GetBoolean(ConnectionStringKeywords.HttpBinding); }
         }
 
         /// <summary>
@@ -228,7 +228,7 @@ namespace Conversa.Net.Xmpp.Client
         /// </summary>
         public uint PacketSize
         {
-            get { return this.GetUInt32(XmppConnectionStringKeywords.PacketSize); }
+            get { return this.GetUInt32(ConnectionStringKeywords.PacketSize); }
         }
 
         /// <summary>
@@ -272,13 +272,13 @@ namespace Conversa.Net.Xmpp.Client
         {
             this.options.Clear();
 
-            this.options.Add(XmppConnectionStringKeywords.Server            , null);
-            this.options.Add(XmppConnectionStringKeywords.ServiceName       , "5222");
-            this.options.Add(XmppConnectionStringKeywords.UserId            , null);
-            this.options.Add(XmppConnectionStringKeywords.UserPassword      , null);
-            this.options.Add(XmppConnectionStringKeywords.Resource          , null);
-            this.options.Add(XmppConnectionStringKeywords.ConnectionTimeout , -1);
-            this.options.Add(XmppConnectionStringKeywords.PacketSize        , 4096);
+            this.options.Add(ConnectionStringKeywords.Server            , null);
+            this.options.Add(ConnectionStringKeywords.ServiceName       , "5222");
+            this.options.Add(ConnectionStringKeywords.UserId            , null);
+            this.options.Add(ConnectionStringKeywords.UserPassword      , null);
+            this.options.Add(ConnectionStringKeywords.Resource          , null);
+            this.options.Add(ConnectionStringKeywords.ConnectionTimeout , -1);
+            this.options.Add(ConnectionStringKeywords.PacketSize        , 4096);
         }
 
         private void Load(string connectionString)

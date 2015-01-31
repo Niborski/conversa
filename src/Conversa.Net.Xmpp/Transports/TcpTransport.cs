@@ -3,7 +3,7 @@
 
 using Conversa.Net.Xmpp.Client;
 using Conversa.Net.Xmpp.Core;
-using Conversa.Net.Xmpp.Shared;
+using Conversa.Net.Xmpp.Xml;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -26,7 +26,7 @@ namespace Conversa.Net.Xmpp.Transports
         private StreamSocket                 socket;
         private DataReader                   reader;
         private DataWriter                   writer;
-        private XmppStreamParser             parser;
+        private StreamParser                 parser;
         private DataReaderLoadOperation      asyncRead;
         private HostName                     hostname;
         private IList<ChainValidationResult> ignorableServerCertificateErrors;
@@ -280,7 +280,7 @@ namespace Conversa.Net.Xmpp.Transports
             this.reader.InputStreamOptions = InputStreamOptions.Partial;
 
             // Create the XMPP stream parser instance
-            this.parser = new XmppStreamParser();
+            this.parser = new StreamParser();
         }
 
         private async Task<bool> ConnectAsync(string remoteServiceName)

@@ -3,7 +3,6 @@
 
 namespace Conversa.Net.Xmpp.Core
 {
-    using System.Collections.Generic;
     using System.Xml.Serialization;
 
     /// <summary>

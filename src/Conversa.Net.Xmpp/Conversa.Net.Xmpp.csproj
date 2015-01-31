@@ -27,6 +27,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <GenerateLibraryLayout>false</GenerateLibraryLayout>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -57,7 +59,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
-    <EmbeddedResource Include="Shared\Serializers.xml" />
+    <EmbeddedResource Include="Xml\Serializers.xml" />
     <None Include="packages.config" />
     <None Include="XMPP Registry\alt-connections.xml" />
     <None Include="XMPP Registry\amp-actions.xml" />
@@ -113,22 +115,29 @@
     <Compile Include="BOSH\HttpBindCondition.cs" />
     <Compile Include="BOSH\HttpBindType.cs" />
     <Compile Include="BOSH\HttpBind.cs" />
+    <Compile Include="Capabilities\Caps.cs" />
     <Compile Include="Capabilities\EntityCapabilities.cs" />
-    <Compile Include="Capabilities\XmppEntityCapabilities.cs" />
+    <Compile Include="ChatStates\ActiveChatState.cs" />
+    <Compile Include="ChatStates\ComposingChatState.cs" />
+    <Compile Include="ChatStates\GoneChatState.cs" />
+    <Compile Include="ChatStates\InactiveChatState.cs" />
+    <Compile Include="ChatStates\PausedChatState.cs" />
     <Compile Include="Client\XmppClient.cs" />
-    <Compile Include="Capabilities\XmppClientCapabilities.cs" />
+    <Compile Include="Capabilities\ClientCapabilities.cs" />
     <Compile Include="Client\XmppClientState.cs" />
+    <Compile Include="Client\Hub.cs" />
+    <Compile Include="Client\StanzaHub.cs" />
     <Compile Include="Core\RosterItem.Custom.cs" />
     <Compile Include="Core\XmppCodes.cs" />
     <Compile Include="Client\XmppConnectionString.cs" />
     <Compile Include="Client\XmppConnectionStringBuilder.cs" />
-    <Compile Include="Client\XmppConnectionStringKeywords.cs" />
-    <Compile Include="Client\XmppConnectionStringSynonyms.cs" />
+    <Compile Include="Client\ConnectionStringKeywords.cs" />
+    <Compile Include="Client\ConnectionStringSynonyms.cs" />
     <Compile Include="Client\XmppException.cs" />
-    <Compile Include="Client\XmppMessageProcessor.cs" />
-    <Compile Include="Client\XmppStreamElement.cs" />
-    <Compile Include="Client\XmppStreamFeatures.cs" />
-    <Compile Include="Client\XmppStreamParser.cs" />
+    <Compile Include="Client\ClientHub.cs" />
+    <Compile Include="Xml\StreamElement.cs" />
+    <Compile Include="Client\ServerFeatures.cs" />
+    <Compile Include="Xml\StreamParser.cs" />
     <Compile Include="Core\Bind.cs" />
     <Compile Include="Core\Bind.Custom.cs" />
     <Compile Include="Core\BindType.cs" />
@@ -179,7 +188,7 @@
     <Compile Include="Core\StreamFeatures.cs" />
     <Compile Include="Core\StreamFeatures.Custom.cs" />
     <Compile Include="Core\XmppAddress.cs" />
-    <Compile Include="Core\XmppEncoding.cs" />
+    <Compile Include="Xml\XmppEncoding.cs" />
     <Compile Include="DataForms\DataForm.cs" />
     <Compile Include="DataForms\DataFormField.cs" />
     <Compile Include="DataForms\DataFormFieldItem.cs" />
@@ -209,17 +218,16 @@
     <Compile Include="In-Band Registration\RegisterType.cs" />
     <Compile Include="Instant Messaging\Avatar.cs" />
     <Compile Include="Instant Messaging\AvatarStorage.cs" />
-    <Compile Include="Instant Messaging\chatstates.cs" />
     <Compile Include="Instant Messaging\RosterEx.cs" />
     <Compile Include="Instant Messaging\RosterExItem.cs" />
     <Compile Include="Instant Messaging\RosterExItemAction.cs" />
     <Compile Include="Instant Messaging\VCardAvatar.cs" />
     <Compile Include="Instant Messaging\VCardData.cs" />
     <Compile Include="Instant Messaging\VCardPhoto.cs" />
-    <Compile Include="Instant Messaging\XmppContact.cs" />
-    <Compile Include="Instant Messaging\XmppContactResource.cs" />
-    <Compile Include="Instant Messaging\XmppPresence.cs" />
-    <Compile Include="Instant Messaging\XmppRoster.cs" />
+    <Compile Include="Instant Messaging\Contact.cs" />
+    <Compile Include="Instant Messaging\ContactResource.cs" />
+    <Compile Include="Instant Messaging\ContactResourcePresence.cs" />
+    <Compile Include="Instant Messaging\ContactList.cs" />
     <Compile Include="Last Activity\LastActivity.cs" />
     <Compile Include="libidn\CombiningClass.cs" />
     <Compile Include="libidn\Composition.cs" />
@@ -249,21 +257,21 @@
     <Compile Include="Multi-User Chat\MucUserInvite.cs" />
     <Compile Include="Multi-User Chat\MucUserItem.cs" />
     <Compile Include="Multi-User Chat\MucUserStatus.cs" />
-    <Compile Include="Personal Eventing\AmipNowPlayingListerner.cs" />
-    <Compile Include="Personal Eventing\Mood.cs" />
-    <Compile Include="Personal Eventing\MoodType.cs" />
-    <Compile Include="Personal Eventing\Tune.cs" />
-    <Compile Include="Personal Eventing\UserActivity.cs" />
-    <Compile Include="Personal Eventing\UserActivityDetail.cs" />
-    <Compile Include="Personal Eventing\UserActivityDetailType.cs" />
-    <Compile Include="Personal Eventing\UserActivityType.cs" />
-    <Compile Include="Personal Eventing\XmppActivity.cs" />
-    <Compile Include="Personal Eventing\XmppEvent.cs" />
-    <Compile Include="Personal Eventing\XmppMessageEvent.cs" />
-    <Compile Include="Personal Eventing\XmppPersonalEventing.cs" />
-    <Compile Include="Personal Eventing\XmppUserEvent.cs" />
-    <Compile Include="Personal Eventing\XmppUserMoodEvent.cs" />
-    <Compile Include="Personal Eventing\XmppUserTuneEvent.cs" />
+    <Compile Include="Eventing\AmipNowPlayingListerner.cs" />
+    <Compile Include="Eventing\Mood.cs" />
+    <Compile Include="Eventing\MoodType.cs" />
+    <Compile Include="Eventing\Tune.cs" />
+    <Compile Include="Eventing\UserActivity.cs" />
+    <Compile Include="Eventing\UserActivityDetail.cs" />
+    <Compile Include="Eventing\UserActivityDetailType.cs" />
+    <Compile Include="Eventing\UserActivityType.cs" />
+    <Compile Include="Eventing\Activity.cs" />
+    <Compile Include="Eventing\Event.cs" />
+    <Compile Include="Eventing\MessageEvent.cs" />
+    <Compile Include="Eventing\PersonalEventing.cs" />
+    <Compile Include="Eventing\UserEvent.cs" />
+    <Compile Include="Eventing\UserMoodEvent.cs" />
+    <Compile Include="Eventing\UserTuneEvent.cs" />
     <Compile Include="Ping\Ping.cs" />
     <Compile Include="Privacy\PrivacyAction.cs" />
     <Compile Include="Privacy\PrivacyActive.cs" />
@@ -272,7 +280,7 @@
     <Compile Include="Privacy\PrivacyItemType.cs" />
     <Compile Include="Privacy\PrivacyList.cs" />
     <Compile Include="Privacy\PrivacyQuery.cs" />
-    <Compile Include="Privacy\XmppPrivacy.cs" />
+    <Compile Include="Privacy\Privacy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Publish-Subscribe\PubSub.cs" />
     <Compile Include="Publish-Subscribe\PubSubAffiliation.cs" />
@@ -304,20 +312,20 @@
     <Compile Include="Publish-Subscribe\PubSubSubscriptionList.cs" />
     <Compile Include="Publish-Subscribe\PubSubSubscriptionType.cs" />
     <Compile Include="Publish-Subscribe\PubSubUnsubscribe.cs" />
-    <Compile Include="Service Discovery\ServiceFeature.cs" />
-    <Compile Include="Service Discovery\ServiceIdentity.cs" />
-    <Compile Include="Service Discovery\ServiceIdentity.Custom.cs" />
-    <Compile Include="Service Discovery\ServiceInfo.cs" />
-    <Compile Include="Service Discovery\ServiceItem.cs" />
-    <Compile Include="Service Discovery\ServiceItemDetail.cs" />
-    <Compile Include="Service Discovery\XmppGatewayService.cs" />
-    <Compile Include="Service Discovery\XmppGatewayType.cs" />
-    <Compile Include="Service Discovery\XmppService.cs" />
-    <Compile Include="Service Discovery\XmppServiceCategory.cs" />
-    <Compile Include="Service Discovery\XmppServiceDiscovery.cs" />
+    <Compile Include="Discovery\ServiceFeature.cs" />
+    <Compile Include="Discovery\ServiceIdentity.cs" />
+    <Compile Include="Discovery\ServiceIdentity.Custom.cs" />
+    <Compile Include="Discovery\ServiceInfo.cs" />
+    <Compile Include="Discovery\ServiceItem.cs" />
+    <Compile Include="Discovery\ServiceItemDetail.cs" />
+    <Compile Include="Discovery\GatewayService.cs" />
+    <Compile Include="Discovery\GatewayType.cs" />
+    <Compile Include="Discovery\Service.cs" />
+    <Compile Include="Discovery\ServiceCategory.cs" />
+    <Compile Include="Discovery\ServiceDiscovery.cs" />
     <Compile Include="Shared\Empty.cs" />
     <Compile Include="Shared\Text.cs" />
-    <Compile Include="Shared\XmppSerializer.cs" />
+    <Compile Include="Xml\XmppSerializer.cs" />
     <Compile Include="Storage\DataProtectionType.cs" />
     <Compile Include="Storage\SecureFileStorage.cs" />
     <Compile Include="Storage\StorageFolderType.cs" />

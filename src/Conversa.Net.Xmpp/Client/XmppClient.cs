@@ -2,13 +2,13 @@
 // Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
 
 using Conversa.Net.Xmpp.Authentication;
-using Conversa.Net.Xmpp.Caps;
+using Conversa.Net.Xmpp.Capabilities;
 using Conversa.Net.Xmpp.Core;
+using Conversa.Net.Xmpp.Discovery;
+using Conversa.Net.Xmpp.Eventing;
 using Conversa.Net.Xmpp.InstantMessaging;
-using Conversa.Net.Xmpp.PersonalEventing;
-using Conversa.Net.Xmpp.ServiceDiscovery;
-using Conversa.Net.Xmpp.Shared;
 using Conversa.Net.Xmpp.Transports;
+using Conversa.Net.Xmpp.Xml;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -38,19 +38,19 @@ namespace Conversa.Net.Xmpp.Client
         private Subject<Presence>  presenceStream;
 
         // Private members
-        private XmppConnectionString   connectionString;
-        private XmppAddress            userAddress;
-        private XmppStreamFeatures     streamFeatures;
-        private XmppClientState        state;
-        private ITransport             transport;
-        private ISaslMechanism         saslMechanism;
-        private CompositeDisposable    subscriptions;
-        private XmppRoster             roster;
-        private XmppActivity           activity;
-        private XmppClientCapabilities capabilities;
-        private XmppServiceDiscovery   serviceDiscovery;
-        private XmppPersonalEventing   personalEventing;
-        private bool                   isDisposed;
+        private XmppConnectionString connectionString;
+        private XmppAddress          userAddress;
+        private ServerFeatures       serverFeatures;
+        private XmppClientState      state;
+        private ITransport           transport;
+        private ISaslMechanism       saslMechanism;
+        private CompositeDisposable  subscriptions;
+        private ContactList           roster;
+        private Activity             activity;
+        private ClientCapabilities   capabilities;
+        private ServiceDiscovery     serviceDiscovery;
+        private PersonalEventing     personalEventing;
+        private bool                 isDisposed;
 
         /// <summary>
         /// Get a vector of SSL server errors to ignore when making an secure connection.
@@ -103,17 +103,17 @@ namespace Conversa.Net.Xmpp.Client
         }
 
         /// <summary>
-        /// Gets the session <see cref="XmppRoster">Roster</see>
+        /// Gets the session <see cref="ContactList">Roster</see>
         /// </summary>
-        public XmppRoster Roster
+        public ContactList Roster
         {
             get { return this.roster; }
         }
 
         /// <summary>
-        /// Gets the list of <see cref="XmppActivity">activities</see>
+        /// Gets the list of <see cref="Activity">activities</see>
         /// </summary>
-        public XmppActivity Activity
+        public Activity Activity
         {
             get { return this.activity; }
         }
@@ -121,15 +121,15 @@ namespace Conversa.Net.Xmpp.Client
         /// <summary>
         /// Gets the <see cref="XmppSession">service discovery </see> instance associated to the session
         /// </summary>
-        public XmppServiceDiscovery ServiceDiscovery
+        public ServiceDiscovery ServiceDiscovery
         {
             get { return this.serviceDiscovery; }
         }
 
         /// <summary>
-        /// Gets the <see cref="XmppPersonalEventing">personal eventing</see> instance associated to the session
+        /// Gets the <see cref="PersonalEventing">personal eventing</see> instance associated to the session
         /// </summary>
-        public XmppPersonalEventing PersonalEventing
+        public PersonalEventing PersonalEventing
         {
             get { return this.personalEventing; }
         }
@@ -191,11 +191,11 @@ namespace Conversa.Net.Xmpp.Client
             this.messageStream        = new Subject<Message>();
             this.presenceStream       = new Subject<Presence>();
             this.subscriptions        = new CompositeDisposable();
-            this.roster               = new XmppRoster(this);
-            this.activity             = new XmppActivity(this);
-            this.capabilities         = new XmppClientCapabilities(this);
-            this.serviceDiscovery     = new XmppServiceDiscovery(this, this.connectionString.UserAddress.DomainName);
-            this.personalEventing     = new XmppPersonalEventing(this);
+            this.roster               = new ContactList(this);
+            this.activity             = new Activity(this);
+            this.capabilities         = new ClientCapabilities(this);
+            this.serviceDiscovery     = new ServiceDiscovery(this, this.connectionString.UserAddress.DomainName);
+            this.personalEventing     = new PersonalEventing(this);
             this.userAddress          = new XmppAddress(this.connectionString.UserAddress.UserName
                                                       , this.connectionString.UserAddress.DomainName
                                                       , this.connectionString.Resource);
@@ -249,7 +249,7 @@ namespace Conversa.Net.Xmpp.Client
                 this.connectionString = null;
                 this.userAddress      = null;
                 this.saslMechanism    = null;
-                this.streamFeatures   = XmppStreamFeatures.None;
+                this.serverFeatures   = ServerFeatures.None;
                 this.state            = XmppClientState.Closed;
 
                 this.CloseTransport();
@@ -344,7 +344,7 @@ namespace Conversa.Net.Xmpp.Client
                 this.saslMechanism    = null;
                 this.connectionString = null;
                 this.userAddress      = null;
-                this.streamFeatures   = XmppStreamFeatures.None;
+                this.serverFeatures   = ServerFeatures.None;
                 this.State            = XmppClientState.Closed;
 
                 this.ReleaseSubjects();
@@ -365,9 +365,9 @@ namespace Conversa.Net.Xmpp.Client
             await this.transport.SendAsync(XmppCodes.EndStream).ConfigureAwait(false);
         }
 
-        private bool Supports(XmppStreamFeatures feature)
+        private bool Supports(ServerFeatures feature)
         {
-            return ((this.streamFeatures & feature) == feature);
+            return ((this.serverFeatures & feature) == feature);
         }
 
         private void InitializeSubscriptions()
@@ -419,15 +419,15 @@ namespace Conversa.Net.Xmpp.Client
         {
             ISaslMechanism mechanism = null;
 
-            if (this.Supports(XmppStreamFeatures.SaslScramSha1))
+            if (this.Supports(ServerFeatures.SaslScramSha1))
             {
                 mechanism = new SaslScramSha1Mechanism(this.ConnectionString);
             }
-            else if (this.Supports(XmppStreamFeatures.SaslDigestMD5))
+            else if (this.Supports(ServerFeatures.SaslDigestMD5))
             {
                 mechanism = new SaslDigestMechanism(this.ConnectionString);
             }
-            else if (this.Supports(XmppStreamFeatures.SaslPlain))
+            else if (this.Supports(ServerFeatures.SaslPlain))
             {
                 mechanism = new SaslPlainMechanism(this.ConnectionString);
             }
@@ -435,7 +435,7 @@ namespace Conversa.Net.Xmpp.Client
             return mechanism;
         }
 
-        private async void OnMessageReceivedAsync(XmppStreamElement xmlMessage)
+        private async void OnMessageReceivedAsync(StreamElement xmlMessage)
         {
             Debug.WriteLine("SERVER <- " + xmlMessage.ToString());
 
@@ -544,58 +544,58 @@ namespace Conversa.Net.Xmpp.Client
 
         private async Task OnNegotiateStreamFeaturesAsync(StreamFeatures features)
         {
-            this.streamFeatures = XmppStreamFeatures.None;
+            this.serverFeatures = ServerFeatures.None;
 
             if (features.SecureConnectionRequired)
             {
-                this.streamFeatures |= XmppStreamFeatures.SecureConnection;
+                this.serverFeatures |= ServerFeatures.SecureConnection;
             }
 
             if (features.HasAuthMechanisms)
             {
-                this.streamFeatures |= this.DiscoverAuthMechanisms(features);
+                this.serverFeatures |= this.DiscoverAuthMechanisms(features);
             }
 
             if (features.SupportsResourceBinding)
             {
-                this.streamFeatures |= XmppStreamFeatures.ResourceBinding;
+                this.serverFeatures |= ServerFeatures.ResourceBinding;
             }
 
             if (features.SupportsSessions)
             {
-                this.streamFeatures |= XmppStreamFeatures.Sessions;
+                this.serverFeatures |= ServerFeatures.Sessions;
             }
 
             if (features.SupportsInBandRegistration)
             {
-                this.streamFeatures |= XmppStreamFeatures.InBandRegistration;
+                this.serverFeatures |= ServerFeatures.InBandRegistration;
             }
 
             await this.NegotiateStreamFeaturesAsync().ConfigureAwait(false);
         }
 
-        private XmppStreamFeatures DiscoverAuthMechanisms(StreamFeatures features)
+        private ServerFeatures DiscoverAuthMechanisms(StreamFeatures features)
         {
-            var mechanisms = XmppStreamFeatures.None;
+            var mechanisms = ServerFeatures.None;
 
             foreach (string mechanism in features.Mechanisms.Mechanism)
             {
                 switch (mechanism)
                 {
                     case XmppCodes.SaslGoogleXOAuth2Authenticator:
-                        mechanisms |= XmppStreamFeatures.SaslGoogleXOAuth2;
+                        mechanisms |= ServerFeatures.SaslGoogleXOAuth2;
                         break;
 
                     case XmppCodes.SaslScramSha1Mechanism:
-                        mechanisms |= XmppStreamFeatures.SaslScramSha1;
+                        mechanisms |= ServerFeatures.SaslScramSha1;
                         break;
 
                     case XmppCodes.SaslDigestMD5Mechanism:
-                        mechanisms |= XmppStreamFeatures.SaslDigestMD5;
+                        mechanisms |= ServerFeatures.SaslDigestMD5;
                         break;
 
                     case XmppCodes.SaslPlainMechanism:
-                        mechanisms |= XmppStreamFeatures.SaslPlain;
+                        mechanisms |= ServerFeatures.SaslPlain;
                         break;
                 }
             }
@@ -605,23 +605,23 @@ namespace Conversa.Net.Xmpp.Client
 
         private async Task NegotiateStreamFeaturesAsync()
         {
-            if (this.Supports(XmppStreamFeatures.SecureConnection))
+            if (this.Supports(ServerFeatures.SecureConnection))
             {
                 await this.OpenSecureConnectionAsync().ConfigureAwait(false);
             }
-            else if (this.Supports(XmppStreamFeatures.SaslGoogleXOAuth2)
-                  || this.Supports(XmppStreamFeatures.SaslScramSha1)
-                  || this.Supports(XmppStreamFeatures.SaslDigestMD5)
-                  || this.Supports(XmppStreamFeatures.SaslPlain))
+            else if (this.Supports(ServerFeatures.SaslGoogleXOAuth2)
+                  || this.Supports(ServerFeatures.SaslScramSha1)
+                  || this.Supports(ServerFeatures.SaslDigestMD5)
+                  || this.Supports(ServerFeatures.SaslPlain))
             {
                 await this.OnStartSaslNegotiationAsync().ConfigureAwait(false);
             }
-            else if (this.Supports(XmppStreamFeatures.ResourceBinding))
+            else if (this.Supports(ServerFeatures.ResourceBinding))
             {
                 // Bind resource
                 await this.OnBindResourceAsync().ConfigureAwait(false);
             }
-            else if (this.Supports(XmppStreamFeatures.Sessions))
+            else if (this.Supports(ServerFeatures.Sessions))
             {
                 await this.OnRequestSessionAsync().ConfigureAwait(false);
             }
@@ -680,7 +680,7 @@ namespace Conversa.Net.Xmpp.Client
 
         private async Task OnBindResourceAsync()
         {
-            if (!this.Supports(XmppStreamFeatures.ResourceBinding))
+            if (!this.Supports(ServerFeatures.ResourceBinding))
             {
                 return;
             }
@@ -700,7 +700,7 @@ namespace Conversa.Net.Xmpp.Client
             this.userAddress = iq.Bind.Jid;
 
             // Update negotiated features
-            this.streamFeatures = this.streamFeatures & (~XmppStreamFeatures.ResourceBinding);
+            this.serverFeatures = this.serverFeatures & (~ServerFeatures.ResourceBinding);
 
             // Continue feature negotiation
             await this.NegotiateStreamFeaturesAsync().ConfigureAwait(false);
@@ -708,7 +708,7 @@ namespace Conversa.Net.Xmpp.Client
 
         private async Task OnRequestSessionAsync()
         {
-            if (!this.Supports(XmppStreamFeatures.Sessions))
+            if (!this.Supports(ServerFeatures.Sessions))
             {
                 return;
             }
@@ -722,7 +722,7 @@ namespace Conversa.Net.Xmpp.Client
             await this.SendAsync(iq).ConfigureAwait(false);
 
             // Update negotiated features
-            this.streamFeatures = this.streamFeatures & (~XmppStreamFeatures.Sessions);
+            this.serverFeatures = this.serverFeatures & (~ServerFeatures.Sessions);
 
             // Continue feature negotiation
             await this.NegotiateStreamFeaturesAsync().ConfigureAwait(false);

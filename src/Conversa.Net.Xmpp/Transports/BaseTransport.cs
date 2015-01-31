@@ -2,6 +2,7 @@
 // Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
 
 using Conversa.Net.Xmpp.Client;
+using Conversa.Net.Xmpp.Xml;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
@@ -17,16 +18,16 @@ namespace Conversa.Net.Xmpp.Transports
     internal abstract class BaseTransport
         : ITransport
     {
-        private XmppConnectionString 	   connectionString;
-        private Subject<XmppStreamElement> messageStream;
-		private Subject<TransportState>    stateChanged;
-        private string               	   hostName;
-        private bool                 	   isDisposed;
+        private XmppConnectionString 	connectionString;
+        private Subject<StreamElement>  messageStream;
+        private Subject<TransportState> stateChanged;
+        private string               	hostName;
+        private bool                 	isDisposed;
 
         /// <summary>
         /// Occurs when a new message is received
         /// </summary>
-        public IObservable<XmppStreamElement> MessageStream
+        public IObservable<StreamElement> MessageStream
         {
             get { return this.messageStream.AsObservable(); }
         }
@@ -34,14 +35,14 @@ namespace Conversa.Net.Xmpp.Transports
         /// <summary>
         /// Occurs when the transport state has changed
         /// </summary>
-		public IObservable<TransportState> StateChanged
-		{
-			get { return this.stateChanged.AsObservable(); }
-		}
+        public IObservable<TransportState> StateChanged
+        {
+            get { return this.stateChanged.AsObservable(); }
+        }
 
-		/// <summary>
-		/// Gets the transport state
-		/// </summary>
+        /// <summary>
+        /// Gets the transport state
+        /// </summary>
         public TransportState State
         {
             get;
@@ -95,8 +96,8 @@ namespace Conversa.Net.Xmpp.Transports
 
         protected BaseTransport()
         {
-            this.messageStream = new Subject<XmppStreamElement>();
-			this.stateChanged  = new Subject<TransportState>();
+            this.messageStream = new Subject<StreamElement>();
+            this.stateChanged  = new Subject<TransportState>();
         }
 
         /// <summary>
@@ -178,23 +179,23 @@ namespace Conversa.Net.Xmpp.Transports
                 this.messageStream = null;
             }
 
-			if (this.stateChanged != null)
-			{
-				this.stateChanged.Dispose();
-				this.stateChanged = null;
-			}
+            if (this.stateChanged != null)
+            {
+                this.stateChanged.Dispose();
+                this.stateChanged = null;
+            }
 
             this.connectionString = null;
         }
 
-        protected void PublishMessage(XmppStreamElement message)
+        protected void PublishMessage(StreamElement message)
         {
-			this.messageStream.OnNext(message);
+            this.messageStream.OnNext(message);
         }
 
         protected void PublishStateChange(TransportState state)
         {
-			this.State = state;
+            this.State = state;
             this.stateChanged.OnNext(state);
         }
     }

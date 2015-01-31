@@ -2,6 +2,7 @@
 // Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
 
 using Conversa.Net.Xmpp.Client;
+using Conversa.Net.Xmpp.Xml;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace Conversa.Net.Xmpp.Transports
         /// <summary>
         /// Occurs when a new XMPP message is received
         /// </summary>
-        IObservable<XmppStreamElement> MessageStream
+        IObservable<StreamElement> MessageStream
         {
             get;
         }
@@ -26,18 +27,18 @@ namespace Conversa.Net.Xmpp.Transports
         /// <summary>
         /// Occurs when the transport state has changed
         /// </summary>
-		IObservable<TransportState> StateChanged
-		{
-			get;
-		}
+        IObservable<TransportState> StateChanged
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Gets the transport state
-		/// </summary>
-		TransportState State
-		{
-			get;
-		}
+        /// <summary>
+        /// Gets the transport state
+        /// </summary>
+        TransportState State
+        {
+            get;
+        }
 
         /// <summary>
         /// XMPP server Host name

@@ -5,11 +5,11 @@ namespace Conversa.Net.Xmpp.Core
 {
     using Conversa.Net.Xmpp.AdHocCommands;
     using Conversa.Net.Xmpp.Blocking;
+    using Conversa.Net.Xmpp.Discovery;
     using Conversa.Net.Xmpp.InBandRegistration;
     using Conversa.Net.Xmpp.InstantMessaging;
     using Conversa.Net.Xmpp.MultiUserChat;
     using Conversa.Net.Xmpp.PublishSubscribe;
-    using Conversa.Net.Xmpp.ServiceDiscovery;
     using Conversa.Net.Xmpp.XmppPing;
     using System.Xml.Schema;
     using System.Xml.Serialization;
