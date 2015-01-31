@@ -1,89 +1,137 @@
-﻿// Copyright (c) Carlos Guzmán Álvarez. All rights reserved.
+// Copyright (c) Carlos Guzmán Álvarez. All rights reserved.
 // Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
 
-namespace Conversa.Net.Xmpp.Caps
-{
-    using Conversa.Net.Xmpp.Shared;
-    using System;
-    using System.Xml.Serialization;
+using Conversa.Net.Xmpp.Client;
+using Conversa.Net.Xmpp.Core;
+using Conversa.Net.Xmpp.Discovery;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
+namespace Conversa.Net.Xmpp.Capabilities
+{
     /// <summary>
     /// Entity Capabilities
     /// </summary>
     /// <remarks>
     /// XEP-0115: Entity Capabilities
     /// </remarks>
-    [XmlTypeAttribute(AnonymousType = true, Namespace = "http://jabber.org/protocol/caps")]
-    [XmlRootAttribute("c", Namespace = "http://jabber.org/protocol/caps", IsNullable = false)]
-    public partial class EntityCapabilities
+    public class EntityCapabilities
+        : StanzaHub
     {
-        /// <summary>
-        /// A set of nametokens specifying additional feature bundles; this attribute is deprecated
-        /// (see the Legacy Format section of this document).
-        /// </summary>
-        [Obsolete]
-        [XmlAttributeAttribute("ext", DataType = "NMTOKENS")]
-        public string Nametokens
-        {
-            get;
-            set;
-        }
+        private XmppAddress address;
+        private Caps        caps;
+        private ServiceInfo info;
+
+        // private XmppCapabilitiesStorage capsStorage;
 
         /// <summary>
-        /// The hashing algorithm used to generate the verification string;
-        /// see Mandatory-to-Implement Technologies regarding supported hashing algorithms.
+        /// Gets the entity address
         /// </summary>
-        [XmlAttributeAttribute("hash", DataType = "NMTOKEN")]
-        public string HashAlgorithmName
+        public XmppAddress Address
         {
-            get;
-            set;
+            get { return this.address; }
         }
 
         /// <summary>
-        /// A URI that uniquely identifies a software application, typically a URL at the website
-        /// of the project or company that produces the software
+        /// Gets or sets the identity.
         /// </summary>
-        /// <remarks>
-        /// It is RECOMMENDED for the value of the 'node' attribute to be an HTTP URL at which a user
-        /// could find further information about the software product, such as "http://psi-im.org"
-        /// for the Psi client; this enables a processing application to also determine a unique string
-        /// for the generating application, which it could maintain in a list of known software
-        /// implementations (e.g., associating the name received via the disco#info reply with the URL
-        /// found in the caps data).
-        /// </remarks>
-        [XmlAttributeAttribute("node")]
-        public string Node
+        /// <value>The identity.</value>
+        public IEnumerable<ServiceIdentity> Identities
         {
-            get;
-            set;
+            get { return this.info.Identities.AsEnumerable(); }
         }
 
         /// <summary>
-        /// A string that is used to verify the identity and supported features of the entity.
+        /// Gets the list of features
         /// </summary>
-        /// <remarks>
-        /// Before version 1.4 of this specification, the 'ver' attribute was used to specify the released
-        /// version of the software; while the values of the 'ver' attribute that result from use of the
-        /// algorithm specified herein are backwards-compatible,
-        /// applications SHOULD appropriately handle the Legacy Format.
-        /// </remarks>
-        [XmlAttributeAttribute("ver")]
-        public string VerificationString
+        public IEnumerable<ServiceFeature> Features
         {
-            get;
-            set;
+            get { return this.Features.AsEnumerable(); }
         }
 
-        [XmlTextAttribute]
-        public Empty Value
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EntityCapabilities"/> class.
+        /// </summary>
+        public EntityCapabilities(XmppClient client, XmppAddress address)
+            : base(client)
         {
-            get;
-            set;
+            this.address = address;
+            this.caps    = new Caps();
+            this.info    = new ServiceInfo { Node = this.caps.Node + "#" + this.caps.VerificationString };
         }
 
-        public EntityCapabilities()
+        public void Clear()
         {
+            this.info.Features.Clear();
+            this.info.Identities.Clear();
+        }
+
+        public void AddFeature(string name)
+        {
+            if (this.info.Features.Count(x => x.Name == name) == 0)
+            {
+                this.info.Features.Add(new ServiceFeature { Name = name });
+            }
+        }
+
+        public void AddIdentity(string category, string name, string type)
+        {
+            if (this.info.Identities.Count(x => x.Category == category && x.Name == name && x.Type == type) == 0)
+            {
+                this.info.Identities.Add(new ServiceIdentity { Category = category, Name = name, Type = type });
+            }
+        }
+
+        public bool SupportsFeature(string featureName)
+        {
+            return (this.Features.Count(f => f.Name == featureName) > 0);
+        }
+
+        public async Task DiscoverAsync()
+        {
+            var iq = new InfoQuery
+            {
+                From        = this.Client.UserAddress
+              , To          = this.Address
+              , Type        = InfoQueryType.Get
+              , ServiceInfo = new ServiceInfo { Node = this.caps.Node }
+            };
+
+            await this.SendAsync(iq).ConfigureAwait(false);
+        }
+
+//        private async Task UpdateCapabilitiesAsync(EntityCapabilities caps)
+//        {
+//            // Request capabilities only if they aren't cached yet for this resource
+//            // or the verfiication string differs from the one that is cached
+//            if (this.Capabilities == null || this.Capabilities.VerificationString != caps.VerificationString)
+//            {
+//                this.Capabilities.Update(caps);
+
+//                // Check if we have the capabilities in the storage
+//                if (!await this.capsStorage.IsEmptyAsync().ConfigureAwait(false))
+//                {
+//                    this.Capabilities = await this.capsStorage.LoadAsync().ConfigureAwait(false);
+//                }
+//                else if ((this.contact.Subscription == RosterSubscriptionType.Both
+//                       || this.contact.Subscription == RosterSubscriptionType.To))
+//#warning TODO: Review
+//                        // && (!this.Presence.TypeSpecified || presence.Type == PresenceType.Unavailable)
+//                {
+//                    // Discover Entity Capabilities Extension Features
+//                    await this.capabilities.DiscoverAsync().ConfigureAwait(false);
+//                }
+//            }
+//        }
+
+        protected override void OnStanza(InfoQuery response)
+        {
+            this.info = response.ServiceInfo;
+
+#warning TODO: Update caps storage
+
+            base.OnStanza(response);
         }
     }
 }

@@ -4,7 +4,7 @@
 namespace Conversa.Net.Xmpp.Core
 {
     using Conversa.Net.Xmpp.AdvancedMessageProcessing;
-    using Conversa.Net.Xmpp.Caps;
+    using Conversa.Net.Xmpp.Capabilities;
     using Conversa.Net.Xmpp.InBandRegistration;
     using System.Xml.Serialization;
 
@@ -123,7 +123,7 @@ namespace Conversa.Net.Xmpp.Core
         //}
 
         [XmlElementAttribute("c", Namespace = "http://jabber.org/protocol/caps")]
-        public EntityCapabilities EntityCapabilities
+        public Caps EntityCapabilities
         {
             get;
             set;

@@ -3,16 +3,16 @@
 
 namespace Conversa.Net.Xmpp.Core
 {
+    using Conversa.Net.Xmpp.ChatStates;
     using Conversa.Net.Xmpp.DataForms;
-using Conversa.Net.Xmpp.DelayedDelivery;
-using Conversa.Net.Xmpp.InstantMessaging;
-using Conversa.Net.Xmpp.MultiUserChat;
-using Conversa.Net.Xmpp.PublishSubscribe;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Xml.Schema;
-using System.Xml.Serialization;
+    using Conversa.Net.Xmpp.DelayedDelivery;
+    using Conversa.Net.Xmpp.MultiUserChat;
+    using Conversa.Net.Xmpp.PublishSubscribe;
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Xml.Schema;
+    using System.Xml.Serialization;
 
     /// <summary>
     /// Message Stanza
@@ -85,11 +85,11 @@ using System.Xml.Serialization;
         }
 
         /// <remarks/>
-        [XmlElementAttribute("active", typeof(ChatStateActive), Namespace = "http://jabber.org/protocol/chatstates")]
-        [XmlElementAttribute("composing", typeof(ChatStateComposing), Namespace = "http://jabber.org/protocol/chatstates")]
-        [XmlElementAttribute("gone", typeof(ChatStateGone), Namespace = "http://jabber.org/protocol/chatstates")]
-        [XmlElementAttribute("inactive", typeof(ChatStateInactive), Namespace = "http://jabber.org/protocol/chatstates")]
-        [XmlElementAttribute("paused", typeof(ChatStatePaused), Namespace = "http://jabber.org/protocol/chatstates")]
+        [XmlElementAttribute("active", typeof(ActiveChatState), Namespace = "http://jabber.org/protocol/chatstates")]
+        [XmlElementAttribute("composing", typeof(ComposingChatState), Namespace = "http://jabber.org/protocol/chatstates")]
+        [XmlElementAttribute("gone", typeof(GoneChatState), Namespace = "http://jabber.org/protocol/chatstates")]
+        [XmlElementAttribute("inactive", typeof(InactiveChatState), Namespace = "http://jabber.org/protocol/chatstates")]
+        [XmlElementAttribute("paused", typeof(PausedChatState), Namespace = "http://jabber.org/protocol/chatstates")]
         [XmlElementAttribute("event", typeof(PubSubEvent), Namespace = "http://jabber.org/protocol/pubsub#event")]
         public List<Object> Items
         {

@@ -6,8 +6,6 @@
 
 using Gnu.Inet.Encoding;
 using System.Text;
-using Windows.Security.Cryptography;
-using Windows.Security.Cryptography.Core;
 
 namespace Conversa.Net.Xmpp.Authentication
 {

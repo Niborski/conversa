@@ -4,7 +4,6 @@
 namespace Conversa.Net.Xmpp.DataForms
 {
     using Conversa.Net.Xmpp.Shared;
-    using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Xml.Serialization;

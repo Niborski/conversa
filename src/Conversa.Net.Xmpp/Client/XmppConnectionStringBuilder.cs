@@ -21,8 +21,8 @@ namespace Conversa.Net.Xmpp.Client
         /// <value>The server.</value>
         public string HostName
         {
-            get { return this.GetString(XmppConnectionStringKeywords.Server); }
-            set { this.SetValue(XmppConnectionStringKeywords.Server, value); }
+            get { return this.GetString(ConnectionStringKeywords.Server); }
+            set { this.SetValue(ConnectionStringKeywords.Server, value); }
         }
 
         /// <summary>
@@ -33,8 +33,8 @@ namespace Conversa.Net.Xmpp.Client
         /// </value>
         public bool ResolveHostName
         {
-            get { return this.GetBoolean(XmppConnectionStringKeywords.ResolveHostName); }
-            set { this.SetValue(XmppConnectionStringKeywords.ResolveHostName, value); }
+            get { return this.GetBoolean(ConnectionStringKeywords.ResolveHostName); }
+            set { this.SetValue(ConnectionStringKeywords.ResolveHostName, value); }
         }
 
         /// <summary>
@@ -43,8 +43,8 @@ namespace Conversa.Net.Xmpp.Client
         /// <value>The service name.</value>
         public string ServiceName
         {
-            get { return this.GetString(XmppConnectionStringKeywords.ServiceName); }
-            set { this.SetValue(XmppConnectionStringKeywords.ServiceName, value); }
+            get { return this.GetString(ConnectionStringKeywords.ServiceName); }
+            set { this.SetValue(ConnectionStringKeywords.ServiceName, value); }
         }
 
         /// <summary>
@@ -53,8 +53,8 @@ namespace Conversa.Net.Xmpp.Client
         /// <value>The user ID.</value>
         public string UserId
         {
-            get { return this.GetString(XmppConnectionStringKeywords.UserId); }
-            set { this.SetValue(XmppConnectionStringKeywords.UserId, value); }
+            get { return this.GetString(ConnectionStringKeywords.UserId); }
+            set { this.SetValue(ConnectionStringKeywords.UserId, value); }
         }
 
         /// <summary>
@@ -63,8 +63,8 @@ namespace Conversa.Net.Xmpp.Client
         /// <value>The password.</value>
         public string Password
         {
-            get { return this.GetString(XmppConnectionStringKeywords.UserPassword); }
-            set { this.SetValue(XmppConnectionStringKeywords.UserPassword, value); }
+            get { return this.GetString(ConnectionStringKeywords.UserPassword); }
+            set { this.SetValue(ConnectionStringKeywords.UserPassword, value); }
         }
 
         /// <summary>
@@ -72,8 +72,8 @@ namespace Conversa.Net.Xmpp.Client
         /// </summary>
         public string Resource
         {
-            get { return this.GetString(XmppConnectionStringKeywords.Resource); }
-            set { this.SetValue(XmppConnectionStringKeywords.Resource, value); }
+            get { return this.GetString(ConnectionStringKeywords.Resource); }
+            set { this.SetValue(ConnectionStringKeywords.Resource, value); }
         }
 
         /// <summary>
@@ -82,8 +82,8 @@ namespace Conversa.Net.Xmpp.Client
         /// <value>The connection timeout.</value>
         public int ConnectionTimeout
         {
-            get { return this.GetInt32(XmppConnectionStringKeywords.ConnectionTimeout); }
-            set { this.SetValue(XmppConnectionStringKeywords.ConnectionTimeout, value); }
+            get { return this.GetInt32(ConnectionStringKeywords.ConnectionTimeout); }
+            set { this.SetValue(ConnectionStringKeywords.ConnectionTimeout, value); }
         }
 
         /// <summary>
@@ -91,8 +91,8 @@ namespace Conversa.Net.Xmpp.Client
         /// </summary>
         public bool UseProxy
         {
-            get { return this.GetBoolean(XmppConnectionStringKeywords.UseProxy); }
-            set { this.SetValue(XmppConnectionStringKeywords.UseProxy, value); }
+            get { return this.GetBoolean(ConnectionStringKeywords.UseProxy); }
+            set { this.SetValue(ConnectionStringKeywords.UseProxy, value); }
         }
 
         /// <summary>
@@ -100,8 +100,8 @@ namespace Conversa.Net.Xmpp.Client
         /// </summary>
         public string ProxyType
         {
-            get { return this.GetString(XmppConnectionStringKeywords.ProxyType); }
-            set { this.SetValue(XmppConnectionStringKeywords.ProxyType, value); }
+            get { return this.GetString(ConnectionStringKeywords.ProxyType); }
+            set { this.SetValue(ConnectionStringKeywords.ProxyType, value); }
         }
 
         /// <summary>
@@ -109,8 +109,8 @@ namespace Conversa.Net.Xmpp.Client
         /// </summary>
         public string ProxyServer
         {
-            get { return this.GetString(XmppConnectionStringKeywords.ProxyServer); }
-            set { this.SetValue(XmppConnectionStringKeywords.ProxyServer, value); }
+            get { return this.GetString(ConnectionStringKeywords.ProxyServer); }
+            set { this.SetValue(ConnectionStringKeywords.ProxyServer, value); }
         }
 
         /// <summary>
@@ -118,8 +118,8 @@ namespace Conversa.Net.Xmpp.Client
         /// </summary>
         public int ProxyPortNumber
         {
-            get { return this.GetInt32(XmppConnectionStringKeywords.ProxyPortNumber); }
-            set { this.SetValue(XmppConnectionStringKeywords.ProxyPortNumber, value); }
+            get { return this.GetInt32(ConnectionStringKeywords.ProxyPortNumber); }
+            set { this.SetValue(ConnectionStringKeywords.ProxyPortNumber, value); }
         }
 
         /// <summary>
@@ -127,8 +127,8 @@ namespace Conversa.Net.Xmpp.Client
         /// </summary>
         public string ProxyUserName
         {
-            get { return this.GetString(XmppConnectionStringKeywords.ProxyUserName); }
-            set { this.SetValue(XmppConnectionStringKeywords.ProxyUserName, value); }
+            get { return this.GetString(ConnectionStringKeywords.ProxyUserName); }
+            set { this.SetValue(ConnectionStringKeywords.ProxyUserName, value); }
         }
 
         /// <summary>
@@ -136,8 +136,8 @@ namespace Conversa.Net.Xmpp.Client
         /// </summary>
         public string ProxyPassword
         {
-            get { return this.GetString(XmppConnectionStringKeywords.ProxyPassword); }
-            set { this.SetValue(XmppConnectionStringKeywords.ProxyPassword, value); }
+            get { return this.GetString(ConnectionStringKeywords.ProxyPassword); }
+            set { this.SetValue(ConnectionStringKeywords.ProxyPassword, value); }
         }
 
         /// <summary>
@@ -145,8 +145,8 @@ namespace Conversa.Net.Xmpp.Client
         /// </summary>
         public bool UseHttpBinding
         {
-            get { return this.GetBoolean(XmppConnectionStringKeywords.HttpBinding); }
-            set { this.SetValue(XmppConnectionStringKeywords.HttpBinding, value); }
+            get { return this.GetBoolean(ConnectionStringKeywords.HttpBinding); }
+            set { this.SetValue(ConnectionStringKeywords.HttpBinding, value); }
         }
 
         /// <summary>
@@ -154,8 +154,8 @@ namespace Conversa.Net.Xmpp.Client
         /// </summary>
         public uint PacketSize
         {
-            get { return this.GetUInt32(XmppConnectionStringKeywords.PacketSize); }
-            set { this.SetValue(XmppConnectionStringKeywords.PacketSize, value); }
+            get { return this.GetUInt32(ConnectionStringKeywords.PacketSize); }
+            set { this.SetValue(ConnectionStringKeywords.PacketSize, value); }
         }
 
         /// <summary>

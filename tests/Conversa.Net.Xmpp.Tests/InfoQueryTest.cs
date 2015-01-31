@@ -2,7 +2,7 @@
 // Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
 
 using Conversa.Net.Xmpp.Core;
-using Conversa.Net.Xmpp.Shared;
+using Conversa.Net.Xmpp.Xml;
 using System;
 using System.Text;
 using Xunit;
@@ -49,7 +49,7 @@ namespace Conversa.Net.Xmpp.Test
             query.Roster = new Roster();
 
             var buffer = XmppSerializer.Serialize(query);
-            var xml    = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+            var xml    = XmppEncoding.Utf8.GetString(buffer, 0, buffer.Length);
 
             Assert.True(exp.CultureAwareCompare(xml));
         }

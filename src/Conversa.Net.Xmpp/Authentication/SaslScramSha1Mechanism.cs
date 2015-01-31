@@ -3,7 +3,7 @@
 
 using Conversa.Net.Xmpp.Client;
 using Conversa.Net.Xmpp.Core;
-using Conversa.Net.Xmpp.Shared;
+using Conversa.Net.Xmpp.Xml;
 using System;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;

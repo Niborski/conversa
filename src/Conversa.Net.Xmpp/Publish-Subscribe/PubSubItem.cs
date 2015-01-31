@@ -3,7 +3,7 @@
 
 namespace Conversa.Net.Xmpp.PublishSubscribe
 {
-    using Conversa.Net.Xmpp.PersonalEventing;
+    using Conversa.Net.Xmpp.Eventing;
     using System.Xml.Serialization;
 
     /// <summary>
