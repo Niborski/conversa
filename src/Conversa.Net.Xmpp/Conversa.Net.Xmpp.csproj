@@ -116,6 +116,7 @@
     <Compile Include="BOSH\HttpBindType.cs" />
     <Compile Include="BOSH\HttpBind.cs" />
     <Compile Include="Capabilities\Caps.cs" />
+    <Compile Include="Capabilities\Caps.Custom.cs" />
     <Compile Include="Capabilities\EntityCapabilities.cs" />
     <Compile Include="ChatStates\ActiveChatState.cs" />
     <Compile Include="ChatStates\ComposingChatState.cs" />

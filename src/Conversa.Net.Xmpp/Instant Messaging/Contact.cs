@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 
 namespace Conversa.Net.Xmpp.InstantMessaging
@@ -18,12 +19,31 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     public sealed class Contact
         : StanzaHub
     {
+        private Subject<ContactResource> newResourceStream;
+        private Subject<ContactResource> removedResourceStream;
+
         private string                 name;
         private string                 displayName;
         private XmppAddress            address;
         private RosterSubscriptionType subscription;
         private List<ContactResource>  resources;
         private List<string>           groups;
+
+        /// <summary>
+        /// Occurs when a new contact resource is added to the contact resource list.
+        /// </summary>
+        public IObservable<ContactResource> NewResourceStream
+        {
+            get { return this.newResourceStream.AsObservable(); }
+        }
+
+        /// <summary>
+        /// Occurs when a new contact resource is removed from the contact resource list.
+        /// </summary>
+        public IObservable<ContactResource> RemovedResourceStream
+        {
+            get { return this.removedResourceStream.AsObservable(); }
+        }
 
         /// <summary>
         /// Gets the contact address.
@@ -104,16 +124,13 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                        , IEnumerable<string>    groups)
             : base(client)
         {
-            this.address   = address.BareAddress;
-            this.groups    = new List<string>();
-            this.resources = new List<ContactResource>();
+            this.address               = address.BareAddress;
+            this.groups                = new List<string>();
+            this.resources             = new List<ContactResource>();
+            this.newResourceStream     = new Subject<ContactResource>();
+            this.removedResourceStream = new Subject<ContactResource>();
 
-            this.RefreshData(name, subscription, groups);
-
-            if (!String.IsNullOrEmpty(address.ResourceName))
-            {
-                this.resources.Add(new ContactResource(this.Client, this, address));
-            }
+            this.Update(name, subscription, groups);
 
             this.SubscribeToPresenceChanges();
         }
@@ -235,7 +252,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             return this.address.ToString();
         }
 
-        internal void RefreshData(string name, RosterSubscriptionType subscription, IEnumerable<string> groups)
+        internal void Update(string name, RosterSubscriptionType subscription, IEnumerable<string> groups)
         {
             this.name         = ((name == null) ? String.Empty : name);
             this.displayName  = (!String.IsNullOrEmpty(this.name) ? this.name : this.address.UserName);
@@ -257,22 +274,21 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                                      .PresenceStream
                                      .Where(message => ((XmppAddress)message.From).BareAddress == this.Address
                                                     && !message.IsError)
-                                     .Subscribe(message => this.OnPresenceMessage(message)));
+                                     .Subscribe(message => this.OnPresenceChanged(message)));
         }
 
-        private async void OnPresenceMessage(Presence message)
+        private async void OnPresenceChanged(Presence message)
         {
             var resource = this.resources.SingleOrDefault(contactResource => contactResource.Address == message.From);
 
             if (resource == null)
             {
-                resource = new ContactResource(this.Client, this, address);
+                resource = new ContactResource(this.Client, message.From, message);
+                
                 this.resources.Add(resource);
-            }
+                this.newResourceStream.OnNext(resource);
 
-            if (resource.Address.BareAddress == this.Client.UserAddress.BareAddress)
-            {
-#warning TODO: See how to handle our own presence changes from other resources
+                await resource.Capabilities.DiscoverAsync().ConfigureAwait(false);
             }
             else
             {
@@ -312,6 +328,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             if (resource.IsOffline)
             {
                 this.resources.Remove(resource);
+                this.removedResourceStream.OnNext(resource);
             }
         }
 

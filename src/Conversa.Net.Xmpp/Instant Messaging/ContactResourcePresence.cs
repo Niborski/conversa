@@ -247,7 +247,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
             if (presence.PrioritySpecified)
             {
-                this.Priority  = presence.Priority;
+                this.Priority = presence.Priority;
             }
 
             this.StatusMessage = ((presence.Status == null) ? String.Empty : presence.Status.Value);

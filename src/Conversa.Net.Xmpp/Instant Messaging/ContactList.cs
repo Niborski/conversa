@@ -173,22 +173,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             return this.contacts.GetEnumerator();
         }
 
-        private async void AddSelfContact()
-        {
-            var contact = new Contact(this.Client
-                                        , this.Client.UserAddress
-                                        , String.Empty
-                                        , RosterSubscriptionType.Both
-                                        , new List<string>(new string[] { "Buddies" }));
-
-            this.contacts.Add(contact);
-
-            await contact.Resources.First().SetDefaultPresenceAsync().ConfigureAwait(false);
-        }
-
         protected override async void OnConnected()
         {
-            this.AddSelfContact();
             await this.RequestRosterAsync();
 
             base.OnConnected();
@@ -230,14 +216,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 if (contact == null)
                 {
                     // Create the new contact
-                    contact = new Contact
-                    (
-                        this.Client
-                      , item.Jid
-                      , item.Name
-                      , item.Subscription
-                      , item.Groups
-                    );
+                    contact = new Contact(this.Client, item.Jid, item.Name, item.Subscription, item.Groups);
 
                     // Add the contact to the roster
                     this.contacts.Add(contact);
@@ -259,7 +238,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
                     default:
                         // Update contact data
-                        contact.RefreshData(item.Name, item.Subscription, item.Groups);
+                        contact.Update(item.Name, item.Subscription, item.Groups);
                         break;
                 }
             }

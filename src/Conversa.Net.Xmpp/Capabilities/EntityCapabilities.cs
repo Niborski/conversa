@@ -20,7 +20,6 @@ namespace Conversa.Net.Xmpp.Capabilities
         : StanzaHub
     {
         private XmppAddress address;
-        private Caps        caps;
         private ServiceInfo info;
 
         // private XmppCapabilitiesStorage capsStorage;
@@ -53,12 +52,26 @@ namespace Conversa.Net.Xmpp.Capabilities
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityCapabilities"/> class.
         /// </summary>
-        public EntityCapabilities(XmppClient client, XmppAddress address)
+        public EntityCapabilities(XmppClient client, XmppAddress address, string node)
             : base(client)
         {
             this.address = address;
-            this.caps    = new Caps();
-            this.info    = new ServiceInfo { Node = this.caps.Node + "#" + this.caps.VerificationString };
+            this.info    = new ServiceInfo { Node = node };
+        }
+
+        public async Task DiscoverAsync()
+        {
+#warning TODO: Grab Capabilities from storage or send the discovery request
+            var iq = new InfoQuery
+            {
+                From        = this.Client.UserAddress
+              , To          = this.Address
+              , Type        = InfoQueryType.Get
+              , ServiceInfo = new ServiceInfo { Node = this.info.Node }
+            };
+
+            await this.SendAsync(iq, r => this.OnDiscoverResponse(r), r => this.OnDiscoverError(r))
+                      .ConfigureAwait(false);
         }
 
         public void Clear()
@@ -88,18 +101,9 @@ namespace Conversa.Net.Xmpp.Capabilities
             return (this.Features.Count(f => f.Name == featureName) > 0);
         }
 
-        public async Task DiscoverAsync()
+        private async void OnAdvertiseCapabilities(Presence response)
         {
-            var iq = new InfoQuery
-            {
-                From        = this.Client.UserAddress
-              , To          = this.Address
-              , Type        = InfoQueryType.Get
-              , ServiceInfo = new ServiceInfo { Node = this.caps.Node }
-            };
-
-            await this.SendAsync(iq, r => this.OnDiscoverResponse(r), r => this.OnDiscoverError(r))
-                      .ConfigureAwait(false);
+            await this.DiscoverAsync().ConfigureAwait(false);
         }
 
         private void OnDiscoverResponse(InfoQuery response)

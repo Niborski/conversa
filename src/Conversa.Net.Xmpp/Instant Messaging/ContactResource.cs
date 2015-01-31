@@ -14,7 +14,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     public sealed class ContactResource
         : StanzaHub
     {
-        private Contact                 contact;
         private XmppAddress             address;
         private ContactResourcePresence presence;
         private EntityCapabilities      capabilities;
@@ -90,13 +89,20 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactResource"/> class.
         /// </summary>
-        internal ContactResource(XmppClient client, Contact contact, XmppAddress address)
+        internal ContactResource(XmppClient client, XmppAddress address, Presence initialPresence)
             : base(client)
         {
-            this.contact      = contact;
-            this.address      = address;
-            this.presence     = new ContactResourcePresence(this.Client, this);
-            this.capabilities = new EntityCapabilities(client, this.Address);
+            var node = ((initialPresence.Capabilities == null) ? null : initialPresence.Capabilities.DiscoveryNode);
+
+            this.address  = address;
+            this.presence = new ContactResourcePresence(this.Client, this);
+
+            if (node != null)
+            {
+                this.capabilities = new EntityCapabilities(client, this.Address, node);
+            }
+
+            this.presence.Update(initialPresence);
         }
 
         public async Task SetDefaultPresenceAsync()
@@ -173,12 +179,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
         private async Task RequestAvatarAsync()
         {
-            if (this.contact.Subscription == RosterSubscriptionType.Both
-             || this.contact.Subscription == RosterSubscriptionType.To)
-            {
-                return;
-            }
-
             var iq = new InfoQuery
             {
                 From      = this.Client.UserAddress

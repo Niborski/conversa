@@ -53,16 +53,6 @@ namespace Conversa.Net.Xmpp.Client
         private bool                 isDisposed;
 
         /// <summary>
-        /// Get a vector of SSL server errors to ignore when making an secure connection.
-        /// </summary>
-        /// <returns>A vector of SSL server errors to ignore.</returns>
-        public IList<ChainValidationResult> IgnorableServerCertificateErrors
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
         /// Occurs when the connection state changes
         /// </summary>
         public IObservable<XmppClientState> StateChanged
@@ -100,6 +90,16 @@ namespace Conversa.Net.Xmpp.Client
         public IObservable<Presence> PresenceStream
         {
             get { return this.presenceStream.AsObservable(); }
+        }
+
+        /// <summary>
+        /// Get a vector of SSL server errors to ignore when making an secure connection.
+        /// </summary>
+        /// <returns>A vector of SSL server errors to ignore.</returns>
+        public IList<ChainValidationResult> IgnorableServerCertificateErrors
+        {
+            get;
+            private set;
         }
 
         /// <summary>
