@@ -105,16 +105,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             this.presence.Update(initialPresence);
         }
 
-        public async Task SetDefaultPresenceAsync()
-        {
-            if (!this.IsOffline)
-            {
-                return;
-            }
-
-            await this.presence.SetDefaultPresenceAsync().ConfigureAwait(false);
-        }
-
         public override string ToString()
         {
             return this.address;

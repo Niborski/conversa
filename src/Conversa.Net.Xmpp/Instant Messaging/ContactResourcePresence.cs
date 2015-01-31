@@ -16,8 +16,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     public sealed class ContactResourcePresence
         : StanzaHub
     {
-        private static sbyte DefaultPresencePriorityValue = -128;
-
         private Subject<ContactResource> presenceStream;
         private ContactResource          resource;
         private ShowType                 showAs;
@@ -93,25 +91,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
-        /// Sets the initial presence against the given user.
-        /// </summary>
-        /// <param name="target">XMPP Address of the target user.</param>
-        public async Task SetDefaultPresenceAsync()
-        {
-            var presence = new Presence
-            {
-                From              = this.Client.UserAddress
-              , To                = this.resource.Address
-              , Show              = ShowType.Online
-              , ShowSpecified     = true
-              , Priority          = DefaultPresencePriorityValue
-              , PrioritySpecified = true
-            };
-
-            await this.SendAsync(presence).ConfigureAwait(false);
-        }
-
-        /// <summary>
         /// Set the presence as <see cref="XmppPresenceState.Available"/>
         /// </summary>
         public async Task SetOnlineAsync()
@@ -159,7 +138,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 Show              = ShowType.Online
               , ShowSpecified     = true
               , Status            = new Status { Value = statusMessage }
-              , Priority          = DefaultPresencePriorityValue
+              , Priority          = (sbyte)priority
               , PrioritySpecified = true
             };
 

@@ -45,7 +45,7 @@ namespace Conversa.Net.Xmpp.Client
         private ITransport           transport;
         private ISaslMechanism       saslMechanism;
         private CompositeDisposable  subscriptions;
-        private ContactList           roster;
+        private ContactList          roster;
         private Activity             activity;
         private ClientCapabilities   capabilities;
         private ServiceDiscovery     serviceDiscovery;
@@ -629,8 +629,6 @@ namespace Conversa.Net.Xmpp.Client
             {
                 // No more features for negotiation set state as Open
                 this.State = XmppClientState.Open;
-
-                await this.DiscoverServerServicesAsync();
             }
         }
 
@@ -726,12 +724,6 @@ namespace Conversa.Net.Xmpp.Client
 
             // Continue feature negotiation
             await this.NegotiateStreamFeaturesAsync().ConfigureAwait(false);
-        }
-
-        private async Task DiscoverServerServicesAsync()
-        {
-            await this.ServiceDiscovery.DiscoverServicesAsync();
-            await this.ServiceDiscovery.DiscoverFeaturesAsync();
         }
     }
 }
