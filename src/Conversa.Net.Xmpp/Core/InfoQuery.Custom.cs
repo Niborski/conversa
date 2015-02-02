@@ -47,7 +47,7 @@ namespace Conversa.Net.Xmpp.Core
         [XmlIgnoreAttribute]
         public bool IsUpdate
         {
-            get { return this.Type == InfoQueryType.Get; }
+            get { return this.Type == InfoQueryType.Set; }
         }
         
         /// <summary>
