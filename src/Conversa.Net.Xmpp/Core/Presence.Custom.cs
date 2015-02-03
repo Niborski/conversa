@@ -15,7 +15,7 @@ namespace Conversa.Net.Xmpp.Core
         : IStanza
     {
         /// <summary>
-        /// Gets a value indicating wheter the current instance is a presence error.
+        /// Gets a value indicating whether the current instance is a presence error.
         /// </summary>
         [XmlIgnoreAttribute]
         public bool IsError
@@ -24,7 +24,7 @@ namespace Conversa.Net.Xmpp.Core
         }
 
         /// <summary>
-        /// Gets a value indicating wheter the current instance is a presence probe.
+        /// Gets a value indicating whether the current instance is a presence probe.
         /// </summary>
         [XmlIgnoreAttribute]
         public bool IsProbe
@@ -33,7 +33,7 @@ namespace Conversa.Net.Xmpp.Core
         }
 
         /// <summary>
-        /// Gets a value indicating wheter the current instance is a subscribe presence.
+        /// Gets a value indicating whether the current instance is a subscribe presence.
         /// </summary>
         [XmlIgnoreAttribute]
         public bool IsSubscribe
@@ -42,7 +42,7 @@ namespace Conversa.Net.Xmpp.Core
         }
 
         /// <summary>
-        /// Gets a value indicating wheter the current instance is a subscribed presence.
+        /// Gets a value indicating whether the current instance is a subscribed presence.
         /// </summary>
         [XmlIgnoreAttribute]
         public bool IsSubscribed
@@ -51,7 +51,7 @@ namespace Conversa.Net.Xmpp.Core
         }
 
         /// <summary>
-        /// Gets a value indicating wheter the current instance is a unavailable presence.
+        /// Gets a value indicating whether the current instance is a unavailable presence.
         /// </summary>
         [XmlIgnoreAttribute]
         public bool IsUnavailable
@@ -60,7 +60,7 @@ namespace Conversa.Net.Xmpp.Core
         }
 
         /// <summary>
-        /// Gets a value indicating wheter the current instance is a unsubscribe presence.
+        /// Gets a value indicating whether the current instance is a unsubscribe presence.
         /// </summary>
         [XmlIgnoreAttribute]
         public bool IsUnsubscribe
@@ -69,7 +69,7 @@ namespace Conversa.Net.Xmpp.Core
         }
 
         /// <summary>
-        /// Gets a value indicating wheter the current instance is a unsubscribed presence.
+        /// Gets a value indicating whether the current instance is a unsubscribed presence.
         /// </summary>
         [XmlIgnoreAttribute]
         public bool IsUnsubscribed

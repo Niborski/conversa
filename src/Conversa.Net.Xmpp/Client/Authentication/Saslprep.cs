@@ -7,7 +7,7 @@
 using Gnu.Inet.Encoding;
 using System.Text;
 
-namespace Conversa.Net.Xmpp.Authentication
+namespace Conversa.Net.Xmpp.Client.Authentication
 {
     public static class Saslprep
     {

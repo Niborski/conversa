@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Carlos Guzmán Álvarez. All rights reserved.
 // Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
 
-using Conversa.Net.Xmpp.Client;
 using Conversa.Net.Xmpp.Xml;
 using System;
 using System.Collections.Generic;
@@ -10,7 +9,7 @@ using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using Windows.Security.Cryptography.Certificates;
 
-namespace Conversa.Net.Xmpp.Transports
+namespace Conversa.Net.Xmpp.Client.Transports
 {
     /// <summary>
     /// Base class for transport implementations
@@ -83,17 +82,26 @@ namespace Conversa.Net.Xmpp.Transports
             get;
         }
 
+        /// <summary>
+        /// Gets or sets the connection string
+        /// </summary>
         protected XmppConnectionString ConnectionString
         {
             get { return this.connectionString; }
             set { this.connectionString = value; }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the current instance is disposed.
+        /// </summary>
         protected bool IsDisposed
         {
             get { return this.isDisposed; }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BaseTransport"/> class.
+        /// </summary>
         protected BaseTransport()
         {
             this.messageStream = new Subject<StreamElement>();

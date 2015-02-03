@@ -83,5 +83,15 @@ namespace System
 
             return CryptographicEngine.DeriveKeyMaterial(cryptoKey, keyParams, cb).ToArray();
         }
+
+        /// <summary>
+        /// Converts the given string to Base 64.
+        /// </summary>
+        /// <param name="source">The string to be converted.</param>
+        /// <returns>The base 64 representation of the given string.</returns>
+        public static string ToBase64String(this string source)
+        {
+            return XmppEncoding.Utf8.GetBytes(source).ToBase64String();
+        }
     }
 }

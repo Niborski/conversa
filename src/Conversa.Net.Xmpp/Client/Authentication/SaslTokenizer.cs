@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace Conversa.Net.Xmpp.Authentication
+namespace Conversa.Net.Xmpp.Client.Authentication
 {
     internal static class SaslTokenizer
     {

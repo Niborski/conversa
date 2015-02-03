@@ -12,22 +12,19 @@ namespace Conversa.Net.Xmpp.Eventing
     public abstract class Event
     {
         /// <summary>
-        /// Return a value that iundicates wheter a pubsub event is an activity event
+        /// Return a value that iundicates whether a pubsub event is an activity event
         /// </summary>
         /// <param name="xmppevent"></param>
         /// <returns></returns>
         public static bool IsActivityEvent(PubSubEvent xmppevent)
         {
-            if (xmppevent.Item is PubSubEventItems)
+            var items = xmppevent.Item as PubSubEventItems;
+
+            if (items != null && items.Items.Count == 1)
             {
-                PubSubEventItems items = (PubSubEventItems)xmppevent.Item;
+                var item = items.Items[0] as PubSubItem;
 
-                if (items.Items.Count == 1)
-                {
-                    PubSubItem item = (PubSubItem)items.Items[0];
-
-                    return (item.Item is Tune || item.Item is Mood);
-                }
+                return (item.Item is Tune || item.Item is Mood);
             }
 
             return false;
@@ -41,22 +38,19 @@ namespace Conversa.Net.Xmpp.Eventing
         /// <returns></returns>
         public static Event Create(Contact user, PubSubEvent xmppevent)
         {
-            if (xmppevent.Item is PubSubEventItems)
+            var items = xmppevent.Item as PubSubEventItems;
+
+            if (items != null && items.Items.Count == 1)
             {
-                PubSubEventItems items = (PubSubEventItems)xmppevent.Item;
+                var item = items.Items[0] as PubSubItem;
 
-                if (items.Items.Count == 1)
+                if (item.Item is Tune)
                 {
-                    PubSubItem item = (PubSubItem)items.Items[0];
-
-                    if (item.Item is Tune)
-                    {
-                        return new UserTuneEvent(user, (Tune)item.Item);
-                    }
-                    else if (item.Item is Mood)
-                    {
-                        return new UserMoodEvent(user, (Mood)item.Item);
-                    }
+                    return new UserTuneEvent(user, (Tune)item.Item);
+                }
+                else if (item.Item is Mood)
+                {
+                    return new UserMoodEvent(user, (Mood)item.Item);
                 }
             }
 

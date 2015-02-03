@@ -15,7 +15,7 @@ namespace Conversa.Net.Xmpp.Core
         : IStanza
     {
         /// <summary>
-        /// Gets a value indicating wheter the current instance is a error message
+        /// Gets a value indicating whether the current instance is a error message
         /// </summary>
         [XmlIgnoreAttribute]
         public bool IsError
@@ -24,7 +24,7 @@ namespace Conversa.Net.Xmpp.Core
         }
 
         /// <summary>
-        /// Gets a value indicating wheter the current instance is a chat message
+        /// Gets a value indicating whether the current instance is a chat message
         /// </summary>
         [XmlIgnoreAttribute]
         public bool IsChat
@@ -33,7 +33,7 @@ namespace Conversa.Net.Xmpp.Core
         }
 
         /// <summary>
-        /// Gets a value indicating wheter the current instance is a group chat message
+        /// Gets a value indicating whether the current instance is a group chat message
         /// </summary>
         [XmlIgnoreAttribute]
         public bool IsGroupChat
@@ -42,7 +42,7 @@ namespace Conversa.Net.Xmpp.Core
         }
 
         /// <summary>
-        /// Gets a value indicating wheter the current instance is a headline messsage
+        /// Gets a value indicating whether the current instance is a headline messsage
         /// </summary>
         [XmlIgnoreAttribute]
         public bool IsHeadline
@@ -51,7 +51,7 @@ namespace Conversa.Net.Xmpp.Core
         }
 
         /// <summary>
-        /// Gets a value indicating wheter the current instance is a normal messsage
+        /// Gets a value indicating whether the current instance is a normal messsage
         /// </summary>
         [XmlIgnoreAttribute]
         public bool IsNormal

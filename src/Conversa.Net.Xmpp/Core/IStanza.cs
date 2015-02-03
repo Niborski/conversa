@@ -21,7 +21,7 @@ namespace Conversa.Net.Xmpp.Core
         }
 
         /// <summary>
-        /// Gets a value indicating wheter the current instance is a error stanza
+        /// Gets a value indicating whether the current instance is a error stanza
         /// </summary>
         bool IsError
         {

@@ -1,14 +1,13 @@
 ﻿// Copyright (c) Carlos Guzmán Álvarez. All rights reserved.
 // Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
 
-using Conversa.Net.Xmpp.Client;
 using Conversa.Net.Xmpp.Xml;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.Security.Cryptography.Certificates;
 
-namespace Conversa.Net.Xmpp.Transports
+namespace Conversa.Net.Xmpp.Client.Transports
 {
     /// <summary>
     /// Interface for transport implementations

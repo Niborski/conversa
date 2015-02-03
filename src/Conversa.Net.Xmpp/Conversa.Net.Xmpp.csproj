@@ -97,13 +97,13 @@
     <Compile Include="Advanced Message Processing\AmpRule.cs" />
     <Compile Include="Advanced Message Processing\AmpUnsupportedActions.cs" />
     <Compile Include="Advanced Message Processing\AmpUnsupportedConditions.cs" />
-    <Compile Include="Authentication\Saslprep.cs" />
-    <Compile Include="Authentication\SaslTokenizer.cs" />
-    <Compile Include="Authentication\SaslAuthenticationFailure.cs" />
-    <Compile Include="Authentication\ISaslMechanism.cs" />
-    <Compile Include="Authentication\SaslDigestMechanism.cs" />
-    <Compile Include="Authentication\SaslPlainMechanism.cs" />
-    <Compile Include="Authentication\SaslScramSha1Mechanism.cs" />
+    <Compile Include="Client\Authentication\Saslprep.cs" />
+    <Compile Include="Client\Authentication\SaslTokenizer.cs" />
+    <Compile Include="Client\Authentication\SaslAuthenticationFailure.cs" />
+    <Compile Include="Client\Authentication\ISaslMechanism.cs" />
+    <Compile Include="Client\Authentication\SaslDigestMechanism.cs" />
+    <Compile Include="Client\Authentication\SaslPlainMechanism.cs" />
+    <Compile Include="Client\Authentication\SaslScramSha1Mechanism.cs" />
     <Compile Include="Blocking Command\Block.cs" />
     <Compile Include="Blocking Command\BlockingErrors.cs" />
     <Compile Include="Blocking Command\BlockItem.cs" />
@@ -334,10 +334,10 @@
     <Compile Include="Storage\DataProtectionType.cs" />
     <Compile Include="Storage\SecureFileStorage.cs" />
     <Compile Include="Storage\StorageFolderType.cs" />
-    <Compile Include="Transports\BaseTransport.cs" />
-    <Compile Include="Transports\ITransport.cs" />
-    <Compile Include="Transports\TcpTransport.cs" />
-    <Compile Include="Transports\TransportState.cs" />
+    <Compile Include="Client\Transports\BaseTransport.cs" />
+    <Compile Include="Client\Transports\ITransport.cs" />
+    <Compile Include="Client\Transports\TcpTransport.cs" />
+    <Compile Include="Client\Transports\TransportState.cs" />
     <Compile Include="XMPP Registry\XmppFeatures.cs" />
   </ItemGroup>
   <ItemGroup>

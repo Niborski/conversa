@@ -136,42 +136,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
-        /// Adds to group.
-        /// </summary>
-        /// <param name="groupName">Name of the group.</param>
-        public async Task AddToGroupAsync(string groupName)
-        {
-            if (this.groups.Contains(groupName))
-            {
-                return;
-            }
-
-            var iq = new InfoQuery
-            {
-                Type   = InfoQueryType.Set
-              , Roster = new Roster(new RosterItem(this.Address, this.Name, this.Subscription, groupName))
-            };
-
-            this.groups.Add(groupName);
-
-            await this.SendAsync(iq).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Updates the contact data.
-        /// </summary>
-        public async Task UpdateAsync()
-        {
-            var iq = new InfoQuery
-            {
-                Type   = InfoQueryType.Set
-              , Roster = new Roster(new RosterItem(this.Address, this.Name, this.Subscription, this.groups))
-            };
-
-            await this.SendAsync(iq).ConfigureAwait(false);
-        }
-
-        /// <summary>
         /// Block contact
         /// </summary>
         public async Task BlockAsync()
@@ -284,7 +248,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             if (resource == null)
             {
                 resource = new ContactResource(this.Client, message.From, message);
-                
+
                 this.resources.Add(resource);
                 this.newResourceStream.OnNext(resource);
 

@@ -57,12 +57,20 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         /// <param name="address">Contact address</param>
         /// <param name="name">Contact name</param>
-        public async Task AddContactAsync(string address, string name)
+        public async Task AddContactAsync(XmppAddress address, string name)
         {
+            var contact = this[address];
+
+            if (contact != null)
+            {
+                throw new ArgumentException("The given address is already in the contact list");
+            }
+
             var iq = new InfoQuery()
             {
                 Type   = InfoQueryType.Set
-              , From   = this.Client.UserAddress
+              , From   = this.Client.UserAddress.BareAddress
+              , To     = this.Client.UserAddress.BareAddress
               , Roster = new Roster
                 {
                     Items =
@@ -70,7 +78,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                         new RosterItem
                         {
                             Subscription = RosterSubscriptionType.None
-                          , Jid          = address
+                          , Jid          = address.BareAddress
                           , Name         = name
                         }
                     }
@@ -82,26 +90,81 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
-        /// Deletes a user from the roster list
+        /// Updates the given contact information
         /// </summary>
-        public async Task RemoveContactAsync(XmppAddress address)
+        public async Task UpdateContactAsync(XmppAddress address)
         {
+            var contact = this[address];
+
+            if (contact == null)
+            {
+                throw new ArgumentException("The given address is not in the contact list");
+            }
+
             var iq = new InfoQuery
             {
                 Type   = InfoQueryType.Set
-              , From   = this.Client.UserAddress
-              , Roster = new Roster()
-            };
-            var item = new RosterItem
-            {
-                Jid          = address.BareAddress
-              , Subscription = RosterSubscriptionType.Remove
+              , From   = this.Client.UserAddress.BareAddress
+              , To     = this.Client.UserAddress.BareAddress
+              , Roster = new Roster(new RosterItem(contact.Address.BareAddress
+                                                 , contact.Name
+                                                 , contact.Subscription
+                                                 , contact.Groups))
             };
 
-            iq.Roster.Items.Add(item);
+            await this.SendAsync(iq).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Removes a user from the roster
+        /// </summary>
+        public async Task RemoveContactAsync(XmppAddress address)
+        {
+            var contact = this[address];
+
+            if (contact == null)
+            {
+                return;
+            }
+
+            var iq = new InfoQuery
+            {
+                Type   = InfoQueryType.Set
+              , From   = this.Client.UserAddress.BareAddress
+              , To     = this.Client.UserAddress.BareAddress
+              , Roster = new Roster(new RosterItem { Jid          = address.BareAddress
+                                                   , Subscription = RosterSubscriptionType.Remove })
+            };
 
             await this.SendAsync(iq, r => this.OnRemoveContactError(r), e => this.OnRemoveContactError(e))
                       .ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Adds to group.
+        /// </summary>
+        /// <param name="groupName">Name of the group.</param>
+        public async Task AddContactToGroupAsync(XmppAddress address, string groupName)
+        {
+            var contact = this[address];
+
+            if (contact == null)
+            {
+                throw new ArgumentException("The given address is not in the contact list");
+            }
+
+            if (contact.Groups.Contains(groupName))
+            {
+                return;
+            }
+
+            var iq = new InfoQuery
+            {
+                Type   = InfoQueryType.Set
+              , Roster = new Roster(new RosterItem(contact.Address, contact.Name, contact.Subscription, groupName))
+            };
+
+            await this.SendAsync(iq).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -112,7 +175,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             var iq = new InfoQuery
             {
                 Type   = InfoQueryType.Get
-              , From   = this.Client.UserAddress
+              , From   = this.Client.UserAddress.BareAddress
+              , To     = this.Client.UserAddress.BareAddress
               , Roster = new Roster()
             };
 
@@ -189,6 +253,21 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             base.OnDisconnected();
         }
 
+        private void SubscribeToRosterPush()
+        {
+            this.AddSubscription(this.Client
+                                     .InfoQueryStream
+                                     .Where(message => message.To == this.Client.UserAddress
+                                                    && message.Roster != null
+                                                    && message.IsUpdate)
+                                     .Subscribe(message => this.OnRosterPush(message)));
+        }
+
+        private async void OnRosterPush(InfoQuery rosterPush)
+        {
+            await this.SendAsync(rosterPush.AsResponse()).ConfigureAwait(false);
+        }
+
         private void OnAddContactResponse(InfoQuery response)
         {
         }
@@ -242,7 +321,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                         contact.Update(item.Name, item.Subscription, item.Groups);
                         break;
                 }
-            }            
+            }
 
             this.rosterStream.OnNext(this);
         }

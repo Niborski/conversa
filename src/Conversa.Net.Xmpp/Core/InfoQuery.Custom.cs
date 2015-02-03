@@ -15,7 +15,7 @@ namespace Conversa.Net.Xmpp.Core
         : IStanza
 	{
         /// <summary>
-        /// Gets a value indicating wheter the current instance is a IQ error 
+        /// Gets a value indicating whether the current instance is a IQ error 
         /// </summary>
         [XmlIgnoreAttribute]
         public bool IsError
@@ -24,7 +24,7 @@ namespace Conversa.Net.Xmpp.Core
         }
 
         /// <summary>
-        /// Gets a value indicating wheter the current instance is a result IQ
+        /// Gets a value indicating whether the current instance is a result IQ
         /// </summary>
         [XmlIgnoreAttribute]
         public bool IsResult
@@ -33,7 +33,7 @@ namespace Conversa.Net.Xmpp.Core
         }
 
         /// <summary>
-        /// Gets a value indicating wheter the current instance is a request IQ
+        /// Gets a value indicating whether the current instance is a request IQ
         /// </summary>
         [XmlIgnoreAttribute]
         public bool IsRequest
@@ -42,7 +42,7 @@ namespace Conversa.Net.Xmpp.Core
         }
 
         /// <summary>
-        /// Gets a value indicating wheter the current instance is a update IQ
+        /// Gets a value indicating whether the current instance is a update IQ
         /// </summary>
         [XmlIgnoreAttribute]
         public bool IsUpdate
