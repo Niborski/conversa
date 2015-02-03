@@ -38,7 +38,7 @@ namespace Conversa.Net.Xmpp.Core
         [XmlIgnoreAttribute]
         public bool IsSubscribe
         {
-            get { return this.TypeSpecified && this.Type == PresenceType.Subscribed; }
+            get { return this.TypeSpecified && this.Type == PresenceType.Subscribe; }
         }
 
         /// <summary>
