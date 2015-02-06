@@ -5,20 +5,20 @@ namespace Conversa.Net.Xmpp.Client
 {
     internal static class ConnectionStringKeywords
     {
-        public const string Server            = "server";
-        public const string ServiceName       = "service name";
-        public const string UserId            = "user id";
-        public const string UserPassword      = "user password";
-        public const string Resource          = "resource";
-        public const string ConnectionTimeout = "connection timeout";
-        public const string UseProxy          = "use proxy";
-        public const string ProxyType         = "proxy type";
-        public const string ProxyServer       = "proxy server";
-        public const string ProxyPortNumber   = "proxy port number";
-        public const string ProxyUserName     = "proxy user name";
-        public const string ProxyPassword     = "proxy password";
-        public const string HttpBinding       = "http binding";
-        public const string ResolveHostName   = "resolve host name";
-        public const string PacketSize        = "packet size";
+        internal const string Server            = "server";
+        internal const string ServiceName       = "service name";
+        internal const string UserId            = "user id";
+        internal const string UserPassword      = "user password";
+        internal const string Resource          = "resource";
+        internal const string ConnectionTimeout = "connection timeout";
+        internal const string UseProxy          = "use proxy";
+        internal const string ProxyType         = "proxy type";
+        internal const string ProxyServer       = "proxy server";
+        internal const string ProxyPortNumber   = "proxy port number";
+        internal const string ProxyUserName     = "proxy user name";
+        internal const string ProxyPassword     = "proxy password";
+        internal const string HttpBinding       = "http binding";
+        internal const string ResolveHostName   = "resolve host name";
+        internal const string PacketSize        = "packet size";
     }
 }
