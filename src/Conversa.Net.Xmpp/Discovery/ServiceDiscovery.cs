@@ -238,13 +238,11 @@ namespace Conversa.Net.Xmpp.Discovery
 
         private bool SupportsFeature(string featureName)
         {
-#warning TODO: Implement
-            return false;
-            //var q = from service in this.Services
-            //        where service.Features.Where(f => f.Name == featureName).Count() > 0
-            //        select service;
+            var q = from feature in this.Features
+                    where feature.Name == featureName
+                    select feature;
 
-            //return (q.Count() > 0);
+            return (q.Count() > 0);
         }
     }
 }

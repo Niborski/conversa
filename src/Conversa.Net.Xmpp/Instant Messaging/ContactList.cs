@@ -21,7 +21,10 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     public sealed class ContactList
         : StanzaHub, IEnumerable<Contact>
     {
-        private Subject<ContactList>   rosterStream;
+        // Messaging Subjects
+        private Subject<Tuple<string, ContactListChangedAction>> contactListChangedStream;
+
+        // Private members
         private ConcurrentBag<Contact> contacts;
 
         /// <summary>
@@ -34,12 +37,9 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             get { return this.contacts.SingleOrDefault(contact => contact.Address.BareAddress == address); }
         }
 
-        /// <summary>
-        /// Occurs when the roster is updated
-        /// </summary>
-        public IObservable<ContactList> RosterUpdated
+        public IObservable<Tuple<string, ContactListChangedAction>> ContactListChangedStream
         {
-            get { return this.rosterStream.AsObservable(); }
+            get { return this.contactListChangedStream.AsObservable(); }
         }
 
         /// <summary>
@@ -48,8 +48,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         internal ContactList(XmppClient client)
             : base(client)
         {
-            this.contacts     = new ConcurrentBag<Contact>();
-            this.rosterStream = new Subject<ContactList>();
+            this.contacts                 = new ConcurrentBag<Contact>();
+            this.contactListChangedStream = new Subject<Tuple<string,ContactListChangedAction>>();
         }
 
         /// <summary>
@@ -190,7 +190,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <returns></returns>
         public async Task RefreshBlockedContactsAsync()
         {
-#warning TODO: Check if blocked contact list should be stored in a separated collection or the information should be injected into XmppContact class
             if (!this.Client.ServiceDiscovery.SupportsBlocking)
             {
                 return;
@@ -240,14 +239,13 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         protected override async void OnConnected()
         {
             await this.RequestRosterAsync().ConfigureAwait(false);
-            await this.Client.Presence.SetInitialPresenceAsync().ConfigureAwait(false);
-
+            
             base.OnConnected();
         }
 
         protected override void OnDisconnected()
         {
-            this.rosterStream.Dispose();
+            this.contactListChangedStream.Dispose();
             this.contacts.Clear();
 
             base.OnDisconnected();
@@ -270,6 +268,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
         private void OnAddContactResponse(InfoQuery response)
         {
+            this.contactListChangedStream.OnNext(new Tuple<string, ContactListChangedAction>(null, ContactListChangedAction.Add));
         }
 
         private void OnAddContactError(InfoQuery error)
@@ -278,6 +277,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
         private void OnRemoveContactResponse(InfoQuery response)
         {
+            this.contactListChangedStream.OnNext(new Tuple<string, ContactListChangedAction>(null, ContactListChangedAction.Remove));
         }
 
         private void OnRemoveContactError(InfoQuery error)
@@ -323,7 +323,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 }
             }
 
-            this.rosterStream.OnNext(this);
+            this.contactListChangedStream.OnNext(new Tuple<string, ContactListChangedAction>(null, ContactListChangedAction.Reset));
         }
 
         private void OnRosterError(InfoQuery error)

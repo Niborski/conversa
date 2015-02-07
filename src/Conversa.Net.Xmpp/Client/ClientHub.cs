@@ -23,7 +23,7 @@ namespace Conversa.Net.Xmpp.Client
             this.SubscribeToClientState();
         }
 
-        protected virtual void SubscribeToClientState()
+        protected void SubscribeToClientState()
         {
             this.AddSubscription(this.Client
                                      .StateChanged

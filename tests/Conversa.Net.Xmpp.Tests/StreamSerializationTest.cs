@@ -7,9 +7,9 @@ using System;
 using System.Text;
 using Xunit;
 
-namespace Conversa.Net.Xmpp.Test
+namespace Conversa.Net.Xmpp.Tests
 {
-    public class StreamTest
+    public class StreamSerializationTest
     {
         [Fact]
         public void DeserializeWithMessage()

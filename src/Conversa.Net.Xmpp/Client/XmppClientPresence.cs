@@ -12,6 +12,13 @@ namespace Conversa.Net.Xmpp.Client
     public sealed class XmppClientPresence
         : StanzaHub
     {
+        private Presence presence;
+
+        public bool IsOffline
+        {
+            get { return this.presence == null || this.presence.IsUnavailable; }
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="XmppClientPresence"/> class.
         /// </summary>
@@ -19,15 +26,6 @@ namespace Conversa.Net.Xmpp.Client
         public XmppClientPresence(XmppClient client)
             : base(client)
         {
-        }
-
-        /// <summary>
-        /// Sets the initial presence state
-        /// </summary>
-        /// <returns></returns>
-        public async Task SetInitialPresenceAsync()
-        {
-            await this.SetPresenceAsync(ShowType.Online).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -73,7 +71,7 @@ namespace Conversa.Net.Xmpp.Client
         /// <param name="priority"></param>
         public async Task SetPresenceAsync(ShowType showAs, string statusMessage, int priority)
         {
-            var presence = new Presence
+            this.presence = new Presence
             {
                 From              = this.Client.UserAddress
               , Show              = ShowType.Online
@@ -83,7 +81,16 @@ namespace Conversa.Net.Xmpp.Client
               , PrioritySpecified = true
             };
 
-            await this.SendAsync(presence).ConfigureAwait(false);
+            await this.SendAsync(this.presence).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Sets the initial presence state
+        /// </summary>
+        /// <returns></returns>
+        internal async Task SetInitialPresenceAsync()
+        {
+            await this.SetPresenceAsync(ShowType.Online).ConfigureAwait(false);
         }
     }
 }

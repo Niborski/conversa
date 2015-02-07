@@ -19,8 +19,9 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     public sealed class Contact
         : StanzaHub
     {
-        private Subject<ContactResource> newResourceStream;
-        private Subject<ContactResource> removedResourceStream;
+        private Subject<ContactBlockingAction> blockingStream;
+        private Subject<ContactResource>       newResourceStream;
+        private Subject<ContactResource>       removedResourceStream;
 
         private string                 name;
         private string                 displayName;
@@ -28,6 +29,14 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         private RosterSubscriptionType subscription;
         private List<ContactResource>  resources;
         private List<string>           groups;
+
+        /// <summary>
+        /// Occurs when the contact blocking status changes.
+        /// </summary>
+        public IObservable<ContactBlockingAction> BlockingStream
+        {
+            get { return this.blockingStream.AsObservable(); }
+        }
 
         /// <summary>
         /// Occurs when a new contact resource is added to the contact resource list.
@@ -127,6 +136,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             this.address               = address.BareAddress;
             this.groups                = new List<string>();
             this.resources             = new List<ContactResource>();
+            this.blockingStream        = new Subject<ContactBlockingAction>();
             this.newResourceStream     = new Subject<ContactResource>();
             this.removedResourceStream = new Subject<ContactResource>();
 

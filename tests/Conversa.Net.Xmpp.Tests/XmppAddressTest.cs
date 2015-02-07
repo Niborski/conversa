@@ -5,7 +5,7 @@ using Conversa.Net.Xmpp.Core;
 using System;
 using Xunit;
 
-namespace Conversa.Net.Xmpp.Test
+namespace Conversa.Net.Xmpp.Tests
 {
     public class XmppAddressTest
     {

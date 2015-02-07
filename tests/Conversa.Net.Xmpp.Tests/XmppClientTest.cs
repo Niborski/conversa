@@ -7,34 +7,25 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Conversa.Net.Xmpp.Test
+namespace Conversa.Net.Xmpp.Tests
 {
     public class XmppClientTest
     {
         [Fact]
-        public void XmppClientAsycTest()
+        public void OpenConnectionTest()
         {
-            InternalXmppClientAsycTest().Wait();
+            InternalOpenConnectionAsync().Wait();
         }
 
-        private async Task InternalXmppClientAsycTest()
+        private async Task InternalOpenConnectionAsync()
         {
-            var csb = new XmppConnectionStringBuilder
+            using (var client = new XmppClient(ConnectionStringHelper.GetDefaultConnectionString()))
             {
-                HostName    = "jabber.at"
-              , ServiceName = "5222"
-              , UserId      = "conversa@jabber.at"
-              , Password    = "6431238Kla"
-              , Resource    = "test"
-            };
+                client.StateChanged.Subscribe(state => Debug.WriteLine("TEST -> Connection state " + state.ToString()));
 
-            using (var connection = new XmppClient(csb.ToConnectionString()))
-            {
-                connection.StateChanged.Subscribe(state => Debug.WriteLine("TEST -> Connection state " + state.ToString()));
+                await client.OpenAsync().ConfigureAwait(false);
 
-                await connection.OpenAsync();
-
-                System.Threading.SpinWait.SpinUntil(() => { return connection.State == XmppClientState.Closing; });
+                System.Threading.SpinWait.SpinUntil(() => { return client.State == XmppClientState.Open; });
             }
         }
     }

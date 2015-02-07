@@ -20,6 +20,11 @@ namespace Conversa.Net.Xmpp.Client
                                              , Action<InfoQuery> onResponse
                                              , Action<InfoQuery> onError)
         {
+            if (this.Client.State != XmppClientState.Open)
+            {
+                return;
+            }
+
             var raction = this.Client
                               .InfoQueryStream
                               .Where(response => response.Id == request.Id && !response.IsError)
@@ -42,6 +47,11 @@ namespace Conversa.Net.Xmpp.Client
                                              , Action<Presence> onResponse
                                              , Action<Presence> onError)
         {
+            if (this.Client.State != XmppClientState.Open)
+            {
+                return;
+            }
+
             var raction = this.Client
                               .PresenceStream
                               .Where(response => response.Id == request.Id && !response.IsError)
@@ -64,6 +74,11 @@ namespace Conversa.Net.Xmpp.Client
                                              , Action<Message> onResponse
                                              , Action<Message> onError = null)
         {
+            if (this.Client.State != XmppClientState.Open)
+            {
+                return;
+            }
+
             var raction = this.Client
                               .MessageStream
                               .Where(response => response.Id == request.Id && !response.IsError)
@@ -88,6 +103,11 @@ namespace Conversa.Net.Xmpp.Client
                                                 , IDisposable dispose)
             where T: class, IStanza
         {
+            if (this.Client.State != XmppClientState.Open)
+            {
+                return;
+            }
+
             this.AddSubscription(request.Id, onResponse, onError, dispose);
 
             await this.SendAsync(request).ConfigureAwait(false);
@@ -95,6 +115,11 @@ namespace Conversa.Net.Xmpp.Client
 
         protected async virtual Task SendAsync(object request)
         {
+            if (this.Client.State != XmppClientState.Open)
+            {
+                return;
+            }
+
             await this.Client.SendAsync(request).ConfigureAwait(false);
         }
     }

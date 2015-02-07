@@ -6,12 +6,11 @@ using Conversa.Net.Xmpp.Shared;
 using Conversa.Net.Xmpp.Xml;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
-namespace Conversa.Net.Xmpp.Test
+namespace Conversa.Net.Xmpp.Tests
 {
-    public class StreamFeaturesTest
+    public class StreamFeaturesSerializationTest
     {
         [Fact]
         public void DeserializeWithStartTlsFeature()

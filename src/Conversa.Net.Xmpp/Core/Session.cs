@@ -15,7 +15,6 @@ namespace Conversa.Net.Xmpp.Core
     /// </remarks>
     [XmlTypeAttribute(Namespace = "urn:ietf:params:xml:ns:xmpp-session")]
     [XmlRootAttribute("session", Namespace = "urn:ietf:params:xml:ns:xmpp-session")]
-    [Obsolete("RFC6121", false)]
     public partial class Session
     {
         /// <remarks/>

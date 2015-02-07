@@ -533,6 +533,11 @@ namespace Conversa.Net.Xmpp.Client
             else
             {
                 this.infoQueryStream.OnNext(iq);
+
+                if (iq.Roster != null && iq.IsResult && this.Presence.IsOffline)
+                {
+                    await this.Presence.SetInitialPresenceAsync().ConfigureAwait(false);
+                }
             }
         }
 

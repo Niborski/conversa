@@ -9,10 +9,10 @@ using Xunit;
 
 namespace Conversa.Net.Xmpp.Test
 {
-    public class InfoQueryTest
+    public class RosterTest
     {
         [Fact]
-        public void DeserializeRosterGet()
+        public void RosterRequestSerializationTest()
         {
             var xml = @"<iq from='juliet@example.com/balcony'
                             id='bv1bs71f'
@@ -30,7 +30,7 @@ namespace Conversa.Net.Xmpp.Test
         }
 
         [Fact]
-        public void SerializeRosterGet()
+        public void RosterRequestDeserializationTest()
         {
             var exp = @"<iq from=""juliet@example.com/balcony""
                             id=""bv1bs71f""
