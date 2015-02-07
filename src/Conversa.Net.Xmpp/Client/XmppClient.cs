@@ -256,12 +256,17 @@ namespace Conversa.Net.Xmpp.Client
                 // unmanaged resources here.
                 // If disposing is false,
                 // only the following code is executed.
-                this.connectionString = null;
-                this.userAddress      = null;
-                this.saslMechanism    = null;
-                this.serverFeatures   = ServerFeatures.None;
-                this.state            = XmppClientState.Closed;
-
+                this.connectionString   = null;
+                this.userAddress        = null;
+                this.saslMechanism      = null;
+                this.roster             = null;
+                this.activity           = null;
+                this.capabilities       = null;
+                this.personalEventing   = null;
+                this.presence           = null;
+                this.serverCapabilities = null;
+                this.serverFeatures     = ServerFeatures.None;
+                this.state              = XmppClientState.Closed;
                 this.CloseTransport();
                 this.ReleaseSubscriptions();
                 this.ReleaseSubjects();
@@ -350,10 +355,16 @@ namespace Conversa.Net.Xmpp.Client
             {
                 this.ReleaseSubscriptions();
 
-                this.transport        = null;
-                this.saslMechanism    = null;
-                this.connectionString = null;
-                this.userAddress      = null;
+                this.transport          = null;
+                this.saslMechanism      = null;
+                this.connectionString   = null;
+                this.userAddress        = null;
+                this.roster             = null;
+                this.activity           = null;
+                this.capabilities       = null;
+                this.personalEventing   = null;
+                this.presence           = null;
+                this.serverCapabilities = null;
                 this.serverFeatures   = ServerFeatures.None;
                 this.State            = XmppClientState.Closed;
 
@@ -754,7 +765,10 @@ namespace Conversa.Net.Xmpp.Client
 
         private async Task DiscoverServerCapabilitiesAsync()
         {
-            await this.serverCapabilities.DiscoverAsync().ConfigureAwait(false);
+            if (this.serverCapabilities != null)
+            {
+                await this.serverCapabilities.DiscoverAsync().ConfigureAwait(false);
+            }
         }
     }
 }
