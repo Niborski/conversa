@@ -4,15 +4,14 @@
 using Conversa.Net.Xmpp.Core;
 using Conversa.Net.Xmpp.Xml;
 using System;
-using System.Text;
 using Xunit;
 
-namespace Conversa.Net.Xmpp.Test
+namespace Conversa.Net.Xmpp.Tests
 {
-    public class RosterTest
+    public class RosterSerializationTest
     {
         [Fact]
-        public void RosterRequestSerializationTest()
+        public void DeserializeRosterRequest()
         {
             var xml = @"<iq from='juliet@example.com/balcony'
                             id='bv1bs71f'
@@ -30,7 +29,7 @@ namespace Conversa.Net.Xmpp.Test
         }
 
         [Fact]
-        public void RosterRequestDeserializationTest()
+        public void SerializeRosterRequest()
         {
             var exp = @"<iq from=""juliet@example.com/balcony""
                             id=""bv1bs71f""
