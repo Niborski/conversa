@@ -97,6 +97,7 @@
     <Compile Include="Advanced Message Processing\AmpRule.cs" />
     <Compile Include="Advanced Message Processing\AmpUnsupportedActions.cs" />
     <Compile Include="Advanced Message Processing\AmpUnsupportedConditions.cs" />
+    <Compile Include="Capabilities\IEntityCapabilitiesInfo.cs" />
     <Compile Include="Client\Authentication\Saslprep.cs" />
     <Compile Include="Client\Authentication\SaslTokenizer.cs" />
     <Compile Include="Client\Authentication\SaslAuthenticationFailure.cs" />

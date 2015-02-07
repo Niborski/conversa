@@ -46,6 +46,10 @@ namespace Conversa.Net.Xmpp.Client
         /// <summary>
         /// In-Band registration of users.
         /// </summary>
-        InBandRegistration	= 128
+        InBandRegistration	= 128,
+        /// <summary>
+        /// Entity capabilities
+        /// </summary>
+        EntityCapabilities  = 256
     }
 }

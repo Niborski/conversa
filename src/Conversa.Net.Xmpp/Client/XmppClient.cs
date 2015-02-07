@@ -5,7 +5,6 @@ using Conversa.Net.Xmpp.Capabilities;
 using Conversa.Net.Xmpp.Client.Authentication;
 using Conversa.Net.Xmpp.Client.Transports;
 using Conversa.Net.Xmpp.Core;
-using Conversa.Net.Xmpp.Discovery;
 using Conversa.Net.Xmpp.Eventing;
 using Conversa.Net.Xmpp.InstantMessaging;
 using Conversa.Net.Xmpp.Xml;
@@ -48,7 +47,7 @@ namespace Conversa.Net.Xmpp.Client
         private ContactList          roster;
         private Activity             activity;
         private ClientCapabilities   capabilities;
-        private ServiceDiscovery     serviceDiscovery;
+        private EntityCapabilities   serverCapabilities;
         private PersonalEventing     personalEventing;
         private XmppClientPresence   presence;
         private bool                 isDisposed;
@@ -120,14 +119,6 @@ namespace Conversa.Net.Xmpp.Client
         }
 
         /// <summary>
-        /// Gets the service discovery instance associated to the client.
-        /// </summary>
-        public ServiceDiscovery ServiceDiscovery
-        {
-            get { return this.serviceDiscovery; }
-        }
-
-        /// <summary>
         /// Gets the personal eventing instance associated to the client.
         /// </summary>
         public PersonalEventing PersonalEventing
@@ -141,6 +132,15 @@ namespace Conversa.Net.Xmpp.Client
         public XmppClientPresence Presence
         {
             get { return this.presence; }
+        }
+
+        /// <summary>
+        /// Gets the server capabilities.
+        /// </summary>
+        /// <value>The server capabilities.</value>
+        public IEntityCapabilitiesInfo ServerCapabilities
+        {
+            get { return this.serverCapabilities; }
         }
 
         /// <summary>
@@ -203,9 +203,9 @@ namespace Conversa.Net.Xmpp.Client
             this.roster               = new ContactList(this);
             this.activity             = new Activity(this);
             this.capabilities         = new ClientCapabilities(this);
-            this.serviceDiscovery     = new ServiceDiscovery(this, this.connectionString.UserAddress.DomainName);
             this.personalEventing     = new PersonalEventing(this);
             this.presence             = new XmppClientPresence(this);
+            this.serverCapabilities   = new EntityCapabilities(this);
             this.userAddress          = new XmppAddress(this.connectionString.UserAddress.UserName
                                                       , this.connectionString.UserAddress.DomainName
                                                       , this.connectionString.Resource);
@@ -586,6 +586,14 @@ namespace Conversa.Net.Xmpp.Client
                 this.serverFeatures |= ServerFeatures.InBandRegistration;
             }
 
+            if (features.SupportsEntityCapabilities)
+            {
+                this.serverFeatures |= ServerFeatures.EntityCapabilities;
+                
+                this.serverCapabilities.Address              = this.UserAddress.DomainName;
+                this.serverCapabilities.ServiceDiscoveryNode = features.EntityCapabilities.DiscoveryNode;
+            }
+
             await this.NegotiateStreamFeaturesAsync().ConfigureAwait(false);
         }
 
@@ -644,6 +652,9 @@ namespace Conversa.Net.Xmpp.Client
             {
                 // No more features for negotiation set state as Open
                 this.State = XmppClientState.Open;
+
+                // Discover Server Capabilities
+                await this.DiscoverServerCapabilitiesAsync();
             }
         }
 
@@ -739,6 +750,11 @@ namespace Conversa.Net.Xmpp.Client
 
             // Continue feature negotiation
             await this.NegotiateStreamFeaturesAsync().ConfigureAwait(false);
+        }
+
+        private async Task DiscoverServerCapabilitiesAsync()
+        {
+            await this.serverCapabilities.DiscoverAsync().ConfigureAwait(false);
         }
     }
 }

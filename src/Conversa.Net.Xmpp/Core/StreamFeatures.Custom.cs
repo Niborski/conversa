@@ -16,7 +16,7 @@ namespace Conversa.Net.Xmpp.Core
         /// <summary>
         /// Gets a value indicating whether secure connection establishment is required
         /// </summary>
-        /// <returns></returns>
+        /// <returns><b>true</b> if secure connection is required; otherwise <b>false</b>.</returns>
         [XmlIgnoreAttribute]
         public bool SecureConnectionRequired
         {
@@ -24,9 +24,9 @@ namespace Conversa.Net.Xmpp.Core
         }
 
         /// <summary>
-        /// Gets a value indicating whether auth mechanisms has bee informed
+        /// Gets a value indicating whether auth mechanisms has been informed.
         /// </summary>
-        /// <returns></returns>
+        /// <returns><b>true</b> if auth mechanisms has been informed; otherwise <b>false</b>.</returns>
         [XmlIgnoreAttribute]
         public bool HasAuthMechanisms
         {
@@ -34,9 +34,9 @@ namespace Conversa.Net.Xmpp.Core
         }
 
         /// <summary>
-        /// Gets a value indicating whether resource binding is supported
+        /// Gets a value indicating whether resource binding is supported.
         /// </summary>
-        /// <returns></returns>
+        /// <returns><b>true</b> if resource binding is supported; otherwise <b>false</b>.</returns>
         [XmlIgnoreAttribute]
         public bool SupportsResourceBinding
         {
@@ -44,9 +44,9 @@ namespace Conversa.Net.Xmpp.Core
         }
 
         /// <summary>
-        /// Gets a value indicating whether session establishment is supported
+        /// Gets a value indicating whether session establishment is supported.
         /// </summary>
-        /// <returns></returns>
+        /// <returns><b>true</b> if session establishment is supported; otherwise <b>false</b>.</returns>
         [XmlIgnoreAttribute]
         public bool SupportsSessions
         {
@@ -54,9 +54,9 @@ namespace Conversa.Net.Xmpp.Core
         }
 
         /// <summary>
-        /// Gets a value indicating whether stream compression is supported
+        /// Gets a value indicating whether stream compression is supported.
         /// </summary>
-        /// <returns></returns>
+        /// <returns><b>true</b> if stream compression is supported; otherwise <b>false</b>.</returns>
         [XmlIgnoreAttribute]
         public bool SupportsCompression
         {
@@ -64,11 +64,21 @@ namespace Conversa.Net.Xmpp.Core
         }
 
         /// <summary>
-        /// Gets a value indicating whether in-band registration is supported
+        /// Gets a value indicating whether in-band registration is supported.
         /// </summary>
-        /// <returns></returns>
+        /// <returns><b>true</b> if in-band registration is supported; otherwise <b>false</b>.</returns>
         [XmlIgnoreAttribute]
         public bool SupportsInBandRegistration
+        {
+            get { return this.Register != null; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether entity capabilities is supported.
+        /// </summary>
+        /// <returns><b>true</b> if entiti capabilities are supported; otherwise <b>false</b>.</returns>
+        [XmlIgnoreAttribute]
+        public bool SupportsEntityCapabilities
         {
             get { return this.Register != null; }
         }

@@ -37,6 +37,9 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             get { return this.contacts.SingleOrDefault(contact => contact.Address.BareAddress == address); }
         }
 
+        /// <summary>
+        /// Occurs when a change happens in the contact list.
+        /// </summary>
         public IObservable<Tuple<string, ContactListChangedAction>> ContactListChangedStream
         {
             get { return this.contactListChangedStream.AsObservable(); }
@@ -136,7 +139,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                                                    , Subscription = RosterSubscriptionType.Remove })
             };
 
-            await this.SendAsync(iq, r => this.OnRemoveContactError(r), e => this.OnRemoveContactError(e))
+            await this.SendAsync(iq, r => this.OnRemoveContactResponse(r), e => this.OnRemoveContactError(e))
                       .ConfigureAwait(false);
         }
 
@@ -190,10 +193,11 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <returns></returns>
         public async Task RefreshBlockedContactsAsync()
         {
-            if (!this.Client.ServiceDiscovery.SupportsBlocking)
-            {
-                return;
-            }
+#warning TODO: Change to use entity caps
+            //if (!this.Client.ServiceDiscovery.SupportsBlocking)
+            //{
+            //    return;
+            //}
 
             var iq = new InfoQuery
             {
@@ -210,10 +214,11 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public async Task UnBlockAllAsync()
         {
-            if (!this.Client.ServiceDiscovery.SupportsBlocking)
-            {
-                return;
-            }
+#warning TODO: Change to use entity caps
+            //if (!this.Client.ServiceDiscovery.SupportsBlocking)
+            //{
+            //    return;
+            //}
 
             var iq = new InfoQuery
             {

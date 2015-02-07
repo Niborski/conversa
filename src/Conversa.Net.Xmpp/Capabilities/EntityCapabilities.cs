@@ -4,8 +4,11 @@
 using Conversa.Net.Xmpp.Client;
 using Conversa.Net.Xmpp.Core;
 using Conversa.Net.Xmpp.Discovery;
-using System.Collections.Generic;
+using Conversa.Net.Xmpp.Registry;
+using System;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 
 namespace Conversa.Net.Xmpp.Capabilities
@@ -17,12 +20,24 @@ namespace Conversa.Net.Xmpp.Capabilities
     /// XEP-0115: Entity Capabilities
     /// </remarks>
     public sealed class EntityCapabilities
-        : StanzaHub
+        : StanzaHub, IEntityCapabilitiesInfo
     {
-        private XmppAddress address;
-        private ServiceInfo info;
+        private Subject<EntityCapabilities> capsChangedStream;
+        private XmppAddress                 address;
+        private ServiceInfo                 info;
 
         // private XmppCapabilitiesStorage capsStorage;
+
+        /// <summary>
+        /// Gets the caps changed stream.
+        /// </summary>
+        /// <value>
+        /// The caps changed stream.
+        /// </value>
+        public IObservable<EntityCapabilities> CapsChangedStream
+        {
+            get { return this.capsChangedStream.AsObservable(); }
+        }
 
         /// <summary>
         /// Gets the entity address
@@ -30,23 +45,70 @@ namespace Conversa.Net.Xmpp.Capabilities
         public XmppAddress Address
         {
             get { return this.address; }
+            set
+            { 
+                this.address = value; 
+                this.Clear();
+            }
+        }
+
+        public string ServiceDiscoveryNode
+        {
+            get { return this.info.Node; }
+            set 
+            { 
+                this.info = new ServiceInfo { Node = value };
+                this.Clear();
+            }
         }
 
         /// <summary>
-        /// Gets or sets the identity.
+        /// Gets a value that indicates whether user tunes are supported
         /// </summary>
-        /// <value>The identity.</value>
-        public IEnumerable<ServiceIdentity> Identities
+        public bool SupportsUserTune
         {
-            get { return this.info.Identities.AsEnumerable(); }
+            get { return this.SupportsFeature(XmppFeatures.UserTune); }
         }
 
         /// <summary>
-        /// Gets the list of features
+        /// Gets a value that indicates whether user moods are supported
         /// </summary>
-        public IEnumerable<ServiceFeature> Features
+        public bool SupportsUserMood
         {
-            get { return this.Features.AsEnumerable(); }
+            get { return this.SupportsFeature(XmppFeatures.UserMood); }
+        }
+
+        /// <summary>
+        /// Gets a value that indicates whether simple communications blocking is supported
+        /// </summary>
+        public bool SupportsBlocking
+        {
+            get { return this.SupportsFeature(XmppFeatures.Blocking); }
+        }
+
+        /// <summary>
+        /// Gets a value that indicates if the contact supports MUC
+        /// </summary>
+        public bool SupportsConference
+        {
+            get { return this.SupportsFeature(XmppFeatures.MultiUserChat); }
+        }
+
+        /// <summary>
+        /// Gets a value that indicates if the contact supports chat state notifications
+        /// </summary>
+        public bool SupportsChatStateNotifications
+        {
+            get { return this.SupportsFeature(XmppFeatures.ChatStateNotifications); }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EntityCapabilities"/> class.
+        /// </summary>
+        internal EntityCapabilities(XmppClient client)
+            : this(client, null, null)
+        {
+            this.info = new ServiceInfo();
         }
 
         /// <summary>
@@ -55,8 +117,9 @@ namespace Conversa.Net.Xmpp.Capabilities
         public EntityCapabilities(XmppClient client, XmppAddress address, string node)
             : base(client)
         {
-            this.address = address;
-            this.info    = new ServiceInfo { Node = node };
+            this.address           = address;
+            this.info              = new ServiceInfo { Node = node };
+            this.capsChangedStream = new Subject<EntityCapabilities>();
         }
 
         public async Task DiscoverAsync()
@@ -80,14 +143,6 @@ namespace Conversa.Net.Xmpp.Capabilities
             this.info.Identities.Clear();
         }
 
-        public void AddFeature(string name)
-        {
-            if (this.info.Features.Count(x => x.Name == name) == 0)
-            {
-                this.info.Features.Add(new ServiceFeature { Name = name });
-            }
-        }
-
         public void AddIdentity(string category, string name, string type)
         {
             if (this.info.Identities.Count(x => x.Category == category && x.Name == name && x.Type == type) == 0)
@@ -96,19 +151,23 @@ namespace Conversa.Net.Xmpp.Capabilities
             }
         }
 
-        public bool SupportsFeature(string featureName)
+        public void AddFeature(string name)
         {
-            return (this.Features.Count(f => f.Name == featureName) > 0);
+            if (this.info.Features.Count(x => x.Name == name) == 0)
+            {
+                this.info.Features.Add(new ServiceFeature { Name = name });
+            }
         }
 
-        private async void OnAdvertiseCapabilities(Presence response)
+        public bool SupportsFeature(string featureName)
         {
-            await this.DiscoverAsync().ConfigureAwait(false);
+            return (this.info.Features.Count(f => f.Name == featureName) > 0);
         }
 
         private void OnDiscoverResponse(InfoQuery response)
         {
             this.info = response.ServiceInfo;
+            this.capsChangedStream.OnNext(this);
 
 #warning TODO: Update caps storage
         }

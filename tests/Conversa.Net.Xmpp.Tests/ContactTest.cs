@@ -20,15 +20,20 @@ namespace Conversa.Net.Xmpp.Tests
             InternalBlockContactAsync().Wait();
         }
 
+        [Fact]
+        public void UnBlockContactTest()
+        {
+            InternalUnBlockContactAsync().Wait();
+        }
+
         private async Task InternalBlockContactAsync()
         {
             var waiter = new AutoResetEvent(false);
 
             using (var client = new XmppClient(ConnectionStringHelper.GetDefaultConnectionString()))
             {
-                client.Roster
-                      .ContactListChangedStream
-                      .Where(x => x.Item2 == ContactListChangedAction.Reset)
+                client.ServerCapabilities
+                      .CapsChangedStream
                       .Subscribe(x => waiter.Set());
 
                 await client.OpenAsync().ConfigureAwait(false);
@@ -42,6 +47,32 @@ namespace Conversa.Net.Xmpp.Tests
                        .Subscribe(x => waiter.Set());
 
                 await contact.BlockAsync().ConfigureAwait(false);
+
+                waiter.WaitOne();
+            }
+        }
+
+        private async Task InternalUnBlockContactAsync()
+        {
+            var waiter = new AutoResetEvent(false);
+
+            using (var client = new XmppClient(ConnectionStringHelper.GetDefaultConnectionString()))
+            {
+                client.ServerCapabilities
+                      .CapsChangedStream
+                      .Subscribe(x => waiter.Set());
+
+                await client.OpenAsync().ConfigureAwait(false);
+
+                waiter.WaitOne();
+
+                var contact = client.Roster.First();
+
+                contact.BlockingStream
+                       .Where(x => x == ContactBlockingAction.Unblocked)
+                       .Subscribe(x => waiter.Set());
+
+                await contact.UnBlockAsync().ConfigureAwait(false);
 
                 waiter.WaitOne();
             }

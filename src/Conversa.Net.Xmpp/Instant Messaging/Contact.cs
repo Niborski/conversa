@@ -146,46 +146,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
-        /// Block contact
-        /// </summary>
-        public async Task BlockAsync()
-        {
-            if (!this.Client.ServiceDiscovery.SupportsBlocking)
-            {
-                return;
-            }
-
-            var iq = new InfoQuery
-            {
-                From  = this.Client.UserAddress
-              , Type  = InfoQueryType.Set
-              , Block = new Block(this.Address)
-            };
-
-            await this.SendAsync(iq).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Unblock contact.
-        /// </summary>
-        public async Task UnBlockAsync()
-        {
-            if (!this.Client.ServiceDiscovery.SupportsBlocking)
-            {
-                return;
-            }
-
-            var iq = new InfoQuery
-            {
-                From    = this.Client.UserAddress
-              , Type    = InfoQueryType.Set
-              , Unblock = new Unblock(this.Address)
-            };
-
-            await this.SendAsync(iq).ConfigureAwait(false);
-        }
-
-        /// <summary>
         /// Subscribes to presence updates of the current user
         /// </summary>
         public async Task AcceptSubscriptionAsync()
@@ -213,6 +173,48 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             };
 
             await this.SendAsync(presence).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Block contact
+        /// </summary>
+        public async Task BlockAsync()
+        {
+            if (!this.Client.ServerCapabilities.SupportsBlocking)
+            {
+                return;
+            }
+
+            var iq = new InfoQuery
+            {
+                From  = this.Client.UserAddress
+              , Type  = InfoQueryType.Set
+              , Block = new Block(this.Address.BareAddress)
+            };
+
+            await this.SendAsync(iq, r => this.OnContactBlocked(r), e => this.OnBlockingError(e))
+                      .ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Unblock contact.
+        /// </summary>
+        public async Task UnBlockAsync()
+        {
+            if (!this.Client.ServerCapabilities.SupportsBlocking)
+            {
+                return;
+            }
+
+            var iq = new InfoQuery
+            {
+                From    = this.Client.UserAddress
+              , Type    = InfoQueryType.Set
+              , Unblock = new Unblock(this.Address.BareAddress)
+            };
+
+            await this.SendAsync(iq, r => this.OnContactUnBlocked(r), e => this.OnBlockingError(e))
+                      .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -316,6 +318,20 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             };
 
             await this.SendAsync(presence).ConfigureAwait(false);
+        }
+
+        private void OnContactBlocked(InfoQuery response)
+        {
+            this.blockingStream.OnNext(ContactBlockingAction.Blocked);
+        }
+
+        private void OnContactUnBlocked(InfoQuery response)
+        {
+            this.blockingStream.OnNext(ContactBlockingAction.Unblocked);
+        }
+
+        private void OnBlockingError(InfoQuery error)
+        {
         }
     }
 }

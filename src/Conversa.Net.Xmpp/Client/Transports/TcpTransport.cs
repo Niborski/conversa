@@ -186,6 +186,11 @@ namespace Conversa.Net.Xmpp.Client.Transports
                 this.PublishStateChange(TransportState.Closing);
                 this.StopAsyncReads();
 
+                if (this.parser != null)
+                {
+                    this.parser.Dispose();
+                    this.parser = null;
+                }
                 if (this.reader != null)
                 {
                     this.reader.Dispose();
@@ -200,11 +205,6 @@ namespace Conversa.Net.Xmpp.Client.Transports
                 {
                     this.socket.Dispose();
                     this.socket = null;
-                }
-                if (this.parser != null)
-                {
-                    this.parser.Dispose();
-                    this.parser = null;
                 }
 
                 if (this.ignorableServerCertificateErrors != null)
