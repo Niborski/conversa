@@ -1,349 +1,116 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2BA628DA-5041-45AB-A693-44ACC356C917}</ProjectGuid>
+    <ProjectGuid>{57B02D58-D511-4CE9-BF1C-880434265F5F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Conversa.Net.Xmpp</RootNamespace>
     <AssemblyName>Conversa.Net.Xmpp</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFrameworkProfile>Profile32</TargetFrameworkProfile>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
+    <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <GenerateLibraryLayout>false</GenerateLibraryLayout>
-    <DocumentationFile>
-    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <GenerateLibraryLayout>false</GenerateLibraryLayout>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugAnyCpu|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\DebugAnyCpu\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
     <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'x86|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
     <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <!-- A reference to the entire .NET Framework is automatically included -->
-    <EmbeddedResource Include="Xml\Serializers.xml" />
-    <None Include="packages.config" />
-    <None Include="XMPP Registry\alt-connections.xml" />
-    <None Include="XMPP Registry\amp-actions.xml" />
-    <None Include="XMPP Registry\amp-conditions.xml" />
-    <None Include="XMPP Registry\compress.xml" />
-    <None Include="XMPP Registry\disco-categories.xml" />
-    <None Include="XMPP Registry\disco-features.xml" />
-    <None Include="XMPP Registry\errors.xml" />
-    <None Include="XMPP Registry\formtypes.xml" />
-    <None Include="XMPP Registry\jingle-apps.xml" />
-    <None Include="XMPP Registry\jingle-transports.xml" />
-    <None Include="XMPP Registry\linklocal.xml" />
-    <None Include="XMPP Registry\mucstatus.xml" />
-    <None Include="XMPP Registry\namespaces.xml" />
-    <None Include="XMPP Registry\nodes.xml" />
-    <None Include="XMPP Registry\querytypes.xml" />
-    <None Include="XMPP Registry\shim.xml" />
-    <None Include="XMPP Registry\si-profiles.xml" />
-    <None Include="XMPP Registry\stream-features.xml" />
-    <None Include="XMPP Registry\xdv-datatypes.xml" />
-    <None Include="XMPP Registry\xdv-prefixes.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Ad-Hoc Commands\Command.cs" />
-    <Compile Include="Ad-Hoc Commands\CommandActions.cs" />
-    <Compile Include="Ad-Hoc Commands\CommandActionsType.cs" />
-    <Compile Include="Ad-Hoc Commands\CommandActionType.cs" />
-    <Compile Include="Ad-Hoc Commands\CommandNote.cs" />
-    <Compile Include="Ad-Hoc Commands\CommandNoteType.cs" />
-    <Compile Include="Ad-Hoc Commands\CommandStatus.cs" />
-    <Compile Include="Advanced Message Processing\AmpFailedRules.cs" />
-    <Compile Include="Advanced Message Processing\Amp.cs" />
-    <Compile Include="Advanced Message Processing\AmpFeature.cs" />
-    <Compile Include="Advanced Message Processing\AmpInvalidRules.cs" />
-    <Compile Include="Advanced Message Processing\AmpRule.cs" />
-    <Compile Include="Advanced Message Processing\AmpUnsupportedActions.cs" />
-    <Compile Include="Advanced Message Processing\AmpUnsupportedConditions.cs" />
-    <Compile Include="Capabilities\IEntityCapabilitiesInfo.cs" />
-    <Compile Include="Client\Authentication\Saslprep.cs" />
-    <Compile Include="Client\Authentication\SaslTokenizer.cs" />
-    <Compile Include="Client\Authentication\SaslAuthenticationFailure.cs" />
-    <Compile Include="Client\Authentication\ISaslMechanism.cs" />
-    <Compile Include="Client\Authentication\SaslDigestMechanism.cs" />
-    <Compile Include="Client\Authentication\SaslPlainMechanism.cs" />
-    <Compile Include="Client\Authentication\SaslScramSha1Mechanism.cs" />
-    <Compile Include="Blocking Command\Block.cs" />
-    <Compile Include="Blocking Command\BlockingErrors.cs" />
-    <Compile Include="Blocking Command\BlockItem.cs" />
-    <Compile Include="Blocking Command\BlockList.cs" />
-    <Compile Include="Blocking Command\Unblock.cs" />
-    <Compile Include="Bookmarks\BookmarkConference.cs" />
-    <Compile Include="Bookmarks\BookmarkStorage.cs" />
-    <Compile Include="Bookmarks\BookmarkUrl.cs" />
-    <Compile Include="BOSH\HttpBindCondition.cs" />
-    <Compile Include="BOSH\HttpBindType.cs" />
-    <Compile Include="BOSH\HttpBind.cs" />
-    <Compile Include="Capabilities\Caps.cs" />
-    <Compile Include="Capabilities\Caps.Custom.cs" />
-    <Compile Include="Capabilities\EntityCapabilities.cs" />
-    <Compile Include="ChatStates\ActiveChatState.cs" />
-    <Compile Include="ChatStates\ComposingChatState.cs" />
-    <Compile Include="ChatStates\GoneChatState.cs" />
-    <Compile Include="ChatStates\InactiveChatState.cs" />
-    <Compile Include="ChatStates\PausedChatState.cs" />
-    <Compile Include="Client\XmppClient.cs" />
-    <Compile Include="Capabilities\ClientCapabilities.cs" />
-    <Compile Include="Client\XmppClientPresence.cs" />
-    <Compile Include="Client\XmppClientState.cs" />
-    <Compile Include="Client\Hub.cs" />
-    <Compile Include="Client\StanzaHub.cs" />
-    <Compile Include="Core\IStanza.cs" />
-    <Compile Include="Core\Message.Custom.cs" />
-    <Compile Include="Core\RosterItem.Custom.cs" />
-    <Compile Include="Core\XmppCodes.cs" />
-    <Compile Include="Client\XmppConnectionString.cs" />
-    <Compile Include="Client\XmppConnectionStringBuilder.cs" />
-    <Compile Include="Client\ConnectionStringKeywords.cs" />
-    <Compile Include="Client\ConnectionStringSynonyms.cs" />
-    <Compile Include="Client\XmppException.cs" />
-    <Compile Include="Client\ClientHub.cs" />
-    <Compile Include="Extensions\ConcurrentBagExtensions.cs" />
-    <Compile Include="Instant Messaging\ContactBlockingAction.cs" />
-    <Compile Include="Instant Messaging\ContactListChangedAction.cs" />
-    <Compile Include="Xml\StreamElement.cs" />
-    <Compile Include="Client\ServerFeatures.cs" />
-    <Compile Include="Xml\StreamParser.cs" />
-    <Compile Include="Core\Bind.cs" />
-    <Compile Include="Core\Bind.Custom.cs" />
-    <Compile Include="Core\BindType.cs" />
-    <Compile Include="Core\CompressFailure.cs" />
-    <Compile Include="Core\CompressFailureType.cs" />
-    <Compile Include="Core\IdentifierGenerator.cs" />
-    <Compile Include="Core\InfoQuery.cs" />
-    <Compile Include="Core\InfoQuery.Custom.cs" />
-    <Compile Include="Core\InfoQueryType.cs" />
-    <Compile Include="Core\Message.cs" />
-    <Compile Include="Core\MessageBody.cs" />
-    <Compile Include="Core\MessageSubject.cs" />
-    <Compile Include="Core\MessageThread.cs" />
-    <Compile Include="Core\MessageType.cs" />
-    <Compile Include="Core\Nickname.cs" />
-    <Compile Include="Core\Presence.cs" />
-    <Compile Include="Core\Presence.Custom.cs" />
-    <Compile Include="Core\PresenceType.cs" />
-    <Compile Include="Core\ProceedTls.cs" />
-    <Compile Include="Core\Roster.cs" />
-    <Compile Include="Core\RosterAsk.cs" />
-    <Compile Include="Core\RosterItem.cs" />
-    <Compile Include="Core\RosterSubscriptionType.cs" />
-    <Compile Include="Core\SaslAbort.cs" />
-    <Compile Include="Core\SaslAuth.cs" />
-    <Compile Include="Core\SaslChallenge.cs" />
-    <Compile Include="Core\SaslFailure.cs" />
-    <Compile Include="Core\SaslFailure.Custom.cs" />
-    <Compile Include="Core\SaslFailureType.cs" />
-    <Compile Include="Core\SaslMechanisms.cs" />
-    <Compile Include="Core\SaslMechanisms.Custom.cs" />
-    <Compile Include="Core\SaslResponse.cs" />
-    <Compile Include="Core\SaslSuccess.cs" />
-    <Compile Include="Core\Session.cs" />
-    <Compile Include="Core\Session.Custom.cs" />
-    <Compile Include="Core\SessionChoiceType.cs" />
-    <Compile Include="Core\ShowType.cs" />
-    <Compile Include="Core\StanzaError.cs" />
-    <Compile Include="Core\StanzaErrorType.cs" />
-    <Compile Include="Core\StartTls.cs" />
-    <Compile Include="Core\Status.cs" />
-    <Compile Include="Core\Stream.cs" />
-    <Compile Include="Core\StreamCompressed.cs" />
-    <Compile Include="Core\StreamCompression.cs" />
-    <Compile Include="Core\StreamCompressionFeature.cs" />
-    <Compile Include="Core\StreamError.cs" />
-    <Compile Include="Core\StreamError.Custom.cs" />
-    <Compile Include="Core\StreamFeatures.cs" />
-    <Compile Include="Core\StreamFeatures.Custom.cs" />
-    <Compile Include="Core\XmppAddress.cs" />
-    <Compile Include="Xml\XmppEncoding.cs" />
-    <Compile Include="DataForms\DataForm.cs" />
-    <Compile Include="DataForms\DataFormField.cs" />
-    <Compile Include="DataForms\DataFormFieldItem.cs" />
-    <Compile Include="DataForms\DataFormFieldOption.cs" />
-    <Compile Include="DataForms\DataFormFieldReported.cs" />
-    <Compile Include="DataForms\DataFormFieldType.cs" />
-    <Compile Include="DataForms\DataFormType.cs" />
-    <Compile Include="DataForms\Layout\DataFormFieldRef.cs" />
-    <Compile Include="DataForms\Layout\DataFormPage.cs" />
-    <Compile Include="DataForms\Layout\DataFormSection.cs" />
-    <Compile Include="DataForms\Validation\DataFormValidation.cs" />
-    <Compile Include="DataForms\Validation\DataFormValidationRange.cs" />
-    <Compile Include="DataForms\Validation\DataFormValidationRangeList.cs" />
-    <Compile Include="DataForms\Validation\DataFormValidationType.cs" />
-    <Compile Include="Delayed Delivery\DelayedDelivery.cs" />
-    <Compile Include="Entity Time\EntityTime.cs" />
-    <Compile Include="Extensions\BufferExtensions.cs" />
-    <Compile Include="Extensions\ListOfTExtensions.cs" />
-    <Compile Include="Extensions\MemoryStreamExtensions.cs" />
-    <Compile Include="Extensions\StringBuilderExtensions.cs" />
-    <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="Feature Negotiation\FeatureNegotiation.cs" />
-    <Compile Include="Geolocation\UserLocation.cs" />
-    <Compile Include="In-Band Registration\OutOfBandAddress.cs" />
-    <Compile Include="In-Band Registration\Register.cs" />
-    <Compile Include="In-Band Registration\RegisterFeature.cs" />
-    <Compile Include="In-Band Registration\RegisterType.cs" />
-    <Compile Include="Instant Messaging\Avatar.cs" />
-    <Compile Include="Instant Messaging\AvatarStorage.cs" />
-    <Compile Include="Instant Messaging\RosterEx.cs" />
-    <Compile Include="Instant Messaging\RosterExItem.cs" />
-    <Compile Include="Instant Messaging\RosterExItemAction.cs" />
-    <Compile Include="Instant Messaging\VCardAvatar.cs" />
-    <Compile Include="Instant Messaging\VCardData.cs" />
-    <Compile Include="Instant Messaging\VCardPhoto.cs" />
-    <Compile Include="Instant Messaging\Contact.cs" />
-    <Compile Include="Instant Messaging\ContactResource.cs" />
-    <Compile Include="Instant Messaging\ContactResourcePresence.cs" />
-    <Compile Include="Instant Messaging\ContactList.cs" />
-    <Compile Include="Last Activity\LastActivity.cs" />
-    <Compile Include="libidn\CombiningClass.cs" />
-    <Compile Include="libidn\Composition.cs" />
-    <Compile Include="libidn\DecompositionKeys.cs" />
-    <Compile Include="libidn\DecompositionMappings.cs" />
-    <Compile Include="libidn\IDNA.cs" />
-    <Compile Include="libidn\IDNAException.cs" />
-    <Compile Include="libidn\NFKC.cs" />
-    <Compile Include="libidn\Punycode.cs" />
-    <Compile Include="libidn\PunycodeException.cs" />
-    <Compile Include="libidn\RFC3454.cs" />
-    <Compile Include="libidn\Stringprep.cs" />
-    <Compile Include="libidn\StringprepException.cs" />
-    <Compile Include="Message Delivery Receipts\MessageReceipt.cs" />
-    <Compile Include="Multi-User Chat\Muc.cs" />
-    <Compile Include="Multi-User Chat\MucActor.cs" />
-    <Compile Include="Multi-User Chat\MucAdmin.cs" />
-    <Compile Include="Multi-User Chat\MucAdminItem.cs" />
-    <Compile Include="Multi-User Chat\MucAffiliation.cs" />
-    <Compile Include="Multi-User Chat\MucHistory.cs" />
-    <Compile Include="Multi-User Chat\MucOwner.cs" />
-    <Compile Include="Multi-User Chat\MucOwnerDestroy.cs" />
-    <Compile Include="Multi-User Chat\MucRole.cs" />
-    <Compile Include="Multi-User Chat\MucUser.cs" />
-    <Compile Include="Multi-User Chat\MucUserDecline.cs" />
-    <Compile Include="Multi-User Chat\MucUserDestroy.cs" />
-    <Compile Include="Multi-User Chat\MucUserInvite.cs" />
-    <Compile Include="Multi-User Chat\MucUserItem.cs" />
-    <Compile Include="Multi-User Chat\MucUserStatus.cs" />
-    <Compile Include="Eventing\AmipNowPlayingListerner.cs" />
-    <Compile Include="Eventing\Mood.cs" />
-    <Compile Include="Eventing\MoodType.cs" />
-    <Compile Include="Eventing\Tune.cs" />
-    <Compile Include="Eventing\UserActivity.cs" />
-    <Compile Include="Eventing\UserActivityDetail.cs" />
-    <Compile Include="Eventing\UserActivityDetailType.cs" />
-    <Compile Include="Eventing\UserActivityType.cs" />
-    <Compile Include="Eventing\Activity.cs" />
-    <Compile Include="Eventing\Event.cs" />
-    <Compile Include="Eventing\MessageEvent.cs" />
-    <Compile Include="Eventing\PersonalEventing.cs" />
-    <Compile Include="Eventing\UserEvent.cs" />
-    <Compile Include="Eventing\UserMoodEvent.cs" />
-    <Compile Include="Eventing\UserTuneEvent.cs" />
-    <Compile Include="Ping\Ping.cs" />
-    <Compile Include="Privacy\PrivacyAction.cs" />
-    <Compile Include="Privacy\PrivacyActive.cs" />
-    <Compile Include="Privacy\PrivacyDefault.cs" />
-    <Compile Include="Privacy\PrivacyItem.cs" />
-    <Compile Include="Privacy\PrivacyItemType.cs" />
-    <Compile Include="Privacy\PrivacyList.cs" />
-    <Compile Include="Privacy\PrivacyQuery.cs" />
-    <Compile Include="Privacy\Privacy.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Publish-Subscribe\PubSub.cs" />
-    <Compile Include="Publish-Subscribe\PubSubAffiliation.cs" />
-    <Compile Include="Publish-Subscribe\PubSubAffiliationList.cs" />
-    <Compile Include="Publish-Subscribe\PubSubAffiliationType.cs" />
-    <Compile Include="Publish-Subscribe\PubSubConfigure.cs" />
-    <Compile Include="Publish-Subscribe\PubSubCreate.cs" />
-    <Compile Include="Publish-Subscribe\PubSubError.cs" />
-    <Compile Include="Publish-Subscribe\PubSubErrorType.cs" />
-    <Compile Include="Publish-Subscribe\PubSubEvent.cs" />
-    <Compile Include="Publish-Subscribe\PubSubEventAssociate.cs" />
-    <Compile Include="Publish-Subscribe\PubSubEventCollection.cs" />
-    <Compile Include="Publish-Subscribe\PubSubEventConfiguration.cs" />
-    <Compile Include="Publish-Subscribe\PubSubEventDelete.cs" />
-    <Compile Include="Publish-Subscribe\PubSubEventDisassociate.cs" />
-    <Compile Include="Publish-Subscribe\PubSubEventItems.cs" />
-    <Compile Include="Publish-Subscribe\PubSubEventPurge.cs" />
-    <Compile Include="Publish-Subscribe\PubSubEventRetract.cs" />
-    <Compile Include="Publish-Subscribe\PubSubEventSubscription.cs" />
-    <Compile Include="Publish-Subscribe\PubSubEventSubscriptionType.cs" />
-    <Compile Include="Publish-Subscribe\PubSubItem.cs" />
-    <Compile Include="Publish-Subscribe\PubSubItemList.cs" />
-    <Compile Include="Publish-Subscribe\PubSubOptions.cs" />
-    <Compile Include="Publish-Subscribe\PubSubPublish.cs" />
-    <Compile Include="Publish-Subscribe\PubSubRetract.cs" />
-    <Compile Include="Publish-Subscribe\PubSubSubscribe.cs" />
-    <Compile Include="Publish-Subscribe\PubSubSubscribeOptions.cs" />
-    <Compile Include="Publish-Subscribe\PubSubSubscription.cs" />
-    <Compile Include="Publish-Subscribe\PubSubSubscriptionList.cs" />
-    <Compile Include="Publish-Subscribe\PubSubSubscriptionType.cs" />
-    <Compile Include="Publish-Subscribe\PubSubUnsubscribe.cs" />
-    <Compile Include="Discovery\ServiceFeature.cs" />
-    <Compile Include="Discovery\ServiceIdentity.cs" />
-    <Compile Include="Discovery\ServiceIdentity.Custom.cs" />
-    <Compile Include="Discovery\ServiceInfo.cs" />
-    <Compile Include="Discovery\ServiceItem.cs" />
-    <Compile Include="Discovery\ServiceItemDetail.cs" />
-    <Compile Include="Discovery\GatewayService.cs" />
-    <Compile Include="Discovery\GatewayType.cs" />
-    <Compile Include="Discovery\Service.cs" />
-    <Compile Include="Discovery\ServiceCategory.cs" />
-    <Compile Include="Discovery\ServiceDiscovery.cs" />
-    <Compile Include="Shared\Empty.cs" />
-    <Compile Include="Shared\Text.cs" />
-    <Compile Include="Xml\XmppSerializer.cs" />
-    <Compile Include="Storage\DataProtectionType.cs" />
-    <Compile Include="Storage\SecureFileStorage.cs" />
-    <Compile Include="Storage\StorageFolderType.cs" />
-    <Compile Include="Client\Transports\BaseTransport.cs" />
-    <Compile Include="Client\Transports\ITransport.cs" />
-    <Compile Include="Client\Transports\TcpTransport.cs" />
-    <Compile Include="Client\Transports\TransportState.cs" />
-    <Compile Include="XMPP Registry\XmppFeatures.cs" />
-  </ItemGroup>
-  <ItemGroup>
+    <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <None Include="project.json" />
     <None Include="Schemas\RFC6120-6121\bind.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -499,27 +266,295 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <TargetPlatform Include="Windows, Version=8.1" />
-    <TargetPlatform Include="WindowsPhoneApp, Version=8.1" />
+    <Compile Include="Ad-Hoc Commands\Command.cs" />
+    <Compile Include="Ad-Hoc Commands\CommandActions.cs" />
+    <Compile Include="Ad-Hoc Commands\CommandActionsType.cs" />
+    <Compile Include="Ad-Hoc Commands\CommandActionType.cs" />
+    <Compile Include="Ad-Hoc Commands\CommandNote.cs" />
+    <Compile Include="Ad-Hoc Commands\CommandNoteType.cs" />
+    <Compile Include="Ad-Hoc Commands\CommandStatus.cs" />
+    <Compile Include="Advanced Message Processing\Amp.cs" />
+    <Compile Include="Advanced Message Processing\AmpFailedRules.cs" />
+    <Compile Include="Advanced Message Processing\AmpFeature.cs" />
+    <Compile Include="Advanced Message Processing\AmpInvalidRules.cs" />
+    <Compile Include="Advanced Message Processing\AmpRule.cs" />
+    <Compile Include="Advanced Message Processing\AmpUnsupportedActions.cs" />
+    <Compile Include="Advanced Message Processing\AmpUnsupportedConditions.cs" />
+    <Compile Include="Blocking Command\Block.cs" />
+    <Compile Include="Blocking Command\BlockingErrors.cs" />
+    <Compile Include="Blocking Command\BlockItem.cs" />
+    <Compile Include="Blocking Command\BlockList.cs" />
+    <Compile Include="Blocking Command\Unblock.cs" />
+    <Compile Include="Bookmarks\BookmarkConference.cs" />
+    <Compile Include="Bookmarks\BookmarkStorage.cs" />
+    <Compile Include="Bookmarks\BookmarkUrl.cs" />
+    <Compile Include="BOSH\HttpBind.cs" />
+    <Compile Include="BOSH\HttpBindCondition.cs" />
+    <Compile Include="BOSH\HttpBindType.cs" />
+    <Compile Include="Capabilities\Caps.cs" />
+    <Compile Include="Capabilities\Caps.Custom.cs" />
+    <Compile Include="Capabilities\ClientCapabilities.cs" />
+    <Compile Include="Capabilities\EntityCapabilities.cs" />
+    <Compile Include="Capabilities\IEntityCapabilitiesInfo.cs" />
+    <Compile Include="ChatStates\ActiveChatState.cs" />
+    <Compile Include="ChatStates\ComposingChatState.cs" />
+    <Compile Include="ChatStates\GoneChatState.cs" />
+    <Compile Include="ChatStates\InactiveChatState.cs" />
+    <Compile Include="ChatStates\PausedChatState.cs" />
+    <Compile Include="Client\Authentication\ISaslMechanism.cs" />
+    <Compile Include="Client\Authentication\SaslAuthenticationFailure.cs" />
+    <Compile Include="Client\Authentication\SaslDigestMechanism.cs" />
+    <Compile Include="Client\Authentication\SaslPlainMechanism.cs" />
+    <Compile Include="Client\Authentication\Saslprep.cs" />
+    <Compile Include="Client\Authentication\SaslScramSha1Mechanism.cs" />
+    <Compile Include="Client\Authentication\SaslTokenizer.cs" />
+    <Compile Include="Client\ClientHub.cs" />
+    <Compile Include="Client\ConnectionStringKeywords.cs" />
+    <Compile Include="Client\ConnectionStringSynonyms.cs" />
+    <Compile Include="Client\Hub.cs" />
+    <Compile Include="Client\ServerFeatures.cs" />
+    <Compile Include="Client\StanzaHub.cs" />
+    <Compile Include="Client\Transports\BaseTransport.cs" />
+    <Compile Include="Client\Transports\ITransport.cs" />
+    <Compile Include="Client\Transports\TcpTransport.cs" />
+    <Compile Include="Client\Transports\TransportState.cs" />
+    <Compile Include="Client\XmppClient.cs" />
+    <Compile Include="Client\XmppClientPresence.cs" />
+    <Compile Include="Client\XmppClientState.cs" />
+    <Compile Include="Client\XmppConnectionString.cs" />
+    <Compile Include="Client\XmppConnectionStringBuilder.cs" />
+    <Compile Include="Client\XmppException.cs" />
+    <Compile Include="Core\Bind.cs" />
+    <Compile Include="Core\Bind.Custom.cs" />
+    <Compile Include="Core\BindType.cs" />
+    <Compile Include="Core\CompressFailure.cs" />
+    <Compile Include="Core\CompressFailureType.cs" />
+    <Compile Include="Core\IdentifierGenerator.cs" />
+    <Compile Include="Core\InfoQuery.cs" />
+    <Compile Include="Core\InfoQuery.Custom.cs" />
+    <Compile Include="Core\InfoQueryType.cs" />
+    <Compile Include="Core\IStanza.cs" />
+    <Compile Include="Core\Message.cs" />
+    <Compile Include="Core\Message.Custom.cs" />
+    <Compile Include="Core\MessageBody.cs" />
+    <Compile Include="Core\MessageSubject.cs" />
+    <Compile Include="Core\MessageThread.cs" />
+    <Compile Include="Core\MessageType.cs" />
+    <Compile Include="Core\Nickname.cs" />
+    <Compile Include="Core\Presence.cs" />
+    <Compile Include="Core\Presence.Custom.cs" />
+    <Compile Include="Core\PresenceType.cs" />
+    <Compile Include="Core\ProceedTls.cs" />
+    <Compile Include="Core\Roster.cs" />
+    <Compile Include="Core\RosterAsk.cs" />
+    <Compile Include="Core\RosterItem.cs" />
+    <Compile Include="Core\RosterItem.Custom.cs" />
+    <Compile Include="Core\RosterSubscriptionType.cs" />
+    <Compile Include="Core\SaslAbort.cs" />
+    <Compile Include="Core\SaslAuth.cs" />
+    <Compile Include="Core\SaslChallenge.cs" />
+    <Compile Include="Core\SaslFailure.cs" />
+    <Compile Include="Core\SaslFailure.Custom.cs" />
+    <Compile Include="Core\SaslFailureType.cs" />
+    <Compile Include="Core\SaslMechanisms.cs" />
+    <Compile Include="Core\SaslMechanisms.Custom.cs" />
+    <Compile Include="Core\SaslResponse.cs" />
+    <Compile Include="Core\SaslSuccess.cs" />
+    <Compile Include="Core\Session.cs" />
+    <Compile Include="Core\Session.Custom.cs" />
+    <Compile Include="Core\SessionChoiceType.cs" />
+    <Compile Include="Core\ShowType.cs" />
+    <Compile Include="Core\StanzaError.cs" />
+    <Compile Include="Core\StanzaErrorType.cs" />
+    <Compile Include="Core\StartTls.cs" />
+    <Compile Include="Core\Status.cs" />
+    <Compile Include="Core\Stream.cs" />
+    <Compile Include="Core\StreamCompressed.cs" />
+    <Compile Include="Core\StreamCompression.cs" />
+    <Compile Include="Core\StreamCompressionFeature.cs" />
+    <Compile Include="Core\StreamError.cs" />
+    <Compile Include="Core\StreamError.Custom.cs" />
+    <Compile Include="Core\StreamFeatures.cs" />
+    <Compile Include="Core\StreamFeatures.Custom.cs" />
+    <Compile Include="Core\XmppAddress.cs" />
+    <Compile Include="Core\XmppCodes.cs" />
+    <Compile Include="DataForms\DataForm.cs" />
+    <Compile Include="DataForms\DataFormField.cs" />
+    <Compile Include="DataForms\DataFormFieldItem.cs" />
+    <Compile Include="DataForms\DataFormFieldOption.cs" />
+    <Compile Include="DataForms\DataFormFieldReported.cs" />
+    <Compile Include="DataForms\DataFormFieldType.cs" />
+    <Compile Include="DataForms\DataFormType.cs" />
+    <Compile Include="DataForms\Layout\DataFormFieldRef.cs" />
+    <Compile Include="DataForms\Layout\DataFormPage.cs" />
+    <Compile Include="DataForms\Layout\DataFormSection.cs" />
+    <Compile Include="DataForms\Validation\DataFormValidation.cs" />
+    <Compile Include="DataForms\Validation\DataFormValidationRange.cs" />
+    <Compile Include="DataForms\Validation\DataFormValidationRangeList.cs" />
+    <Compile Include="DataForms\Validation\DataFormValidationType.cs" />
+    <Compile Include="Delayed Delivery\DelayedDelivery.cs" />
+    <Compile Include="Discovery\GatewayService.cs" />
+    <Compile Include="Discovery\GatewayType.cs" />
+    <Compile Include="Discovery\Service.cs" />
+    <Compile Include="Discovery\ServiceCategory.cs" />
+    <Compile Include="Discovery\ServiceDiscovery.cs" />
+    <Compile Include="Discovery\ServiceFeature.cs" />
+    <Compile Include="Discovery\ServiceIdentity.cs" />
+    <Compile Include="Discovery\ServiceIdentity.Custom.cs" />
+    <Compile Include="Discovery\ServiceInfo.cs" />
+    <Compile Include="Discovery\ServiceItem.cs" />
+    <Compile Include="Discovery\ServiceItemDetail.cs" />
+    <Compile Include="Entity Time\EntityTime.cs" />
+    <Compile Include="Eventing\Activity.cs" />
+    <Compile Include="Eventing\Event.cs" />
+    <Compile Include="Eventing\MessageEvent.cs" />
+    <Compile Include="Eventing\Mood.cs" />
+    <Compile Include="Eventing\MoodType.cs" />
+    <Compile Include="Eventing\PersonalEventing.cs" />
+    <Compile Include="Eventing\Tune.cs" />
+    <Compile Include="Eventing\UserActivity.cs" />
+    <Compile Include="Eventing\UserActivityDetail.cs" />
+    <Compile Include="Eventing\UserActivityDetailType.cs" />
+    <Compile Include="Eventing\UserActivityType.cs" />
+    <Compile Include="Eventing\UserEvent.cs" />
+    <Compile Include="Eventing\UserMoodEvent.cs" />
+    <Compile Include="Eventing\UserTuneEvent.cs" />
+    <Compile Include="Extensions\BufferExtensions.cs" />
+    <Compile Include="Extensions\ConcurrentBagExtensions.cs" />
+    <Compile Include="Extensions\ListOfTExtensions.cs" />
+    <Compile Include="Extensions\MemoryStreamExtensions.cs" />
+    <Compile Include="Extensions\StringBuilderExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Feature Negotiation\FeatureNegotiation.cs" />
+    <Compile Include="Geolocation\UserLocation.cs" />
+    <Compile Include="In-Band Registration\OutOfBandAddress.cs" />
+    <Compile Include="In-Band Registration\Register.cs" />
+    <Compile Include="In-Band Registration\RegisterFeature.cs" />
+    <Compile Include="In-Band Registration\RegisterType.cs" />
+    <Compile Include="Instant Messaging\Avatar.cs" />
+    <Compile Include="Instant Messaging\AvatarStorage.cs" />
+    <Compile Include="Instant Messaging\Contact.cs" />
+    <Compile Include="Instant Messaging\ContactBlockingAction.cs" />
+    <Compile Include="Instant Messaging\ContactList.cs" />
+    <Compile Include="Instant Messaging\ContactListChangedAction.cs" />
+    <Compile Include="Instant Messaging\ContactResource.cs" />
+    <Compile Include="Instant Messaging\ContactResourcePresence.cs" />
+    <Compile Include="Instant Messaging\RosterEx.cs" />
+    <Compile Include="Instant Messaging\RosterExItem.cs" />
+    <Compile Include="Instant Messaging\RosterExItemAction.cs" />
+    <Compile Include="Instant Messaging\VCardAvatar.cs" />
+    <Compile Include="Instant Messaging\VCardData.cs" />
+    <Compile Include="Instant Messaging\VCardPhoto.cs" />
+    <Compile Include="Last Activity\LastActivity.cs" />
+    <Compile Include="libidn\CombiningClass.cs" />
+    <Compile Include="libidn\Composition.cs" />
+    <Compile Include="libidn\DecompositionKeys.cs" />
+    <Compile Include="libidn\DecompositionMappings.cs" />
+    <Compile Include="libidn\IDNA.cs" />
+    <Compile Include="libidn\IDNAException.cs" />
+    <Compile Include="libidn\NFKC.cs" />
+    <Compile Include="libidn\Punycode.cs" />
+    <Compile Include="libidn\PunycodeException.cs" />
+    <Compile Include="libidn\RFC3454.cs" />
+    <Compile Include="libidn\Stringprep.cs" />
+    <Compile Include="libidn\StringprepException.cs" />
+    <Compile Include="Message Delivery Receipts\MessageReceipt.cs" />
+    <Compile Include="Multi-User Chat\Muc.cs" />
+    <Compile Include="Multi-User Chat\MucActor.cs" />
+    <Compile Include="Multi-User Chat\MucAdmin.cs" />
+    <Compile Include="Multi-User Chat\MucAdminItem.cs" />
+    <Compile Include="Multi-User Chat\MucAffiliation.cs" />
+    <Compile Include="Multi-User Chat\MucHistory.cs" />
+    <Compile Include="Multi-User Chat\MucOwner.cs" />
+    <Compile Include="Multi-User Chat\MucOwnerDestroy.cs" />
+    <Compile Include="Multi-User Chat\MucRole.cs" />
+    <Compile Include="Multi-User Chat\MucUser.cs" />
+    <Compile Include="Multi-User Chat\MucUserDecline.cs" />
+    <Compile Include="Multi-User Chat\MucUserDestroy.cs" />
+    <Compile Include="Multi-User Chat\MucUserInvite.cs" />
+    <Compile Include="Multi-User Chat\MucUserItem.cs" />
+    <Compile Include="Multi-User Chat\MucUserStatus.cs" />
+    <Compile Include="Ping\ping.cs" />
+    <Compile Include="Privacy\Privacy.cs" />
+    <Compile Include="Privacy\PrivacyAction.cs" />
+    <Compile Include="Privacy\PrivacyActive.cs" />
+    <Compile Include="Privacy\PrivacyDefault.cs" />
+    <Compile Include="Privacy\PrivacyItem.cs" />
+    <Compile Include="Privacy\PrivacyItemType.cs" />
+    <Compile Include="Privacy\PrivacyList.cs" />
+    <Compile Include="Privacy\PrivacyQuery.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Publish-Subscribe\PubSub.cs" />
+    <Compile Include="Publish-Subscribe\PubSubAffiliation.cs" />
+    <Compile Include="Publish-Subscribe\PubSubAffiliationList.cs" />
+    <Compile Include="Publish-Subscribe\PubSubAffiliationType.cs" />
+    <Compile Include="Publish-Subscribe\PubSubConfigure.cs" />
+    <Compile Include="Publish-Subscribe\PubSubCreate.cs" />
+    <Compile Include="Publish-Subscribe\PubSubError.cs" />
+    <Compile Include="Publish-Subscribe\PubSubErrorType.cs" />
+    <Compile Include="Publish-Subscribe\PubSubEvent.cs" />
+    <Compile Include="Publish-Subscribe\PubSubEventAssociate.cs" />
+    <Compile Include="Publish-Subscribe\PubSubEventCollection.cs" />
+    <Compile Include="Publish-Subscribe\PubSubEventConfiguration.cs" />
+    <Compile Include="Publish-Subscribe\PubSubEventDelete.cs" />
+    <Compile Include="Publish-Subscribe\PubSubEventDisassociate.cs" />
+    <Compile Include="Publish-Subscribe\PubSubEventItems.cs" />
+    <Compile Include="Publish-Subscribe\PubSubEventPurge.cs" />
+    <Compile Include="Publish-Subscribe\PubSubEventRetract.cs" />
+    <Compile Include="Publish-Subscribe\PubSubEventSubscription.cs" />
+    <Compile Include="Publish-Subscribe\PubSubEventSubscriptionType.cs" />
+    <Compile Include="Publish-Subscribe\PubSubItem.cs" />
+    <Compile Include="Publish-Subscribe\PubSubItemList.cs" />
+    <Compile Include="Publish-Subscribe\PubSubOptions.cs" />
+    <Compile Include="Publish-Subscribe\PubSubPublish.cs" />
+    <Compile Include="Publish-Subscribe\PubSubRetract.cs" />
+    <Compile Include="Publish-Subscribe\PubSubSubscribe.cs" />
+    <Compile Include="Publish-Subscribe\PubSubSubscribeOptions.cs" />
+    <Compile Include="Publish-Subscribe\PubSubSubscription.cs" />
+    <Compile Include="Publish-Subscribe\PubSubSubscriptionList.cs" />
+    <Compile Include="Publish-Subscribe\PubSubSubscriptionType.cs" />
+    <Compile Include="Publish-Subscribe\PubSubUnsubscribe.cs" />
+    <Compile Include="Shared\Empty.cs" />
+    <Compile Include="Shared\Text.cs" />
+    <Compile Include="Storage\DataProtectionType.cs" />
+    <Compile Include="Storage\SecureFileStorage.cs" />
+    <Compile Include="Storage\StorageFolderType.cs" />
+    <Compile Include="Xml\StreamElement.cs" />
+    <Compile Include="Xml\StreamParser.cs" />
+    <Compile Include="Xml\XmppEncoding.cs" />
+    <Compile Include="Xml\XmppSerializer.cs" />
+    <Compile Include="XMPP Registry\XmppFeatures.cs" />
+    <Content Include="Properties\Conversa.Net.Xmpp.rd.xml" />
+    <EmbeddedResource Include="Xml\Serializers.xml" />
+    <None Include="XMPP Registry\alt-connections.xml" />
+    <None Include="XMPP Registry\amp-actions.xml" />
+    <None Include="XMPP Registry\amp-conditions.xml" />
+    <None Include="XMPP Registry\compress.xml" />
+    <None Include="XMPP Registry\disco-categories.xml" />
+    <None Include="XMPP Registry\disco-features.xml" />
+    <None Include="XMPP Registry\errors.xml" />
+    <None Include="XMPP Registry\formtypes.xml" />
+    <None Include="XMPP Registry\jingle-apps.xml" />
+    <None Include="XMPP Registry\jingle-transports.xml" />
+    <None Include="XMPP Registry\linklocal.xml" />
+    <None Include="XMPP Registry\mucstatus.xml" />
+    <None Include="XMPP Registry\namespaces.xml" />
+    <None Include="XMPP Registry\nodes.xml" />
+    <None Include="XMPP Registry\querytypes.xml" />
+    <None Include="XMPP Registry\shim.xml" />
+    <None Include="XMPP Registry\si-profiles.xml" />
+    <None Include="XMPP Registry\stream-features.xml" />
+    <None Include="XMPP Registry\xdv-datatypes.xml" />
+    <None Include="XMPP Registry\xdv-prefixes.xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="AMIPClientWrapper">
-      <HintPath>..\..\lib\AMIP\AMIPClientWrapper.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Core">
-      <HintPath>..\..\packages\Rx-Core.2.2.5\lib\portable-win81+wpa81\System.Reactive.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Interfaces">
-      <HintPath>..\..\packages\Rx-Interfaces.2.2.5\lib\portable-win81+wpa81\System.Reactive.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Linq">
-      <HintPath>..\..\packages\Rx-Linq.2.2.5\lib\portable-win81+wpa81\System.Reactive.Linq.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.PlatformServices">
-      <HintPath>..\..\packages\Rx-PlatformServices.2.2.5\lib\portable-win81+wpa81\System.Reactive.PlatformServices.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <ItemGroup />
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
+    <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>rem "C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\x64\sgen.exe" "$(TargetPath)" /force</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -527,471 +562,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0')">
-      <ItemGroup>
-        <Reference Include="Mono.Security">
-          <HintPath>..\..\packages\Mono.Security\lib\net40\Mono.Security.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="($(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3')) Or ($(TargetFrameworkIdentifier) == 'MonoAndroid') Or ($(TargetFrameworkIdentifier) == 'MonoTouch')">
-      <ItemGroup>
-        <Reference Include="Mono.Security">
-          <HintPath>..\..\packages\Mono.Security\lib\net45\Mono.Security.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETCore' And $(TargetFrameworkVersion) == 'v4.5.1'">
-      <ItemGroup>
-        <Reference Include="PCLCrypto.Abstractions">
-          <HintPath>..\..\packages\PCLCrypto\lib\win81\PCLCrypto.Abstractions.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="PCLCrypto">
-          <HintPath>..\..\packages\PCLCrypto\lib\win81\PCLCrypto.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3')">
-      <ItemGroup>
-        <Reference Include="PCLCrypto.Abstractions">
-          <HintPath>..\..\packages\PCLCrypto\lib\net40-Client\PCLCrypto.Abstractions.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="PCLCrypto">
-          <HintPath>..\..\packages\PCLCrypto\lib\net40-Client\PCLCrypto.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(TargetFrameworkIdentifier) == 'MonoAndroid'">
-      <ItemGroup>
-        <Reference Include="PCLCrypto.Abstractions">
-          <HintPath>..\..\packages\PCLCrypto\lib\monoandroid\PCLCrypto.Abstractions.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="PCLCrypto">
-          <HintPath>..\..\packages\PCLCrypto\lib\monoandroid\PCLCrypto.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(TargetFrameworkIdentifier) == 'MonoTouch'">
-      <ItemGroup>
-        <Reference Include="PCLCrypto.Abstractions">
-          <HintPath>..\..\packages\PCLCrypto\lib\monotouch\PCLCrypto.Abstractions.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="PCLCrypto">
-          <HintPath>..\..\packages\PCLCrypto\lib\monotouch\PCLCrypto.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(TargetFrameworkIdentifier) == 'Silverlight' And $(TargetFrameworkVersion) == 'v5.0'">
-      <ItemGroup>
-        <Reference Include="PCLCrypto.Abstractions">
-          <HintPath>..\..\packages\PCLCrypto\lib\sl5\PCLCrypto.Abstractions.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="PCLCrypto">
-          <HintPath>..\..\packages\PCLCrypto\lib\sl5\PCLCrypto.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(TargetFrameworkIdentifier) == 'WindowsPhone' And ($(TargetFrameworkVersion) == 'v8.0' Or $(TargetFrameworkVersion) == 'v8.1')">
-      <ItemGroup>
-        <Reference Include="PCLCrypto.Abstractions">
-          <HintPath>..\..\packages\PCLCrypto\lib\wp8\PCLCrypto.Abstractions.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="PCLCrypto">
-          <HintPath>..\..\packages\PCLCrypto\lib\wp8\PCLCrypto.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(TargetFrameworkIdentifier) == 'WindowsPhoneApp'">
-      <ItemGroup>
-        <Reference Include="PCLCrypto.Abstractions">
-          <HintPath>..\..\packages\PCLCrypto\lib\wpa81\PCLCrypto.Abstractions.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="PCLCrypto">
-          <HintPath>..\..\packages\PCLCrypto\lib\wpa81\PCLCrypto.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="($(TargetFrameworkIdentifier) == '.NETCore' And $(TargetFrameworkVersion) == 'v4.5') Or ($(TargetFrameworkProfile) == 'Profile5') Or ($(TargetFrameworkProfile) == 'Profile6') Or ($(TargetFrameworkProfile) == 'Profile7') Or ($(TargetFrameworkProfile) == 'Profile14') Or ($(TargetFrameworkProfile) == 'Profile19') Or ($(TargetFrameworkProfile) == 'Profile24') Or ($(TargetFrameworkProfile) == 'Profile31') Or ($(TargetFrameworkProfile) == 'Profile32') Or ($(TargetFrameworkProfile) == 'Profile37') Or ($(TargetFrameworkProfile) == 'Profile42') Or ($(TargetFrameworkProfile) == 'Profile44') Or ($(TargetFrameworkProfile) == 'Profile47') Or ($(TargetFrameworkProfile) == 'Profile49') Or ($(TargetFrameworkProfile) == 'Profile78') Or ($(TargetFrameworkProfile) == 'Profile84') Or ($(TargetFrameworkProfile) == 'Profile92') Or ($(TargetFrameworkProfile) == 'Profile102') Or ($(TargetFrameworkProfile) == 'Profile111') Or ($(TargetFrameworkProfile) == 'Profile136') Or ($(TargetFrameworkProfile) == 'Profile147') Or ($(TargetFrameworkProfile) == 'Profile151') Or ($(TargetFrameworkProfile) == 'Profile157') Or ($(TargetFrameworkProfile) == 'Profile158') Or ($(TargetFrameworkProfile) == 'Profile225') Or ($(TargetFrameworkProfile) == 'Profile240') Or ($(TargetFrameworkProfile) == 'Profile255') Or ($(TargetFrameworkProfile) == 'Profile259') Or ($(TargetFrameworkProfile) == 'Profile328') Or ($(TargetFrameworkProfile) == 'Profile336') Or ($(TargetFrameworkProfile) == 'Profile344')" />
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETCore'">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Core">
-          <HintPath>..\..\packages\Rx-Core\lib\windows8\System.Reactive.Core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Core">
-          <HintPath>..\..\packages\Rx-Core\lib\net40\System.Reactive.Core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(TargetFrameworkIdentifier) == 'Silverlight' And $(TargetFrameworkVersion) == 'v5.0'">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Core">
-          <HintPath>..\..\packages\Rx-Core\lib\sl5\System.Reactive.Core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(TargetFrameworkIdentifier) == 'WindowsPhone' And $(TargetFrameworkVersion) == 'v7.1'">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Core">
-          <HintPath>..\..\packages\Rx-Core\lib\windowsphone71\System.Reactive.Core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(TargetFrameworkIdentifier) == 'WindowsPhone' And ($(TargetFrameworkVersion) == 'v8.0' Or $(TargetFrameworkVersion) == 'v8.1')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Core">
-          <HintPath>..\..\packages\Rx-Core\lib\windowsphone8\System.Reactive.Core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="($(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3')) Or ($(TargetFrameworkIdentifier) == 'MonoAndroid') Or ($(TargetFrameworkIdentifier) == 'MonoTouch')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Core">
-          <HintPath>..\..\packages\Rx-Core\lib\net45\System.Reactive.Core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="($(TargetFrameworkIdentifier) == 'WindowsPhoneApp') Or ($(TargetFrameworkProfile) == 'Profile32')" />
-    <When Condition="($(TargetFrameworkProfile) == 'Profile5') Or ($(TargetFrameworkProfile) == 'Profile6') Or ($(TargetFrameworkProfile) == 'Profile14') Or ($(TargetFrameworkProfile) == 'Profile19') Or ($(TargetFrameworkProfile) == 'Profile24') Or ($(TargetFrameworkProfile) == 'Profile37') Or ($(TargetFrameworkProfile) == 'Profile42') Or ($(TargetFrameworkProfile) == 'Profile47') Or ($(TargetFrameworkProfile) == 'Profile147') Or ($(TargetFrameworkProfile) == 'Profile158')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Core">
-          <HintPath>..\..\packages\Rx-Core\lib\portable-net40+sl5+win8+wp8\System.Reactive.Core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="($(TargetFrameworkProfile) == 'Profile7') Or ($(TargetFrameworkProfile) == 'Profile31') Or ($(TargetFrameworkProfile) == 'Profile44') Or ($(TargetFrameworkProfile) == 'Profile49') Or ($(TargetFrameworkProfile) == 'Profile78')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Core">
-          <HintPath>..\..\packages\Rx-Core\lib\portable-windows8+net45+wp8\System.Reactive.Core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="($(TargetFrameworkProfile) == 'Profile84') Or ($(TargetFrameworkProfile) == 'Profile111') Or ($(TargetFrameworkProfile) == 'Profile151') Or ($(TargetFrameworkProfile) == 'Profile157') Or ($(TargetFrameworkProfile) == 'Profile259')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Core">
-          <HintPath>..\..\packages\Rx-Core\lib\portable-net45+winrt45+wp8+wpa81\System.Reactive.Core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETCore'">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Interfaces">
-          <HintPath>..\..\packages\Rx-Interfaces\lib\windows8\System.Reactive.Interfaces.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Interfaces">
-          <HintPath>..\..\packages\Rx-Interfaces\lib\net40\System.Reactive.Interfaces.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(TargetFrameworkIdentifier) == 'Silverlight' And $(TargetFrameworkVersion) == 'v5.0'">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Interfaces">
-          <HintPath>..\..\packages\Rx-Interfaces\lib\sl5\System.Reactive.Interfaces.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(TargetFrameworkIdentifier) == 'WindowsPhone' And $(TargetFrameworkVersion) == 'v7.1'">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Interfaces">
-          <HintPath>..\..\packages\Rx-Interfaces\lib\windowsphone71\System.Reactive.Interfaces.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(TargetFrameworkIdentifier) == 'WindowsPhone' And ($(TargetFrameworkVersion) == 'v8.0' Or $(TargetFrameworkVersion) == 'v8.1')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Interfaces">
-          <HintPath>..\..\packages\Rx-Interfaces\lib\windowsphone8\System.Reactive.Interfaces.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="($(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3')) Or ($(TargetFrameworkIdentifier) == 'MonoAndroid') Or ($(TargetFrameworkIdentifier) == 'MonoTouch')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Interfaces">
-          <HintPath>..\..\packages\Rx-Interfaces\lib\net45\System.Reactive.Interfaces.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="($(TargetFrameworkIdentifier) == 'WindowsPhoneApp') Or ($(TargetFrameworkProfile) == 'Profile32')" />
-    <When Condition="($(TargetFrameworkProfile) == 'Profile5') Or ($(TargetFrameworkProfile) == 'Profile6') Or ($(TargetFrameworkProfile) == 'Profile14') Or ($(TargetFrameworkProfile) == 'Profile19') Or ($(TargetFrameworkProfile) == 'Profile24') Or ($(TargetFrameworkProfile) == 'Profile37') Or ($(TargetFrameworkProfile) == 'Profile42') Or ($(TargetFrameworkProfile) == 'Profile47') Or ($(TargetFrameworkProfile) == 'Profile147') Or ($(TargetFrameworkProfile) == 'Profile158')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Interfaces">
-          <HintPath>..\..\packages\Rx-Interfaces\lib\portable-net40+sl5+win8+wp8\System.Reactive.Interfaces.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="($(TargetFrameworkProfile) == 'Profile7') Or ($(TargetFrameworkProfile) == 'Profile31') Or ($(TargetFrameworkProfile) == 'Profile44') Or ($(TargetFrameworkProfile) == 'Profile49') Or ($(TargetFrameworkProfile) == 'Profile78')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Interfaces">
-          <HintPath>..\..\packages\Rx-Interfaces\lib\portable-windows8+net45+wp8\System.Reactive.Interfaces.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="($(TargetFrameworkProfile) == 'Profile84') Or ($(TargetFrameworkProfile) == 'Profile111') Or ($(TargetFrameworkProfile) == 'Profile151') Or ($(TargetFrameworkProfile) == 'Profile157') Or ($(TargetFrameworkProfile) == 'Profile259')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Interfaces">
-          <HintPath>..\..\packages\Rx-Interfaces\lib\portable-net45+winrt45+wp8+wpa81\System.Reactive.Interfaces.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETCore'">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Linq">
-          <HintPath>..\..\packages\Rx-Linq\lib\windows8\System.Reactive.Linq.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Linq">
-          <HintPath>..\..\packages\Rx-Linq\lib\net40\System.Reactive.Linq.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(TargetFrameworkIdentifier) == 'Silverlight' And $(TargetFrameworkVersion) == 'v5.0'">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Linq">
-          <HintPath>..\..\packages\Rx-Linq\lib\sl5\System.Reactive.Linq.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(TargetFrameworkIdentifier) == 'WindowsPhone' And $(TargetFrameworkVersion) == 'v7.1'">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Linq">
-          <HintPath>..\..\packages\Rx-Linq\lib\windowsphone71\System.Reactive.Linq.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(TargetFrameworkIdentifier) == 'WindowsPhone' And ($(TargetFrameworkVersion) == 'v8.0' Or $(TargetFrameworkVersion) == 'v8.1')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Linq">
-          <HintPath>..\..\packages\Rx-Linq\lib\windowsphone8\System.Reactive.Linq.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="($(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3')) Or ($(TargetFrameworkIdentifier) == 'MonoAndroid') Or ($(TargetFrameworkIdentifier) == 'MonoTouch')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Linq">
-          <HintPath>..\..\packages\Rx-Linq\lib\net45\System.Reactive.Linq.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="($(TargetFrameworkIdentifier) == 'WindowsPhoneApp') Or ($(TargetFrameworkProfile) == 'Profile32')" />
-    <When Condition="($(TargetFrameworkProfile) == 'Profile5') Or ($(TargetFrameworkProfile) == 'Profile6') Or ($(TargetFrameworkProfile) == 'Profile14') Or ($(TargetFrameworkProfile) == 'Profile19') Or ($(TargetFrameworkProfile) == 'Profile24') Or ($(TargetFrameworkProfile) == 'Profile37') Or ($(TargetFrameworkProfile) == 'Profile42') Or ($(TargetFrameworkProfile) == 'Profile47') Or ($(TargetFrameworkProfile) == 'Profile147') Or ($(TargetFrameworkProfile) == 'Profile158')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Linq">
-          <HintPath>..\..\packages\Rx-Linq\lib\portable-net40+sl5+win8+wp8\System.Reactive.Linq.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="($(TargetFrameworkProfile) == 'Profile7') Or ($(TargetFrameworkProfile) == 'Profile31') Or ($(TargetFrameworkProfile) == 'Profile44') Or ($(TargetFrameworkProfile) == 'Profile49') Or ($(TargetFrameworkProfile) == 'Profile78')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Linq">
-          <HintPath>..\..\packages\Rx-Linq\lib\portable-windows8+net45+wp8\System.Reactive.Linq.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="($(TargetFrameworkProfile) == 'Profile84') Or ($(TargetFrameworkProfile) == 'Profile111') Or ($(TargetFrameworkProfile) == 'Profile151') Or ($(TargetFrameworkProfile) == 'Profile157') Or ($(TargetFrameworkProfile) == 'Profile259')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.Linq">
-          <HintPath>..\..\packages\Rx-Linq\lib\portable-net45+winrt45+wp8+wpa81\System.Reactive.Linq.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETCore'">
-      <ItemGroup>
-        <Reference Include="System.Reactive.PlatformServices">
-          <HintPath>..\..\packages\Rx-PlatformServices\lib\windows8\System.Reactive.PlatformServices.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.PlatformServices">
-          <HintPath>..\..\packages\Rx-PlatformServices\lib\net40\System.Reactive.PlatformServices.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(TargetFrameworkIdentifier) == 'Silverlight' And $(TargetFrameworkVersion) == 'v5.0'">
-      <ItemGroup>
-        <Reference Include="System.Reactive.PlatformServices">
-          <HintPath>..\..\packages\Rx-PlatformServices\lib\sl5\System.Reactive.PlatformServices.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(TargetFrameworkIdentifier) == 'WindowsPhone' And $(TargetFrameworkVersion) == 'v7.1'">
-      <ItemGroup>
-        <Reference Include="System.Reactive.PlatformServices">
-          <HintPath>..\..\packages\Rx-PlatformServices\lib\windowsphone71\System.Reactive.PlatformServices.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(TargetFrameworkIdentifier) == 'WindowsPhone' And ($(TargetFrameworkVersion) == 'v8.0' Or $(TargetFrameworkVersion) == 'v8.1')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.PlatformServices">
-          <HintPath>..\..\packages\Rx-PlatformServices\lib\windowsphone8\System.Reactive.PlatformServices.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="($(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3')) Or ($(TargetFrameworkIdentifier) == 'MonoAndroid') Or ($(TargetFrameworkIdentifier) == 'MonoTouch')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.PlatformServices">
-          <HintPath>..\..\packages\Rx-PlatformServices\lib\net45\System.Reactive.PlatformServices.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="($(TargetFrameworkIdentifier) == 'WindowsPhoneApp') Or ($(TargetFrameworkProfile) == 'Profile32')" />
-    <When Condition="($(TargetFrameworkProfile) == 'Profile5') Or ($(TargetFrameworkProfile) == 'Profile6') Or ($(TargetFrameworkProfile) == 'Profile14') Or ($(TargetFrameworkProfile) == 'Profile19') Or ($(TargetFrameworkProfile) == 'Profile24') Or ($(TargetFrameworkProfile) == 'Profile37') Or ($(TargetFrameworkProfile) == 'Profile42') Or ($(TargetFrameworkProfile) == 'Profile47') Or ($(TargetFrameworkProfile) == 'Profile147') Or ($(TargetFrameworkProfile) == 'Profile158')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.PlatformServices">
-          <HintPath>..\..\packages\Rx-PlatformServices\lib\portable-net40+sl5+win8+wp8\System.Reactive.PlatformServices.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="($(TargetFrameworkProfile) == 'Profile7') Or ($(TargetFrameworkProfile) == 'Profile31') Or ($(TargetFrameworkProfile) == 'Profile44') Or ($(TargetFrameworkProfile) == 'Profile49') Or ($(TargetFrameworkProfile) == 'Profile78')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.PlatformServices">
-          <HintPath>..\..\packages\Rx-PlatformServices\lib\portable-windows8+net45+wp8\System.Reactive.PlatformServices.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="($(TargetFrameworkProfile) == 'Profile84') Or ($(TargetFrameworkProfile) == 'Profile111') Or ($(TargetFrameworkProfile) == 'Profile151') Or ($(TargetFrameworkProfile) == 'Profile157') Or ($(TargetFrameworkProfile) == 'Profile259')">
-      <ItemGroup>
-        <Reference Include="System.Reactive.PlatformServices">
-          <HintPath>..\..\packages\Rx-PlatformServices\lib\portable-net45+winrt45+wp8+wpa81\System.Reactive.PlatformServices.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="($(TargetFrameworkIdentifier) == 'WindowsPhoneApp') Or ($(TargetFrameworkIdentifier) == '.NETCore') Or ($(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3')) Or ($(TargetFrameworkIdentifier) == 'Silverlight' And $(TargetFrameworkVersion) == 'v5.0') Or ($(TargetFrameworkIdentifier) == 'WindowsPhone' And ($(TargetFrameworkVersion) == 'v8.0' Or $(TargetFrameworkVersion) == 'v8.1')) Or ($(TargetFrameworkIdentifier) == 'MonoAndroid') Or ($(TargetFrameworkIdentifier) == 'MonoTouch') Or ($(TargetFrameworkProfile) == 'Profile5') Or ($(TargetFrameworkProfile) == 'Profile6') Or ($(TargetFrameworkProfile) == 'Profile7') Or ($(TargetFrameworkProfile) == 'Profile14') Or ($(TargetFrameworkProfile) == 'Profile19') Or ($(TargetFrameworkProfile) == 'Profile24') Or ($(TargetFrameworkProfile) == 'Profile31') Or ($(TargetFrameworkProfile) == 'Profile32') Or ($(TargetFrameworkProfile) == 'Profile37') Or ($(TargetFrameworkProfile) == 'Profile42') Or ($(TargetFrameworkProfile) == 'Profile44') Or ($(TargetFrameworkProfile) == 'Profile47') Or ($(TargetFrameworkProfile) == 'Profile49') Or ($(TargetFrameworkProfile) == 'Profile78') Or ($(TargetFrameworkProfile) == 'Profile84') Or ($(TargetFrameworkProfile) == 'Profile92') Or ($(TargetFrameworkProfile) == 'Profile102') Or ($(TargetFrameworkProfile) == 'Profile111') Or ($(TargetFrameworkProfile) == 'Profile136') Or ($(TargetFrameworkProfile) == 'Profile147') Or ($(TargetFrameworkProfile) == 'Profile151') Or ($(TargetFrameworkProfile) == 'Profile157') Or ($(TargetFrameworkProfile) == 'Profile158') Or ($(TargetFrameworkProfile) == 'Profile225') Or ($(TargetFrameworkProfile) == 'Profile240') Or ($(TargetFrameworkProfile) == 'Profile255') Or ($(TargetFrameworkProfile) == 'Profile259') Or ($(TargetFrameworkProfile) == 'Profile328') Or ($(TargetFrameworkProfile) == 'Profile336') Or ($(TargetFrameworkProfile) == 'Profile344')" />
-  </Choose>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-  </Target>
 </Project>

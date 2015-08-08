@@ -20,9 +20,8 @@ namespace Conversa.Net.Xmpp.Eventing
     public sealed class PersonalEventing
         : StanzaHub
     {
-        private List<string>			features;
-        private AmipNowPlayingListerner	nowPlayingListener;
-        private bool                    isUserTuneEnabled;
+        private List<string> features;
+        private bool         isUserTuneEnabled;
 
         /// <summary>
         /// Gets the collection of features ( if personal eventing is supported )
@@ -30,14 +29,6 @@ namespace Conversa.Net.Xmpp.Eventing
         public IEnumerable<string> Features
         {
             get { return this.features.AsEnumerable(); }
-        }
-
-        /// <summary>
-        /// Gets a value that indicates if it supports user tunes
-        /// </summary>
-        public bool SupportsUserTune
-        {
-            get { return this.SupportsFeature(XmppFeatures.UserTune); }
         }
 
         /// <summary>
@@ -58,14 +49,13 @@ namespace Conversa.Net.Xmpp.Eventing
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:XmppServiceDiscovery"/> class.
+        /// Initializes a new instance of the <see cref="T:PersonalEventing"/> class.
         /// </summary>
         /// <param name="client">XMPP Client instance.</param>
         internal PersonalEventing(XmppClient client)
             : base(client)
         {
-            this.features           = new List<string>();
-            this.nowPlayingListener	= new AmipNowPlayingListerner(this.Client);
+            this.features = new List<string>();
         }
 
         /// <summary>
@@ -93,11 +83,6 @@ namespace Conversa.Net.Xmpp.Eventing
             foreach (var details in response.ServiceItem.Items)
             {
                 this.features.Add(details.Node);
-            }
-
-            if (this.SupportsUserTune)
-            {
-                this.nowPlayingListener.Start();
             }
         }
 

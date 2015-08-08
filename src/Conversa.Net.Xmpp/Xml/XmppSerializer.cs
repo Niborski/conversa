@@ -91,7 +91,7 @@ namespace Conversa.Net.Xmpp.Xml
 
             var assembly = typeof(XmppSerializer).GetTypeInfo().Assembly;
             var resource = "Conversa.Net.Xmpp.Xml.Serializers.xml";
-            var document = new XmlDocument();
+            var document = new Windows.Data.Xml.Dom.XmlDocument();
 
             document.LoadXml(ReadResource(assembly, resource));
 

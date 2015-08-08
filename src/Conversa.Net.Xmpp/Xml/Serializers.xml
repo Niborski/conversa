@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <serializers>
-  <!--<serializer group="Core" elementname="stream:stream">
+  <serializer group="Core" elementname="stream:stream">
     <serializertype>Conversa.Net.Xmpp.Core.Stream</serializertype>
     <namespace>
       <prefix>stream</prefix>
       <namespace>http://etherx.jabber.org/streams</namespace>
     </namespace>
-  </serializer>-->
+  </serializer>
   <serializer group="Core" elementname="stream:features">
     <serializertype>Conversa.Net.Xmpp.Core.StreamFeatures</serializertype>
     <namespace>

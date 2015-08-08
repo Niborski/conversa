@@ -3,15 +3,16 @@
 
 using Conversa.Net.Xmpp.Core;
 using Conversa.Net.Xmpp.Xml;
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using System;
 using System.Text;
-using Xunit;
 
 namespace Conversa.Net.Xmpp.Tests
 {
+    [TestClass]
     public class StreamSerializationTest
     {
-        [Fact]
+        [TestMethod]
         public void DeserializeWithMessage()
         {
             var xml = @"<stream:stream
@@ -27,22 +28,22 @@ namespace Conversa.Net.Xmpp.Tests
 
             var stream = XmppSerializer.Deserialize<Stream>("stream:stream", xml);
 
-            Assert.NotNull(stream);
-            Assert.Equal("en", stream.Lang);
-            Assert.Equal("1.0", stream.Version);
-            Assert.Equal("juliet@im.example.com", stream.From);
-            Assert.Equal("im.example.com", stream.To);
-            Assert.NotNull(stream.Items);
-            Assert.Equal(1, stream.Items.Count);
-            Assert.True(stream.Items[0] is Message);
+            Assert.IsNotNull(stream);
+            Assert.AreEqual("en", stream.Lang);
+            Assert.AreEqual("1.0", stream.Version);
+            Assert.AreEqual("juliet@im.example.com", stream.From);
+            Assert.AreEqual("im.example.com", stream.To);
+            Assert.IsNotNull(stream.Items);
+            Assert.AreEqual(1, stream.Items.Count);
+            Assert.IsTrue(stream.Items[0] is Message);
 
             var message = stream.Items[0] as Message;
 
-            Assert.True(message.Body != null);
-            Assert.Equal("foo", message.Body.Value);
+            Assert.IsTrue(message.Body != null);
+            Assert.AreEqual("foo", message.Body.Value);
         }
 
-        [Fact]
+        [TestMethod]
         public void SerializeWithMessage()
         {
             var exp = @"<stream:stream
@@ -70,7 +71,7 @@ namespace Conversa.Net.Xmpp.Tests
             var buffer = XmppSerializer.Serialize(stream);
             var xml    = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
 
-            Assert.True(exp.CultureAwareCompare(xml));
+            Assert.IsTrue(exp.CultureAwareCompare(xml));
         }
     }
 }

@@ -3,30 +3,20 @@
 
 using Conversa.Net.Xmpp.Client;
 using Conversa.Net.Xmpp.InstantMessaging;
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using System;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Conversa.Net.Xmpp.Tests
 {
+    [TestClass]
     public class ContactTest
     {
-        [Fact]
-        public void BlockContactTest()
-        {
-            InternalBlockContactAsync().Wait();
-        }
-
-        [Fact]
-        public void UnBlockContactTest()
-        {
-            InternalUnBlockContactAsync().Wait();
-        }
-
-        private async Task InternalBlockContactAsync()
+        [TestMethod]
+        public async Task BlockContactTest()
         {
             var waiter = new AutoResetEvent(false);
 
@@ -52,7 +42,8 @@ namespace Conversa.Net.Xmpp.Tests
             }
         }
 
-        private async Task InternalUnBlockContactAsync()
+        [TestMethod]
+        public async Task UnBlockContactTest()
         {
             var waiter = new AutoResetEvent(false);
 

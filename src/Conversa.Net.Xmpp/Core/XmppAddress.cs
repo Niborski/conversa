@@ -11,7 +11,8 @@ namespace Conversa.Net.Xmpp.Core
     /// XMPP Address (JID)
     /// </summary>
     /// <remarks>http://tools.ietf.org/html/rfc6122</remarks>
-    public sealed class XmppAddress
+    public sealed class XmppAddress 
+        : IEquatable<String>, IEquatable<XmppAddress>
     {
         /// <summary>
         /// Regex used to parse XMPP Address (JID) strings
@@ -217,24 +218,46 @@ namespace Conversa.Net.Xmpp.Core
             return (((object)x == null) ? null : x.address);
         }
 
-        // Override the Object.Equals(object o) method:
-        public override bool Equals(object obj)
+        public bool Equals(string other)
         {
             // If parameter is null return false.
-            if (obj == null)
+            if (other == null)
             {
                 return false;
             }
 
-            // If parameter cannot be cast to Point return false.
-            XmppAddress addr = obj as XmppAddress;
+            return (this.address == other);
+        }
 
-            if ((Object)addr == null)
+        public bool Equals(XmppAddress other)
+        {
+            // If parameter is null return false.
+            if ((object)other == null)
             {
                 return false;
             }
 
-            return (this.address == addr.address);
+            return (this.address == other.address);
+        }
+
+        // Override the Object.Equals(object o) method:
+        public override bool Equals(object other)
+        {
+            // If parameter is null return false.
+            if ((object)other == null)
+            {
+                return false;
+            }
+            if (other is XmppAddress)
+            {
+                return Equals(other as XmppAddress);
+            }
+            else if (other is string)
+            {
+                return Equals(other as string);
+            }
+
+            return false;
         }
 
         // Override the Object.GetHashCode() method:
@@ -303,6 +326,5 @@ namespace Conversa.Net.Xmpp.Core
                 this.address += "/" + this.ResourceName;
             }
         }
-
     }
 }

@@ -3,14 +3,15 @@
 
 using Conversa.Net.Xmpp.Core;
 using Conversa.Net.Xmpp.Xml;
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using System;
-using Xunit;
 
 namespace Conversa.Net.Xmpp.Tests
 {
+    [TestClass]
     public class RosterSerializationTest
     {
-        [Fact]
+        [TestMethod]
         public void DeserializeRosterRequest()
         {
             var xml = @"<iq from='juliet@example.com/balcony'
@@ -22,13 +23,13 @@ namespace Conversa.Net.Xmpp.Tests
 
             var infoQuery = XmppSerializer.Deserialize<InfoQuery>("iq", xml);
 
-            Assert.NotNull(infoQuery);
-            Assert.Equal("juliet@example.com/balcony", infoQuery.From);
-            Assert.Equal(InfoQueryType.Get, infoQuery.Type);
-            Assert.NotEqual(null, infoQuery.Roster);
+            Assert.IsNotNull(infoQuery);
+            Assert.AreEqual("juliet@example.com/balcony", infoQuery.From);
+            Assert.AreEqual(InfoQueryType.Get, infoQuery.Type);
+            Assert.AreNotEqual(null, infoQuery.Roster);
         }
 
-        [Fact]
+        [TestMethod]
         public void SerializeRosterRequest()
         {
             var exp = @"<iq from=""juliet@example.com/balcony""
@@ -50,7 +51,7 @@ namespace Conversa.Net.Xmpp.Tests
             var buffer = XmppSerializer.Serialize(query);
             var xml    = XmppEncoding.Utf8.GetString(buffer, 0, buffer.Length);
 
-            Assert.True(exp.CultureAwareCompare(xml));
+            Assert.IsTrue(exp.CultureAwareCompare(xml));
         }
     }
 }

@@ -4,15 +4,16 @@
 using Conversa.Net.Xmpp.Core;
 using Conversa.Net.Xmpp.Shared;
 using Conversa.Net.Xmpp.Xml;
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using System;
 using System.Collections.Generic;
-using Xunit;
 
 namespace Conversa.Net.Xmpp.Tests
 {
+    [TestClass]
     public class StreamFeaturesSerializationTest
     {
-        [Fact]
+        [TestMethod]
         public void DeserializeWithStartTlsFeature()
         {
             var xml = @"<stream:features>
@@ -23,12 +24,12 @@ namespace Conversa.Net.Xmpp.Tests
 
             var features = XmppSerializer.Deserialize<StreamFeatures>("stream:features", xml);
 
-            Assert.NotNull(features);
-            Assert.NotNull(features.StartTls);
-            Assert.NotNull(features.StartTls.Required);
+            Assert.IsNotNull(features);
+            Assert.IsNotNull(features.StartTls);
+            Assert.IsNotNull(features.StartTls.Required);
         }
 
-        [Fact]
+        [TestMethod]
         public void SerializeWithStartTlsFeature()
         {
             var exp = @"<stream:features xmlns:stream=""http://etherx.jabber.org/streams"">
@@ -41,17 +42,18 @@ namespace Conversa.Net.Xmpp.Tests
             {
                 StartTls = new StartTls
                 {
-                    Required = new Empty()
+                    Required          = new Empty()
+                  , RequiredSpecified = true
                 }
             };
 
             var buffer = XmppSerializer.Serialize(features);
             var xml    = XmppEncoding.Utf8.GetString(buffer, 0, buffer.Length);
 
-            Assert.True(exp.CultureAwareCompare(xml));
+            Assert.IsTrue(exp.CultureAwareCompare(xml));
         }
 
-        [Fact]
+        [TestMethod]
         public void DeserializeWithCompressFeature()
         {
             var xml = @"<stream:features>
@@ -63,14 +65,14 @@ namespace Conversa.Net.Xmpp.Tests
 
             var features = XmppSerializer.Deserialize<StreamFeatures>("stream:features", xml);
 
-            Assert.NotNull(features);
-            Assert.NotNull(features.Compression);
-            Assert.Equal(2, features.Compression.Methods.Count);
-            Assert.Equal("zlib", features.Compression.Methods[0]);
-            Assert.Equal("lzw", features.Compression.Methods[1]);
+            Assert.IsNotNull(features);
+            Assert.IsNotNull(features.Compression);
+            Assert.AreEqual(2, features.Compression.Methods.Count);
+            Assert.AreEqual("zlib", features.Compression.Methods[0]);
+            Assert.AreEqual("lzw", features.Compression.Methods[1]);
         }
 
-        [Fact]
+        [TestMethod]
         public void SerializeWithCompressFeature()
         {
             var exp = @"<stream:features xmlns:stream=""http://etherx.jabber.org/streams"">
@@ -91,10 +93,10 @@ namespace Conversa.Net.Xmpp.Tests
             var buffer = XmppSerializer.Serialize(features);
             var xml    = XmppEncoding.Utf8.GetString(buffer, 0, buffer.Length);
 
-            Assert.True(exp.CultureAwareCompare(xml));
+            Assert.IsTrue(exp.CultureAwareCompare(xml));
         }
 
-        [Fact]
+        [TestMethod]
         public void DeserializeWithBindFeature()
         {
             var xml = @"<stream:features xmlns:stream=""http://etherx.jabber.org/streams"">
@@ -103,11 +105,11 @@ namespace Conversa.Net.Xmpp.Tests
 
             var features = XmppSerializer.Deserialize<StreamFeatures>("stream:features", xml);
 
-            Assert.NotNull(features);
-            Assert.NotNull(features.Bind);
+            Assert.IsNotNull(features);
+            Assert.IsNotNull(features.Bind);
         }
 
-        [Fact]
+        [TestMethod]
         public void SerializeWithBindFeature()
         {
             var exp = @"<stream:features xmlns:stream=""http://etherx.jabber.org/streams"">
@@ -122,7 +124,7 @@ namespace Conversa.Net.Xmpp.Tests
             var buffer = XmppSerializer.Serialize(features);
             var xml    = XmppEncoding.Utf8.GetString(buffer, 0, buffer.Length);
 
-            Assert.True(exp.CultureAwareCompare(xml));
+            Assert.IsTrue(exp.CultureAwareCompare(xml));
         }
     }
 }

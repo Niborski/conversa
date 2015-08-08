@@ -34,7 +34,7 @@ namespace Conversa.Net.Xmpp.Client
         // Messaging Subjects
         private Subject<InfoQuery> infoQueryStream;
         private Subject<Message>   messageStream;
-        private Subject<Presence>  presenceStream;
+        private Subject<Presence>  presenceStream;        
 
         // Private members
         private XmppConnectionString connectionString;
@@ -144,14 +144,6 @@ namespace Conversa.Net.Xmpp.Client
         }
 
         /// <summary>
-        /// Gets the string used to open the connection.
-        /// </summary>
-        public XmppConnectionString ConnectionString
-        {
-            get  { return this.connectionString; }
-        }
-
-        /// <summary>
         /// Gets the connection Host name
         /// </summary>
         public string HostName
@@ -189,11 +181,36 @@ namespace Conversa.Net.Xmpp.Client
         }
 
         /// <summary>
+        /// Gets or sets the string used to open the connection.
+        /// </summary>
+        public XmppConnectionString ConnectionString
+        {
+            get { return connectionString; }
+            set
+            {
+                if (this.state != XmppClientState.Closed)
+                {
+                    throw new XmppException("Connection should be closed");
+                }
+                connectionString = value;
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="XmppClient"/> class.
+        /// </summary>
+        public XmppClient()
+            : this(null)
+        {
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="XmppClient"/> class.
         /// </summary>
         public XmppClient(XmppConnectionString connectionString)
         {
             this.connectionString     = connectionString;
+            this.state                = XmppClientState.Closed;
             this.stateChanged         = new Subject<XmppClientState>();
             this.authenticationFailed = new Subject<SaslAuthenticationFailure>();
             this.infoQueryStream      = new Subject<InfoQuery>();
@@ -206,9 +223,6 @@ namespace Conversa.Net.Xmpp.Client
             this.personalEventing     = new PersonalEventing(this);
             this.presence             = new XmppClientPresence(this);
             this.serverCapabilities   = new EntityCapabilities(this);
-            this.userAddress          = new XmppAddress(this.connectionString.UserAddress.UserName
-                                                      , this.connectionString.UserAddress.DomainName
-                                                      , this.connectionString.Resource);
         }
 
         /// <summary>
@@ -281,10 +295,19 @@ namespace Conversa.Net.Xmpp.Client
         /// <param name="connectionString">The connection string used for authentication.</param>
         public async Task OpenAsync()
         {
+            if (this.ConnectionString == null)
+            {
+                throw new XmppException("ConnectionString cannot be null.");
+            }
             if (this.State == XmppClientState.Open)
             {
                 throw new XmppException("Connection is already open.");
             }
+
+            // Build user xmpp address
+            this.userAddress = new XmppAddress(this.connectionString.UserAddress.UserName
+                                             , this.connectionString.UserAddress.DomainName
+                                             , this.connectionString.Resource);
 
             // Set the initial state
             this.State = XmppClientState.Opening;

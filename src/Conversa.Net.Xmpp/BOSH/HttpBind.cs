@@ -323,14 +323,6 @@ namespace Conversa.Net.Xmpp.Bosh
             set;
         }
 
-        /// <remarks/>
-        //[XmlAnyAttributeAttribute()]
-        //public System.Xml.XmlAttribute[] AnyAttr
-        //{
-        //    get;
-        //    set;
-        //}
-
         [XmlAttributeAttribute("restart", Form = XmlSchemaForm.Qualified, Namespace = "urn:xmpp:xbosh")]
         public bool Restart
         {
