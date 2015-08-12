@@ -17,17 +17,12 @@ namespace Conversa.Net.Xmpp.Tests
         {
             using (var client = new XmppClient(ConnectionStringHelper.GetDefaultConnectionString()))
             {
-                client.StateChanged.Subscribe(state => OnStateChanged(state));
+                client.StateChanged.Subscribe(state => Debug.WriteLine("TEST -> Connection state " + state.ToString()));
 
-                await client.OpenAsync().ConfigureAwait(false);
+                await client.OpenAsync();
 
                 System.Threading.SpinWait.SpinUntil(() => { return client.State == XmppClientState.Open; });
             }
-        }
-
-        private void OnStateChanged(XmppClientState state)
-        {
-            Debug.WriteLine("TEST -> Connection state " + state.ToString());
         }
     }
 }

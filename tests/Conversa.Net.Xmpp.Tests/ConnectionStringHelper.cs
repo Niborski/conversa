@@ -8,7 +8,7 @@ namespace Conversa.Net.Xmpp.Tests
         {
             var csb = new XmppConnectionStringBuilder
             {
-                HostName    = "jabber.at"
+                HostName    = "xmpp.jabber.at"
               , ServiceName = "5222"
               , UserId      = "conversa@jabber.at"
               , Password    = "6431238Kla"

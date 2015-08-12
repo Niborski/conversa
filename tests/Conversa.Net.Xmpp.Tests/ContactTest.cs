@@ -26,7 +26,7 @@ namespace Conversa.Net.Xmpp.Tests
                       .CapsChangedStream
                       .Subscribe(x => waiter.Set());
 
-                await client.OpenAsync().ConfigureAwait(false);
+                await client.OpenAsync();
 
                 waiter.WaitOne();
 
@@ -36,7 +36,7 @@ namespace Conversa.Net.Xmpp.Tests
                        .Where(x => x == ContactBlockingAction.Blocked)
                        .Subscribe(x => waiter.Set());
 
-                await contact.BlockAsync().ConfigureAwait(false);
+                await contact.BlockAsync();
 
                 waiter.WaitOne();
             }
@@ -53,7 +53,7 @@ namespace Conversa.Net.Xmpp.Tests
                       .CapsChangedStream
                       .Subscribe(x => waiter.Set());
 
-                await client.OpenAsync().ConfigureAwait(false);
+                await client.OpenAsync();
 
                 waiter.WaitOne();
 
@@ -63,7 +63,7 @@ namespace Conversa.Net.Xmpp.Tests
                        .Where(x => x == ContactBlockingAction.Unblocked)
                        .Subscribe(x => waiter.Set());
 
-                await contact.UnBlockAsync().ConfigureAwait(false);
+                await contact.UnBlockAsync();
 
                 waiter.WaitOne();
             }
