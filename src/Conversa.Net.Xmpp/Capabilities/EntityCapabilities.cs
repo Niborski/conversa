@@ -20,7 +20,7 @@ namespace Conversa.Net.Xmpp.Capabilities
     /// XEP-0115: Entity Capabilities
     /// </remarks>
     public sealed class EntityCapabilities
-        : StanzaHub, IEntityCapabilitiesInfo
+        : Hub, IEntityCapabilitiesInfo
     {
         private Subject<EntityCapabilities> capsChangedStream;
         private XmppAddress                 address;

@@ -56,7 +56,7 @@ namespace Conversa.Net.Xmpp.Client.Authentication
             return new SaslAuth
             {
                 Mechanism = XmppCodes.SaslScramSha1Mechanism
-              , Value     = ("n,," + this.clientFirstMessageBare).ToBase64String()
+              , Value     = ($"n,,{this.clientFirstMessageBare}").ToBase64String()
             };
         }
 
@@ -88,16 +88,14 @@ namespace Conversa.Net.Xmpp.Client.Authentication
             var snonce               = tokens["r"];
             var ssalt                = Convert.FromBase64String(tokens["s"]);
             var ssaltSize            = Convert.ToUInt32(tokens["i"]);
-            var clientFinalMessageWP = "c=" + XmppEncoding.Utf8.GetBytes("n,,").ToBase64String() + ",r=" + snonce;
+            var clientFinalMessageWP = $"c={XmppEncoding.Utf8.GetBytes("n,,").ToBase64String()},r={snonce}";
             var saltedPassword       = password.Rfc2898DeriveBytes(ssalt, ssaltSize, 20);
             var clientKey            = saltedPassword.ComputeHmacSha1("Client Key");
             var storedKey            = clientKey.ComputeSHA1Hash();
-            var authMessage          = this.clientFirstMessageBare
-                                     + "," + serverFirstMessage
-                                     + "," + clientFinalMessageWP;
+            var authMessage          = $"{this.clientFirstMessageBare},{serverFirstMessage},{clientFinalMessageWP}";
             var clientSignature      = storedKey.ComputeHmacSha1(authMessage);
             var clientProof          = clientKey.Xor(clientSignature);
-            var clientFinalMessage   = clientFinalMessageWP + ",p=" + clientProof.ToBase64String();
+            var clientFinalMessage   = $"{clientFinalMessageWP},p={clientProof.ToBase64String()}";
             var serverKey            = saltedPassword.ComputeHmacSha1("Server Key");
             this.serverSignature     = serverKey.ComputeHmacSha1(authMessage).ToBase64String();
             

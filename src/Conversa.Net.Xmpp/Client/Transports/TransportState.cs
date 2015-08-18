@@ -34,5 +34,10 @@ namespace Conversa.Net.Xmpp.Client.Transports
         /// The transport connection is closed.
         /// </summary>
         Closed,
+
+        /// <summary>
+        /// The transport connection has failed.
+        /// </summary>
+        ConnectionFailed
     }
 }

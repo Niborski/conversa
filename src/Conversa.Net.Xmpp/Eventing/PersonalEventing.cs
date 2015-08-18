@@ -18,7 +18,7 @@ namespace Conversa.Net.Xmpp.Eventing
     /// XEP-0163: Personal Eventing Protocol
     /// </remarks>
     public sealed class PersonalEventing
-        : StanzaHub
+        : Hub
     {
         private List<string> features;
         private bool         isUserTuneEnabled;

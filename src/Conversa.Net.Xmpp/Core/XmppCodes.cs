@@ -9,24 +9,9 @@ namespace Conversa.Net.Xmpp.Core
     internal static class XmppCodes
     {
         /// <summary>
-        /// Namespace of the XMPP stream
-        /// </summary>
-        internal const string StreamNamespace = "jabber:client";
-
-        /// <summary>
-        /// URI of the XMPP stream
-        /// </summary>
-        internal const string StreamURI = "http://etherx.jabber.org/streams";
-
-        /// <summary>
-        /// Version of the XMPP stream
-        /// </summary>
-        internal const string StreamVersion = "1.0";
-
-        /// <summary>
         /// XMPP Stream initialization format
         /// </summary>
-        internal const string StreamFormat = "<?xml version='1.0' encoding='UTF-8' ?><stream:stream xmlns='{0}' xmlns:stream='{1}' to='{2}' version='{3}'>";
+        internal const string StreamFormat = "<?xml version='1.0' encoding='UTF-8' ?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' to='{0}' version='1.0'>";
 
         /// <summary>
         /// XMPP Stream XML open node tag

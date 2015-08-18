@@ -16,7 +16,7 @@ namespace Conversa.Net.Xmpp.Capabilities
     /// Client capabilities (XEP-0115)
     /// </summary>
     public sealed class ClientCapabilities
-        : StanzaHub
+        : Hub
     {
         private const string Uri      = "https://github.com/carlosga/conversa";
         private const string Category = "client";

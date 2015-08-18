@@ -12,7 +12,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// Represents a contact resource
     /// </summary>
     public sealed class ContactResource
-        : StanzaHub
+        : Hub
     {
         private XmppAddress             address;
         private ContactResourcePresence presence;

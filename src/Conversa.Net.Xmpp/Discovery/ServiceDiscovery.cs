@@ -17,7 +17,7 @@ namespace Conversa.Net.Xmpp.Discovery
     /// XEP-0030: Service Discovery
     /// </remarks>
     public sealed class ServiceDiscovery
-        : StanzaHub
+        : Hub
     {
         private string                node;
         private List<ServiceIdentity> identities;

@@ -17,7 +17,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// Represents a <see cref="ContactList"/> contact.
     /// </summary>
     public sealed class Contact
-        : StanzaHub
+        : Hub
     {
         private Subject<ContactBlockingAction> blockingStream;
         private Subject<ContactResource>       newResourceStream;

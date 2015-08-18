@@ -308,12 +308,10 @@
     <Compile Include="Client\Authentication\Saslprep.cs" />
     <Compile Include="Client\Authentication\SaslScramSha1Mechanism.cs" />
     <Compile Include="Client\Authentication\SaslTokenizer.cs" />
-    <Compile Include="Client\ClientHub.cs" />
     <Compile Include="Client\ConnectionStringKeywords.cs" />
     <Compile Include="Client\ConnectionStringSynonyms.cs" />
     <Compile Include="Client\Hub.cs" />
     <Compile Include="Client\ServerFeatures.cs" />
-    <Compile Include="Client\StanzaHub.cs" />
     <Compile Include="Client\Transports\BaseTransport.cs" />
     <Compile Include="Client\Transports\ITransport.cs" />
     <Compile Include="Client\Transports\TcpTransport.cs" />

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Background;
 using Windows.Foundation;
 using Windows.Networking;
 using Windows.Networking.Sockets;
@@ -66,7 +67,7 @@ namespace Conversa.Net.Xmpp.Client.Transports
         public override async Task OpenAsync(XmppConnectionString         connectionString
                                            , IList<ChainValidationResult> ignorableServerCertificateErrors)
         {
-            Debug.WriteLine("TRANSPORT => Opening connection against hostname " + connectionString.HostName);
+            Debug.WriteLine($"TRANSPORT => Opening connection against hostname {connectionString.HostName}");
 
             this.PublishStateChange(TransportState.Opening);
 
@@ -89,10 +90,13 @@ namespace Conversa.Net.Xmpp.Client.Transports
             // Connect to the server
             await this.ConnectAsync().ConfigureAwait(false);
 
-            this.PublishStateChange(TransportState.Open);
+            if (this.State != TransportState.ConnectionFailed)
+            {
+                this.PublishStateChange(TransportState.Open);
 
-            // Initialize XMPP Stream
-            await this.ResetStreamAsync().ConfigureAwait(false);
+                // Initialize XMPP Stream
+                await this.ResetStreamAsync().ConfigureAwait(false);
+            }
         }
 
         public override async Task UpgradeToSslAsync()
@@ -105,7 +109,7 @@ namespace Conversa.Net.Xmpp.Client.Transports
             // Try to stop current read operation
             this.StopAsyncReads();
 
-            // Update ignorable SSL error list
+            // Update ignorable SSL errors
             this.socket.Control.IgnorableServerCertificateErrors.Clear();
 
             foreach (var ignorableError in this.ignorableServerCertificateErrors)
@@ -132,7 +136,7 @@ namespace Conversa.Net.Xmpp.Client.Transports
         /// <param name="value">The value</param>
         public override async Task SendAsync(string value)
         {
-            Debug.WriteLine("CLIENT -> " + value);
+            Debug.WriteLine($"CLIENT -> {value}");
 
             this.writer.WriteString(value);
 
@@ -146,7 +150,7 @@ namespace Conversa.Net.Xmpp.Client.Transports
         /// <param name="value">The value</param>
         public override async Task SendAsync(byte[] value)
         {
-            Debug.WriteLine("CLIENT -> " + XmppEncoding.Utf8.GetString(value, 0, value.Length));
+            Debug.WriteLine($"CLIENT -> {XmppEncoding.Utf8.GetString(value, 0, value.Length)}");
 
             this.writer.WriteBytes(value);
 
@@ -159,12 +163,7 @@ namespace Conversa.Net.Xmpp.Client.Transports
         /// </summary>
         public override async Task ResetStreamAsync()
         {
-            // Serialization can't be used in this case
-            string xml = String.Format(XmppCodes.StreamFormat
-                                     , XmppCodes.StreamNamespace
-                                     , XmppCodes.StreamURI
-                                     , this.ConnectionString.UserAddress.DomainName
-                                     , XmppCodes.StreamVersion);
+            var xml = String.Format(XmppCodes.StreamFormat, this.ConnectionString.UserAddress.DomainName);
 
             // Stop current read operation
             this.StopAsyncReads();
@@ -228,7 +227,7 @@ namespace Conversa.Net.Xmpp.Client.Transports
             this.hostname = new HostName(this.ConnectionString.HostName);
 
             // Remote service name ( DNS SRV )
-            var remoteServiceName = XmppCodes.XmppSrvRecordPrefix + "." + this.ConnectionString.HostName;
+            var remoteServiceName = $"{XmppCodes.XmppSrvRecordPrefix}.{this.ConnectionString.HostName}";
 
             // Network Socket
             this.socket = new StreamSocket();
@@ -245,7 +244,10 @@ namespace Conversa.Net.Xmpp.Client.Transports
             // this.socket.Control.NoDelay = false;
 
             // The quality of service on a StreamSocket object.
-            // this.socket.Control.QualityOfService = SocketQualityOfService.LowLatency;
+            this.socket.Control.QualityOfService = SocketQualityOfService.Normal;
+
+            // Connection attempts are made in parallel or serially.
+            // this.socket.Control.SerializeConnectionAttempts = true;
 
             // Make the socket to connect to the Server
             // 1. First try to connect agains the remote service name with DNS SRV
@@ -260,8 +262,12 @@ namespace Conversa.Net.Xmpp.Client.Transports
 
             if (!connected)
             {
+                this.PublishStateChange(TransportState.ConnectionFailed);
+
                 this.socket.Dispose();
                 this.socket = null;
+
+                return;
             }
 
             // Create streams for reading & writing to the socket
@@ -269,8 +275,8 @@ namespace Conversa.Net.Xmpp.Client.Transports
             this.writer = new DataWriter(this.socket.OutputStream);
 
             // Set encodings
-            this.reader.UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding.Utf8;
-            this.writer.UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding.Utf8;
+            this.reader.UnicodeEncoding = UnicodeEncoding.Utf8;
+            this.writer.UnicodeEncoding = UnicodeEncoding.Utf8;
 
             // Set byte order
             // this.writer.ByteOrder = Windows.Storage.Streams.ByteOrder.LittleEndian;
@@ -295,6 +301,41 @@ namespace Conversa.Net.Xmpp.Client.Transports
                 return false;
             }
         }
+
+        //private BackgroundTaskRegistration task;
+        //private StreamSocketListener tcpListener;
+
+        //private void RegisterBackgroundTask()
+        //{
+        //    var socketTaskBuilder = new BackgroundTaskBuilder();
+
+        //    socketTaskBuilder.Name           = "conversa://xmpp/background-tasks/tcp";
+        //    socketTaskBuilder.TaskEntryPoint = "Conversa.Net.Xmpp.Client.Transports.TcpTransport, Conversa.Net.Xmpp";
+
+        //    var trigger = new SocketActivityTrigger();
+        //    socketTaskBuilder.SetTrigger(trigger);
+
+        //    this.task = socketTaskBuilder.Register();
+        //}
+
+        //private void TransferOwnership()
+        //{
+        //    this.socket.EnableTransferOwnership(this.task.TaskId, SocketActivityConnectedStandbyAction.Wake);            
+        //}
+
+        //void IBackgroundTask.Run(IBackgroundTaskInstance taskInstance)
+        //{
+        //    BackgroundTaskDeferral _deferral = taskInstance.GetDeferral();
+
+        //    //
+        //    // TODO: Insert code to start one or more asynchronous methods using the
+        //    //       await keyword, for example:
+        //    //
+        //    // await ExampleMethodAsync();
+        //    //
+
+        //    _deferral.Complete();
+        //}
 
         private void BeginReadAsync()
         {

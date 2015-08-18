@@ -14,7 +14,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// Contact resource presence handling
     /// </summary>
     public sealed class ContactResourcePresence
-        : StanzaHub
+        : Hub
     {
         private Subject<ContactResource> presenceStream;
         private ContactResource          resource;

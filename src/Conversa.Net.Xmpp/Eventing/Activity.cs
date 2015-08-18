@@ -16,7 +16,7 @@ namespace Conversa.Net.Xmpp.Eventing
     /// XMPP Activity
     /// </summary>
     public sealed class Activity
-        : StanzaHub, IEnumerable<Event>, INotifyCollectionChanged
+        : Hub, IEnumerable<Event>, INotifyCollectionChanged
     {
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 

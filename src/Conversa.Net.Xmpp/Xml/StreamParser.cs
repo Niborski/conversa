@@ -295,7 +295,7 @@ namespace Conversa.Net.Xmpp.Xml
                 }
                 else
                 {
-                    this.currentTag.Append((char)this.Read());
+                    this.currentTag.Append(this.Read());
 
                     if (next == '>')
                     {

@@ -10,7 +10,7 @@ namespace Conversa.Net.Xmpp.Client
     /// XMPP Client Presence
     /// </summary>
     public sealed class XmppClientPresence
-        : StanzaHub
+        : Hub
     {
         private Presence presence;
 

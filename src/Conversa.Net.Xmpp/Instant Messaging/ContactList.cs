@@ -19,7 +19,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// Contact's Roster
     /// </summary>
     public sealed class ContactList
-        : StanzaHub, IEnumerable<Contact>
+        : Hub, IEnumerable<Contact>
     {
         // Messaging Subjects
         private Subject<Tuple<string, ContactListChangedAction>> contactListChangedStream;
@@ -178,8 +178,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             var iq = new InfoQuery
             {
                 Type   = InfoQueryType.Get
-              , From   = this.Client.UserAddress.BareAddress
-              , To     = this.Client.UserAddress.BareAddress
+              , From   = this.Client.UserAddress
               , Roster = new Roster()
             };
 

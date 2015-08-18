@@ -263,7 +263,7 @@ namespace Conversa.Net.Xmpp.Client
                 if (disposing)
                 {
                     // Release managed resources here
-                    this.Close();
+                    this.CloseAsync().GetAwaiter().GetResult();
                 }
 
                 // Call the appropriate methods to clean up
@@ -352,7 +352,7 @@ namespace Conversa.Net.Xmpp.Client
             await this.transport.SendAsync(XmppSerializer.Serialize(message)).ConfigureAwait(false);
         }
 
-        private async void Close()
+        public async Task CloseAsync()
         {
             if (this.isDisposed || this.State == XmppClientState.Closed || this.State == XmppClientState.Closing)
             {
@@ -416,9 +416,8 @@ namespace Conversa.Net.Xmpp.Client
 
         private void InitializeSubscriptions()
         {
-            this.subscriptions.Add(this.transport
-                                       .MessageStream
-                                       .Subscribe(message => this.OnMessageReceivedAsync(message)));
+            this.subscriptions.Add(this.transport.StateChanged.Subscribe(state => OnTransportStateChanged(state)));
+            this.subscriptions.Add(this.transport.MessageStream.Subscribe(message => OnMessageReceivedAsync(message)));
         }
 
         private void ReleaseSubscriptions()
@@ -479,9 +478,24 @@ namespace Conversa.Net.Xmpp.Client
             return mechanism;
         }
 
+        private async void OnTransportStateChanged(TransportState state)
+        {
+            if (state == TransportState.ConnectionFailed)
+            {
+                await this.CloseAsync().ConfigureAwait(false);
+            }
+            else if (state == TransportState.Closed)
+            {
+                if (this.State == XmppClientState.Opening || this.State == XmppClientState.Open)
+                {
+                    await this.CloseAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
         private async void OnMessageReceivedAsync(StreamElement xmlMessage)
         {
-            Debug.WriteLine("SERVER <- " + xmlMessage.ToString());
+            Debug.WriteLine($"SERVER <- {xmlMessage}");
 
             if (xmlMessage.OpensXmppStream)
             {
@@ -725,15 +739,15 @@ namespace Conversa.Net.Xmpp.Client
             this.OnSaslFailure(failure.GetErrorMessage());
         }
 
-        private void OnSaslFailure(string message)
+        private async void OnSaslFailure(string message)
         {
-            var errorMessage = "Authentication failed (" + message + ")";
+            var errorMessage = $"Authentication failed ({message})";
 
             this.authenticationFailed.OnNext(new SaslAuthenticationFailure(errorMessage));
 
             this.State = XmppClientState.AuthenticationFailure;
 
-            this.Close();
+            await this.CloseAsync().ConfigureAwait(false);
         }
 
         private async Task OnBindResourceAsync()
