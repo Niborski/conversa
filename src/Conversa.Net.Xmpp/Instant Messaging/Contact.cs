@@ -264,7 +264,10 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 this.resources.Add(resource);
                 this.newResourceStream.OnNext(resource);
 
-                await resource.Capabilities.DiscoverAsync().ConfigureAwait(false);
+                if (resource.Capabilities != null)
+                {
+                    await resource.Capabilities.DiscoverAsync().ConfigureAwait(false);
+                }
             }
             else
             {
