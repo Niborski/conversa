@@ -8,9 +8,9 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Threading.Tasks;
 
 namespace Conversa.Net.Xmpp.InstantMessaging
@@ -19,12 +19,12 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// Contact's Roster
     /// </summary>
     public sealed class ContactList
-        : Hub, IEnumerable<Contact>
+        : IEnumerable<Contact>, INotifyCollectionChanged
     {
-        // Messaging Subjects
-        private Subject<Tuple<string, ContactListChangedAction>> contactListChangedStream;
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-        // Private members
+       // Private members
+        private XmppClient             client;
         private ConcurrentBag<Contact> contacts;
 
         /// <summary>
@@ -36,23 +36,23 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         {
             get { return this.contacts.SingleOrDefault(contact => contact.Address.BareAddress == address); }
         }
-
-        /// <summary>
-        /// Occurs when a change happens in the contact list.
-        /// </summary>
-        public IObservable<Tuple<string, ContactListChangedAction>> ContactListChangedStream
-        {
-            get { return this.contactListChangedStream.AsObservable(); }
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactList"/> class
         /// </summary>
         internal ContactList(XmppClient client)
-            : base(client)
         {
-            this.contacts                 = new ConcurrentBag<Contact>();
-            this.contactListChangedStream = new Subject<Tuple<string,ContactListChangedAction>>();
+            this.client   = client;
+            this.contacts = new ConcurrentBag<Contact>();
+
+            this.client
+                .StateChanged
+                .Where(state => state == XmppClientState.Open)
+                .Subscribe(async state => await OnConnectedAsync().ConfigureAwait(false));
+
+            this.client
+                .StateChanged
+                .Where(state => state == XmppClientState.Closing)
+                .Subscribe(state => OnDisconnected());
         }
 
         /// <summary>
@@ -72,8 +72,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             var iq = new InfoQuery()
             {
                 Type   = InfoQueryType.Set
-              , From   = this.Client.UserAddress.BareAddress
-              , To     = this.Client.UserAddress.BareAddress
+              , From   = this.client.UserAddress.BareAddress
+              , To     = this.client.UserAddress.BareAddress
               , Roster = new Roster
                 {
                     Items =
@@ -88,7 +88,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 }
             };
 
-            await this.SendAsync(iq, r => this.OnAddContactResponse(r), e => this.OnAddContactError(e))
+            await this.client
+                      .SendAsync(iq, r => this.OnAddContactResponse(r), e => this.OnAddContactError(e))
                       .ConfigureAwait(false);
         }
 
@@ -107,15 +108,15 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             var iq = new InfoQuery
             {
                 Type   = InfoQueryType.Set
-              , From   = this.Client.UserAddress.BareAddress
-              , To     = this.Client.UserAddress.BareAddress
+              , From   = this.client.UserAddress.BareAddress
+              , To     = this.client.UserAddress.BareAddress
               , Roster = new Roster(new RosterItem(contact.Address.BareAddress
                                                  , contact.Name
                                                  , contact.Subscription
                                                  , contact.Groups))
             };
 
-            await this.SendAsync(iq).ConfigureAwait(false);
+            await this.client.SendAsync(iq).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -133,13 +134,14 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             var iq = new InfoQuery
             {
                 Type   = InfoQueryType.Set
-              , From   = this.Client.UserAddress.BareAddress
-              , To     = this.Client.UserAddress.BareAddress
+              , From   = this.client.UserAddress.BareAddress
+              , To     = this.client.UserAddress.BareAddress
               , Roster = new Roster(new RosterItem { Jid          = address.BareAddress
                                                    , Subscription = RosterSubscriptionType.Remove })
             };
 
-            await this.SendAsync(iq, r => this.OnRemoveContactResponse(r), e => this.OnRemoveContactError(e))
+            await this.client
+                      .SendAsync(iq, r => this.OnRemoveContactResponse(r), e => this.OnRemoveContactError(e))
                       .ConfigureAwait(false);
         }
 
@@ -167,7 +169,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , Roster = new Roster(new RosterItem(contact.Address, contact.Name, contact.Subscription, groupName))
             };
 
-            await this.SendAsync(iq).ConfigureAwait(false);
+            await this.client.SendAsync(iq).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -178,11 +180,13 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             var iq = new InfoQuery
             {
                 Type   = InfoQueryType.Get
-              , From   = this.Client.UserAddress
+              , From   = this.client.UserAddress
+              , To     = this.client.UserAddress.BareAddress
               , Roster = new Roster()
             };
 
-            await this.SendAsync(iq, r => this.OnUpdateRoster(r), e => this.OnRosterError(e))
+            await this.client
+                      .SendAsync(iq, r => this.OnUpdateRoster(r), e => this.OnRosterError(e))
                       .ConfigureAwait(false);
         }
 
@@ -204,7 +208,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , BlockList = new BlockList()
             };
 
-            await this.SendAsync(iq, r => this.OnBlockedContactsResponse(r), e => this.OnBlockedContactsError(e))
+            await this.client
+                      .SendAsync(iq, r => this.OnBlockedContactsResponse(r), e => this.OnBlockedContactsError(e))
                       .ConfigureAwait(false);
         }
 
@@ -222,11 +227,12 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             var iq = new InfoQuery
             {
                 Type    = InfoQueryType.Set
-              , From    = this.Client.UserAddress
+              , From    = this.client.UserAddress
               , Unblock = new Unblock()
             };
 
-            await this.SendAsync(iq, r => this.OnUnBlockAllResponse(r), e => this.OnUnBlockAllError(e))
+            await this.client
+                      .SendAsync(iq, r => this.OnUnBlockAllResponse(r), e => this.OnUnBlockAllError(e))
                       .ConfigureAwait(false);
         }
 
@@ -240,39 +246,34 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             return this.contacts.GetEnumerator();
         }
 
-        protected override async void OnConnected()
+        private async Task OnConnectedAsync()
         {
             await this.RequestRosterAsync().ConfigureAwait(false);
-            
-            base.OnConnected();
         }
 
-        protected override void OnDisconnected()
+        private void OnDisconnected()
         {
-            this.contactListChangedStream.Dispose();
             this.contacts.Clear();
-
-            base.OnDisconnected();
         }
 
         private void SubscribeToRosterPush()
         {
-            this.AddSubscription(this.Client
-                                     .InfoQueryStream
-                                     .Where(message => message.To == this.Client.UserAddress
-                                                    && message.Roster != null
-                                                    && message.IsUpdate)
-                                     .Subscribe(message => this.OnRosterPush(message)));
+            this.client
+                .InfoQueryStream
+                .Where(message => message.To == this.client.UserAddress
+                               && message.Roster != null
+                               && message.IsUpdate)
+                .Subscribe(async message => await this.OnRosterPush(message).ConfigureAwait(false));
         }
 
-        private async void OnRosterPush(InfoQuery rosterPush)
+        private async Task OnRosterPush(InfoQuery rosterPush)
         {
-            await this.SendAsync(rosterPush.AsResponse()).ConfigureAwait(false);
+            await this.client.SendAsync(rosterPush.AsResponse()).ConfigureAwait(false);
         }
 
         private void OnAddContactResponse(InfoQuery response)
         {
-            this.contactListChangedStream.OnNext(new Tuple<string, ContactListChangedAction>(null, ContactListChangedAction.Add));
+            this.CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add));
         }
 
         private void OnAddContactError(InfoQuery error)
@@ -281,7 +282,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
         private void OnRemoveContactResponse(InfoQuery response)
         {
-            this.contactListChangedStream.OnNext(new Tuple<string, ContactListChangedAction>(null, ContactListChangedAction.Remove));
+            this.CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove));
         }
 
         private void OnRemoveContactError(InfoQuery error)
@@ -300,7 +301,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 if (contact == null)
                 {
                     // Create the new contact
-                    contact = new Contact(this.Client, item.Jid, item.Name, item.Subscription, item.Groups);
+                    contact = new Contact(this.client, item.Jid, item.Name, item.Subscription, item.Groups);
 
                     // Add the contact to the roster
                     this.contacts.Add(contact);
@@ -327,7 +328,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 }
             }
 
-            this.contactListChangedStream.OnNext(new Tuple<string, ContactListChangedAction>(null, ContactListChangedAction.Reset));
+            this.CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
         private void OnRosterError(InfoQuery error)

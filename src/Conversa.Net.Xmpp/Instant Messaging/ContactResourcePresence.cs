@@ -14,8 +14,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// Contact resource presence handling
     /// </summary>
     public sealed class ContactResourcePresence
-        : Hub
     {
+        private XmppClient               client;
         private Subject<ContactResource> presenceStream;
         private ContactResource          resource;
         private ShowType                 showAs;
@@ -63,11 +63,16 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         /// <param name="session"></param>
         internal ContactResourcePresence(XmppClient client, ContactResource resource)
-            : base(client)
         {
+            this.client         = client;
             this.resource       = resource;
             this.showAs         = ShowType.Offline;
             this.presenceStream = new Subject<ContactResource>();
+
+            this.client
+                .StateChanged
+                .Where(state => state == XmppClientState.Closing)
+                .Subscribe(state => OnDisconnecting());
         }
 
         /// <summary>
@@ -78,13 +83,13 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         {
             var presence = new Presence
             {
-                From          = this.Client.UserAddress
+                From          = this.client.UserAddress
               , To            = this.resource.Address
               , Type          = PresenceType.Probe
               , TypeSpecified = true
             };
 
-            await this.SendAsync(presence).ConfigureAwait(false);
+            await this.client.SendAsync(presence).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -99,7 +104,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , TypeSpecified = true
             };
 
-            await this.SendAsync(presence).ConfigureAwait(false);
+            await this.client.SendAsync(presence).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -114,7 +119,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , TypeSpecified = true
             };
 
-            await this.SendAsync(presence).ConfigureAwait(false);
+            await this.client.SendAsync(presence).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -129,7 +134,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , TypeSpecified = true
             };
 
-            await this.SendAsync(presence).ConfigureAwait(false);
+            await this.client.SendAsync(presence).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -144,10 +149,10 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , TypeSpecified = true
             };
 
-            await this.SendAsync(presence).ConfigureAwait(false);
+            await this.client.SendAsync(presence).ConfigureAwait(false);
         }
 
-        protected override void OnDisconnected()
+        private void OnDisconnecting()
         {
             this.resource = null;
             this.presenceStream.Dispose();

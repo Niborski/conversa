@@ -242,6 +242,17 @@ namespace Conversa.Net.Xmpp.Client
         }
 
         /// <summary>
+        /// Returns a <see cref="T:Conversa.Net.Xmpp.Core.XmppAddress"></see> that represents the current <see cref="T:Conversa.Net.Xmpp.Client.XmppConnectionString"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:Conversa.Net.Xmpp.Core.XmppAddress"></see> that represents the current <see cref="T:Conversa.Net.Xmpp.Client.XmppConnectionString"></see>.
+        /// </returns>
+        public string ToXmppAddress()
+        {
+            return new XmppAddress(this.UserAddress?.UserName, this.UserAddress?.DomainName, this.Resource);
+        }
+
+        /// <summary>
         /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
         /// </summary>
         /// <returns>

@@ -20,8 +20,9 @@ namespace Conversa.Net.Xmpp.Capabilities
     /// XEP-0115: Entity Capabilities
     /// </remarks>
     public sealed class EntityCapabilities
-        : Hub, IEntityCapabilitiesInfo
+        : IEntityCapabilitiesInfo
     {
+        private XmppClient                  client;
         private Subject<EntityCapabilities> capsChangedStream;
         private XmppAddress                 address;
         private ServiceInfo                 info;
@@ -108,15 +109,16 @@ namespace Conversa.Net.Xmpp.Capabilities
         internal EntityCapabilities(XmppClient client)
             : this(client, null, null)
         {
-            this.info = new ServiceInfo();
+            this.client = client;
+            this.info   = new ServiceInfo();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityCapabilities"/> class.
         /// </summary>
         public EntityCapabilities(XmppClient client, XmppAddress address, string node)
-            : base(client)
         {
+            this.client            = client;
             this.address           = address;
             this.info              = new ServiceInfo { Node = node };
             this.capsChangedStream = new Subject<EntityCapabilities>();
@@ -127,13 +129,14 @@ namespace Conversa.Net.Xmpp.Capabilities
 #warning TODO: Grab Capabilities from storage or send the discovery request
             var iq = new InfoQuery
             {
-                From        = this.Client.UserAddress
+                From        = this.client.UserAddress
               , To          = this.Address
               , Type        = InfoQueryType.Get
               , ServiceInfo = new ServiceInfo { Node = this.info.Node }
             };
 
-            await this.SendAsync(iq, r => this.OnDiscoverResponse(r), r => this.OnDiscoverError(r))
+            await this.client
+                      .SendAsync(iq, r => this.OnDiscoverResponse(r), r => this.OnDiscoverError(r))
                       .ConfigureAwait(false);
         }
 

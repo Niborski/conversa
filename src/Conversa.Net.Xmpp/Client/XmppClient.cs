@@ -9,6 +9,7 @@ using Conversa.Net.Xmpp.Eventing;
 using Conversa.Net.Xmpp.InstantMessaging;
 using Conversa.Net.Xmpp.Xml;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reactive.Disposables;
@@ -43,7 +44,6 @@ namespace Conversa.Net.Xmpp.Client
         private XmppClientState      state;
         private ITransport           transport;
         private ISaslMechanism       saslMechanism;
-        private CompositeDisposable  subscriptions;
         private ContactList          roster;
         private Activity             activity;
         private ClientCapabilities   capabilities;
@@ -51,6 +51,9 @@ namespace Conversa.Net.Xmpp.Client
         private PersonalEventing     personalEventing;
         private XmppClientPresence   presence;
         private bool                 isDisposed;
+
+        // Message Subscriptions
+        private ConcurrentDictionary<string, CompositeDisposable> subscriptions;
 
         /// <summary>
         /// Occurs when the connection state changes
@@ -216,7 +219,7 @@ namespace Conversa.Net.Xmpp.Client
             this.infoQueryStream      = new Subject<InfoQuery>();
             this.messageStream        = new Subject<Message>();
             this.presenceStream       = new Subject<Presence>();
-            this.subscriptions        = new CompositeDisposable();
+            this.subscriptions        = new ConcurrentDictionary<string, CompositeDisposable>();
             this.roster               = new ContactList(this);
             this.activity             = new Activity(this);
             this.capabilities         = new ClientCapabilities(this);
@@ -282,7 +285,7 @@ namespace Conversa.Net.Xmpp.Client
                 this.serverFeatures     = ServerFeatures.None;
                 this.state              = XmppClientState.Closed;
                 this.CloseTransport();
-                this.ReleaseSubscriptions();
+                this.DisposeSubscriptions();
                 this.ReleaseSubjects();
             }
 
@@ -290,9 +293,8 @@ namespace Conversa.Net.Xmpp.Client
         }
 
         /// <summary>
-        /// Opens the connection
+        /// Opens the connection.
         /// </summary>
-        /// <param name="connectionString">The connection string used for authentication.</param>
         public async Task OpenAsync()
         {
             if (this.ConnectionString == null)
@@ -305,9 +307,7 @@ namespace Conversa.Net.Xmpp.Client
             }
 
             // Build user xmpp address
-            this.userAddress = new XmppAddress(this.connectionString.UserAddress.UserName
-                                             , this.connectionString.UserAddress.DomainName
-                                             , this.connectionString.Resource);
+            this.userAddress = this.connectionString.ToXmppAddress();
 
             // Set the initial state
             this.State = XmppClientState.Opening;
@@ -325,33 +325,9 @@ namespace Conversa.Net.Xmpp.Client
         }
 
         /// <summary>
-        /// Sends a new message.
+        /// Closes the connection.
         /// </summary>
-        public async Task SendAsync<T>()
-            where T: class, new()
-        {
-            await this.SendAsync<T>(new T()).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Sends a new message.
-        /// </summary>
-        /// <param name="message">The message to be sent</param>
-        public async Task SendAsync<T>(T message)
-            where T: class
-        {
-            await this.transport.SendAsync(XmppSerializer.Serialize(message)).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Sends a new message.
-        /// </summary>
-        /// <param name="message">The message to be sent</param>
-        public async Task SendAsync(object message)
-        {
-            await this.transport.SendAsync(XmppSerializer.Serialize(message)).ConfigureAwait(false);
-        }
-
+        /// <returns></returns>
         public async Task CloseAsync()
         {
             if (this.isDisposed || this.State == XmppClientState.Closed || this.State == XmppClientState.Closing)
@@ -376,7 +352,7 @@ namespace Conversa.Net.Xmpp.Client
             }
             finally
             {
-                this.ReleaseSubscriptions();
+                this.DisposeSubscriptions();
 
                 this.transport          = null;
                 this.saslMechanism      = null;
@@ -393,6 +369,131 @@ namespace Conversa.Net.Xmpp.Client
 
                 this.ReleaseSubjects();
             }
+        }
+
+        public async Task SendAsync(InfoQuery request, Action<InfoQuery> onResponse = null, Action<InfoQuery> onError = null)
+        {
+            if (this.State != XmppClientState.Open)
+            {
+                return;
+            }
+
+            IDisposable raction = null;
+            IDisposable eaction = null;
+
+            if (onResponse != null)
+            {
+                raction = this.InfoQueryStream
+                              .Where(response => response.Id == request.Id && !response.IsError)
+                              .Subscribe(onResponse);
+            }
+
+            if (eaction != null)
+            {
+                eaction = this.InfoQueryStream
+                              .Where(response => response.Id == request.Id && response.IsError)
+                              .Subscribe(onError);
+            }
+
+            var daction = this.InfoQueryStream
+                              .Where(response => response.Id == request.Id)
+                              .Subscribe(response => this.DisposeSubscription(response.Id));
+
+            await this.SendAsync(request, raction, eaction, daction).ConfigureAwait(false);
+        }
+
+        public async Task SendAsync(Presence request, Action<Presence> onResponse = null, Action<Presence> onError = null)
+        {
+            if (this.State != XmppClientState.Open)
+            {
+                return;
+            }
+
+            IDisposable raction = null;
+            IDisposable eaction = null;
+
+            if (onResponse != null)
+            {
+                raction = this.PresenceStream
+                              .Where(response => response.Id == request.Id && !response.IsError)
+                              .Subscribe(onResponse);
+            }
+
+            if (onError != null)
+            {
+                eaction = this.PresenceStream
+                              .Where(message => message.Id == request.Id && message.IsError)
+                              .Subscribe(onError);
+            }
+
+            var daction = this.PresenceStream
+                              .Where(response => response.Id == request.Id)
+                              .Subscribe(response => this.DisposeSubscription(response.Id));
+
+            await this.SendAsync(request, raction, eaction, daction).ConfigureAwait(false);
+        }
+
+        public async Task SendAsync(Message request, Action<Message> onResponse = null, Action<Message> onError = null)
+        {
+            if (this.State != XmppClientState.Open)
+            {
+                return;
+            }
+
+            IDisposable raction = null;
+            IDisposable eaction = null;
+
+            if (onResponse != null)
+            {
+                raction = this.MessageStream
+                              .Where(response => response.Id == request.Id && !response.IsError)
+                              .Subscribe(onResponse);
+            }
+
+            if (onError != null)
+            {
+                eaction = this.MessageStream
+                              .Where(message => message.Id == request.Id && message.IsError)
+                              .Subscribe(onError);
+            }
+
+            var daction = this.MessageStream
+                              .Where(response => response.Id == request.Id)
+                              .Subscribe(response => this.DisposeSubscription(response.Id));
+
+            await this.SendAsync(request, raction, eaction, daction).ConfigureAwait(false);
+        }
+
+        public async Task SendAsync<T>(T request, IDisposable onResponse = null, IDisposable onError = null, IDisposable dispose = null)
+            where T : class, IStanza
+        {
+            if (this.State != XmppClientState.Open)
+            {
+                return;
+            }
+
+            this.AddSubscription(request.Id, onResponse, onError, dispose);
+
+            await this.SendAsync(request).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Sends a new message.
+        /// </summary>
+        public async Task SendAsync<T>()
+            where T : class, new()
+        {
+            await this.SendAsync<T>(new T()).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Sends a new message.
+        /// </summary>
+        /// <param name="message">The message to be sent</param>
+        public async Task SendAsync<T>(T message)
+            where T : class
+        {
+            await this.transport.SendAsync(XmppSerializer.Serialize(message)).ConfigureAwait(false);
         }
 
         private void CloseTransport()
@@ -416,17 +517,8 @@ namespace Conversa.Net.Xmpp.Client
 
         private void InitializeSubscriptions()
         {
-            this.subscriptions.Add(this.transport.StateChanged.Subscribe(state => OnTransportStateChanged(state)));
-            this.subscriptions.Add(this.transport.MessageStream.Subscribe(message => OnMessageReceivedAsync(message)));
-        }
-
-        private void ReleaseSubscriptions()
-        {
-            if (this.subscriptions != null)
-            {
-                this.subscriptions.Dispose();
-                this.subscriptions = null;
-            }
+            this.AddSubscription(this.transport.StateChanged.Subscribe(state => OnTransportStateChanged(state)));
+            this.AddSubscription(this.transport.MessageStream.Subscribe(message => OnMessageReceivedAsync(message)));
         }
 
         private void ReleaseSubjects()
@@ -702,7 +794,7 @@ namespace Conversa.Net.Xmpp.Client
                 this.State = XmppClientState.Open;
 
                 // Discover Server Capabilities
-                await this.DiscoverServerCapabilitiesAsync();
+                await this.DiscoverServerCapabilitiesAsync().ConfigureAwait(false);
             }
         }
 
@@ -807,5 +899,73 @@ namespace Conversa.Net.Xmpp.Client
                 await this.serverCapabilities.DiscoverAsync().ConfigureAwait(false);
             }
         }
+
+        private void AddSubscription(IDisposable onMessage)
+        {
+            var subscription = new CompositeDisposable();
+
+            subscription.Add(onMessage);
+
+            this.subscriptions.TryAdd(Guid.NewGuid().ToString(), subscription);
+        }
+
+        private void AddSubscription(string messageId
+                                   , IDisposable onResponse
+                                   , IDisposable onError
+                                   , IDisposable onDispose)
+        {
+            var subscription = new CompositeDisposable();
+
+            if (onResponse != null)
+            {
+                subscription.Add(onResponse);
+            }
+            if (onError != null)
+            {
+                subscription.Add(onError);
+            }
+            subscription.Add(onDispose);
+
+            this.subscriptions.TryAdd(messageId, subscription);
+        }
+
+        private void DisposeSubscriptions()
+        {
+            if (!this.subscriptions.IsEmpty)
+            {
+                foreach (var pair in this.subscriptions)
+                {
+                    pair.Value.Dispose();
+                }
+
+                this.subscriptions.Clear();
+            }
+        }
+
+        private void DisposeSubscription(string messageId)
+        {
+            if (this.subscriptions.ContainsKey(messageId))
+            {
+                CompositeDisposable subscription = null;
+
+                this.subscriptions.TryRemove(messageId, out subscription);
+
+                if (subscription != null)
+                {
+                    subscription.Dispose();
+                }
+            }
+        }
+
+        //private void SubscribeToClientState()
+        //{
+        //    this.AddSubscription(this.StateChanged
+        //                             .Where(state => state == XmppClientState.Open)
+        //                             .Subscribe(state => this.OnConnected()));
+
+        //    this.AddSubscription(this.StateChanged
+        //                             .Where(state => state == XmppClientState.Closed)
+        //                             .Subscribe(state => this.OnDisconnected()));
+        //}
     }
 }

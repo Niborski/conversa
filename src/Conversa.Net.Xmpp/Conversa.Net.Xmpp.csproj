@@ -310,7 +310,6 @@
     <Compile Include="Client\Authentication\SaslTokenizer.cs" />
     <Compile Include="Client\ConnectionStringKeywords.cs" />
     <Compile Include="Client\ConnectionStringSynonyms.cs" />
-    <Compile Include="Client\Hub.cs" />
     <Compile Include="Client\ServerFeatures.cs" />
     <Compile Include="Client\Transports\BaseTransport.cs" />
     <Compile Include="Client\Transports\ITransport.cs" />

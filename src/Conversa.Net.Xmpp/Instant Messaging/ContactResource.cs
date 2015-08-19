@@ -12,8 +12,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// Represents a contact resource
     /// </summary>
     public sealed class ContactResource
-        : Hub
     {
+        private XmppClient              client;
         private XmppAddress             address;
         private ContactResourcePresence presence;
         private EntityCapabilities      capabilities;
@@ -90,12 +90,12 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// Initializes a new instance of the <see cref="ContactResource"/> class.
         /// </summary>
         internal ContactResource(XmppClient client, XmppAddress address, Presence initialPresence)
-            : base(client)
         {
             var node = ((initialPresence.Capabilities == null) ? null : initialPresence.Capabilities.DiscoveryNode);
 
+            this.client   = client;
             this.address  = address;
-            this.presence = new ContactResourcePresence(this.Client, this);
+            this.presence = new ContactResourcePresence(this.client, this);
 
             if (node != null)
             {
@@ -171,13 +171,14 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         {
             var iq = new InfoQuery
             {
-                From      = this.Client.UserAddress
+                From      = this.client.UserAddress
               , To        = this.Address
               , Type      = InfoQueryType.Get
               , VCardData = new VCardData()
             };
 
-            await this.SendAsync(iq, r => this.OnAvatarResponse(r), e => this.OnError(e))
+            await this.client
+                      .SendAsync(iq, r => this.OnAvatarResponse(r), e => this.OnError(e))
                       .ConfigureAwait(false);
         }
 

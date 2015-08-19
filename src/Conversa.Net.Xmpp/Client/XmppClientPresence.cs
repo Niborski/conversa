@@ -10,9 +10,9 @@ namespace Conversa.Net.Xmpp.Client
     /// XMPP Client Presence
     /// </summary>
     public sealed class XmppClientPresence
-        : Hub
     {
-        private Presence presence;
+        private XmppClient client;
+        private Presence   presence;
 
         public bool IsOffline
         {
@@ -24,8 +24,8 @@ namespace Conversa.Net.Xmpp.Client
         /// </summary>
         /// <param name="client"></param>
         public XmppClientPresence(XmppClient client)
-            : base(client)
         {
+            this.client = client;
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Conversa.Net.Xmpp.Client
         /// </summary>
         public async Task SetUnavailableAsync()
         {
-            await this.SendAsync(new Presence().AsUnavailable()).ConfigureAwait(false);
+            await this.client.SendAsync(new Presence().AsUnavailable()).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace Conversa.Net.Xmpp.Client
         {
             this.presence = new Presence
             {
-                From              = this.Client.UserAddress
+                From              = this.client.UserAddress
               , Show              = ShowType.Online
               , ShowSpecified     = true
               , Status            = new Status { Value = statusMessage }
@@ -81,7 +81,7 @@ namespace Conversa.Net.Xmpp.Client
               , PrioritySpecified = true
             };
 
-            await this.SendAsync(this.presence).ConfigureAwait(false);
+            await this.client.SendAsync(this.presence).ConfigureAwait(false);
         }
 
         /// <summary>

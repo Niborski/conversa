@@ -16,7 +16,6 @@ namespace Conversa.Net.Xmpp.Capabilities
     /// Client capabilities (XEP-0115)
     /// </summary>
     public sealed class ClientCapabilities
-        : Hub
     {
         private const string Uri      = "https://github.com/carlosga/conversa";
         private const string Category = "client";
@@ -27,14 +26,17 @@ namespace Conversa.Net.Xmpp.Capabilities
 
         private Caps             caps;
         private ServiceDiscovery disco;
+        private XmppClient       client;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientCapabilities"/> class.
         /// </summary>
         internal ClientCapabilities(XmppClient client)
-            : base(client)
         {
-            this.disco = new ServiceDiscovery(this.Client, Uri);
+            this.client = client;
+
+            // Service Discovery
+            this.disco = new ServiceDiscovery(client, Uri);
 
             // Identities
             this.disco.AddIdentity(Category, Name, Type);
@@ -67,23 +69,23 @@ namespace Conversa.Net.Xmpp.Capabilities
             this.disco.Node += "#" + this.caps.VerificationString;
 
             // Subscribe to entity capabilities requests
-            this.SubscribeToCapabilitiesRequest();
+            this.InitializeSubscriptions();
         }
 
-        protected async override void OnConnected()                    
+        private void InitializeSubscriptions()
         {
-            await this.AdvertiseCapabilitiesAsync();
-        }
+            this.client
+                .StateChanged
+                .Where(state => state == XmppClientState.Open)
+                .Subscribe(async state => await AdvertiseCapabilitiesAsync().ConfigureAwait(false));
 
-        private void SubscribeToCapabilitiesRequest()
-        {
-            this.AddSubscription(this.Client
-                                     .InfoQueryStream
-                                     .Where(message => message.To == this.Client.UserAddress
-                                                    && message.IsRequest
-                                                    && message.ServiceInfo != null
-                                                    && message.ServiceInfo.Node == this.disco.Node)
-                                     .Subscribe(message => this.OnAdvertiseCapabilities(message)));
+            this.client
+                .InfoQueryStream
+                .Where(message => message.To == this.client.UserAddress
+                               && message.IsRequest
+                               && message.ServiceInfo != null
+                               && message.ServiceInfo.Node == this.disco.Node)
+                .Subscribe(message => this.OnAdvertiseCapabilities(message));
         }
 
         private async Task AdvertiseCapabilitiesAsync()
@@ -93,13 +95,14 @@ namespace Conversa.Net.Xmpp.Capabilities
                 Capabilities = this.caps
             };
 
-            await this.SendAsync(presence, r => this.OnAdvertiseCapabilities(r), e => this.OnError(e))
+            await this.client
+                      .SendAsync(presence, async r => await this.OnAdvertiseCapabilities(r), e => this.OnError(e))
                       .ConfigureAwait(false);
         }
 
-        private async void OnAdvertiseCapabilities(Presence response)
+        private async Task OnAdvertiseCapabilities(Presence response)
         {
-            if (response.From != this.Client.UserAddress)
+            if (response.From != this.client.UserAddress)
             {
                 await this.disco.SendAsnwerTo(response.Id, response.From);
             }

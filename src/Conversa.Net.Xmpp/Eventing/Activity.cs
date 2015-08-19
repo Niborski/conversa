@@ -16,20 +16,30 @@ namespace Conversa.Net.Xmpp.Eventing
     /// XMPP Activity
     /// </summary>
     public sealed class Activity
-        : Hub, IEnumerable<Event>, INotifyCollectionChanged
+        : IEnumerable<Event>, INotifyCollectionChanged
     {
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
+        private XmppClient                  client;
         private ObservableCollection<Event>	activities;
-        private IDisposable                 messageSubscription;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="XmppSession"/> class
         /// </summary>
         internal Activity(XmppClient client)
-            : base(client)
         {
+            this.client     = client;
             this.activities	= new ObservableCollection<Event>();
+
+            this.client
+                .StateChanged
+                .Where(state => state == XmppClientState.Open)
+                .Subscribe(state => OnConnected());
+
+            this.client
+                .StateChanged
+                .Where(state => state == XmppClientState.Closing)
+                .Subscribe(state => OnDisconnecting());
         }
 
         /// <summary>
@@ -39,10 +49,7 @@ namespace Conversa.Net.Xmpp.Eventing
         {
         	this.activities.Clear();
 
-            if (this.CollectionChanged != null)
-            {
-                this.CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-            }
+            this.CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
         IEnumerator<Event> IEnumerable<Event>.GetEnumerator()
@@ -55,26 +62,18 @@ namespace Conversa.Net.Xmpp.Eventing
             return this.activities.GetEnumerator();
         }
 
-        protected override void OnConnected()
+        private void OnConnected()
         {
-            this.messageSubscription = this.Client
-                                           .MessageStream
-                                           .Where(m => m.Type == MessageType.Headline || m.Type == MessageType.Normal)
-                                           .Subscribe(message => { this.OnMessageReceived(message); });
+            this.client
+                .MessageStream
+                .Where(m => m.Type == MessageType.Headline || m.Type == MessageType.Normal)
+                .Subscribe(message => { this.OnMessageReceived(message); });
 
             this.activities.CollectionChanged += new NotifyCollectionChangedEventHandler(OnCollectionChanged);
-
-            base.OnConnected();
         }
 
-        private void Unsubscribe()
+        private void OnDisconnecting()
         {
-            if (this.messageSubscription != null)
-            {
-                this.messageSubscription.Dispose();
-                this.messageSubscription = null;
-            }
-
             this.activities.CollectionChanged -= new NotifyCollectionChangedEventHandler(OnCollectionChanged);
         }
 

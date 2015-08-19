@@ -18,8 +18,8 @@ namespace Conversa.Net.Xmpp.Eventing
     /// XEP-0163: Personal Eventing Protocol
     /// </remarks>
     public sealed class PersonalEventing
-        : Hub
     {
+        private XmppClient   client;
         private List<string> features;
         private bool         isUserTuneEnabled;
 
@@ -53,8 +53,8 @@ namespace Conversa.Net.Xmpp.Eventing
         /// </summary>
         /// <param name="client">XMPP Client instance.</param>
         internal PersonalEventing(XmppClient client)
-            : base(client)
         {
+            this.client   = client;
             this.features = new List<string>();
         }
 
@@ -67,12 +67,13 @@ namespace Conversa.Net.Xmpp.Eventing
             var iq = new InfoQuery
             {
                 Type        = InfoQueryType.Get
-              , From        = this.Client.UserAddress
-              , To          = this.Client.UserAddress.BareAddress
+              , From        = this.client.UserAddress
+              , To          = this.client.UserAddress.BareAddress
               , ServiceItem = new ServiceItem()
             };
 
-            await this.SendAsync(iq, r => this.OnDiscoverSupport(r), e => this.OnDiscoverError(e))
+            await this.client
+                      .SendAsync(iq, r => this.OnDiscoverSupport(r), e => this.OnDiscoverError(e))
                       .ConfigureAwait(false);
         }
 

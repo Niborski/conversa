@@ -17,8 +17,8 @@ namespace Conversa.Net.Xmpp.Discovery
     /// XEP-0030: Service Discovery
     /// </remarks>
     public sealed class ServiceDiscovery
-        : Hub
     {
+        private XmppClient            client;
         private string                node;
         private List<ServiceIdentity> identities;
         private List<ServiceFeature>  features;
@@ -109,8 +109,8 @@ namespace Conversa.Net.Xmpp.Discovery
         /// Initializes a new instance of the <see cref="ServiceDiscovery"/> class.
         /// </summary>
         public ServiceDiscovery(XmppClient client, string node)
-            : base(client)
         {
+            this.client     = client;
             this.node       = node;
             this.identities = new List<ServiceIdentity>();
             this.features   = new List<ServiceFeature>();
@@ -158,7 +158,7 @@ namespace Conversa.Net.Xmpp.Discovery
                 iq.ServiceInfo.Features.Add(feature);
             }
 
-            await this.Client.SendAsync(iq).ConfigureAwait(false);
+            await this.client.SendAsync(iq).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -169,12 +169,13 @@ namespace Conversa.Net.Xmpp.Discovery
             var iq = new InfoQuery
             {
                 Type        = InfoQueryType.Get
-              , From        = this.Client.UserAddress
+              , From        = this.client.UserAddress
               , To          = this.Node
               , ServiceItem = new ServiceItem()
             };
 
-            await this.SendAsync(iq, r => this.OnDiscoverServices(r), e => this.OnError(e))
+            await this.client
+                      .SendAsync(iq, r => this.OnDiscoverServices(r), e => this.OnError(e))
                       .ConfigureAwait(false);
         }
 
@@ -186,12 +187,13 @@ namespace Conversa.Net.Xmpp.Discovery
             var iq = new InfoQuery
             {
                 Type        = InfoQueryType.Get
-              , From        = this.Client.UserAddress
+              , From        = this.client.UserAddress
               , To          = this.Node
               , ServiceInfo = new ServiceInfo()
             };
 
-            await this.SendAsync(iq, r => this.OnDiscoverFeatures(r), e => this.OnError(e))
+            await this.client
+                      .SendAsync(iq, r => this.OnDiscoverFeatures(r), e => this.OnError(e))
                       .ConfigureAwait(false);
         }
 
@@ -212,7 +214,7 @@ namespace Conversa.Net.Xmpp.Discovery
 
             foreach (var itemDetail in response.ServiceItem.Items)
             {
-                this.services.Add(new Service(this.Client, itemDetail.Jid));
+                this.services.Add(new Service(this.client, itemDetail.Jid));
             }
         }
 
