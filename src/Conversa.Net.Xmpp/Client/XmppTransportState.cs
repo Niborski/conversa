@@ -6,7 +6,7 @@ namespace Conversa.Net.Xmpp.Client
     /// <summary>
     /// Describes the current state of the connection to a XMPP Server.
     /// </summary>
-    public enum XmppClientState
+    public enum XmppTransportState
     {
         /// <summary>
         /// The connection is being opened

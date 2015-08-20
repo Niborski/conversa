@@ -26,12 +26,12 @@ namespace Conversa.Net.Xmpp.Capabilities
 
         private Caps             caps;
         private ServiceDiscovery disco;
-        private XmppClient       client;
+        private XmppTransport       client;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientCapabilities"/> class.
         /// </summary>
-        internal ClientCapabilities(XmppClient client)
+        internal ClientCapabilities(XmppTransport client)
         {
             this.client = client;
 
@@ -76,7 +76,7 @@ namespace Conversa.Net.Xmpp.Capabilities
         {
             this.client
                 .StateChanged
-                .Where(state => state == XmppClientState.Open)
+                .Where(state => state == XmppTransportState.Open)
                 .Subscribe(async state => await AdvertiseCapabilitiesAsync().ConfigureAwait(false));
 
             this.client

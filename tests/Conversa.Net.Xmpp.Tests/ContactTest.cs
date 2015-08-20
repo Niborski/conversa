@@ -20,7 +20,7 @@ namespace Conversa.Net.Xmpp.Tests
         {
             var waiter = new AutoResetEvent(false);
 
-            using (var client = new XmppClient(ConnectionStringHelper.GetDefaultConnectionString()))
+            using (var client = new XmppTransport(ConnectionStringHelper.GetDefaultConnectionString()))
             {
                 client.ServerCapabilities
                       .CapsChangedStream
@@ -47,7 +47,7 @@ namespace Conversa.Net.Xmpp.Tests
         {
             var waiter = new AutoResetEvent(false);
 
-            using (var client = new XmppClient(ConnectionStringHelper.GetDefaultConnectionString()))
+            using (var client = new XmppTransport(ConnectionStringHelper.GetDefaultConnectionString()))
             {
                 client.ServerCapabilities
                       .CapsChangedStream

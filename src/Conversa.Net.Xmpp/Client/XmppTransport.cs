@@ -10,24 +10,23 @@ using Conversa.Net.Xmpp.InstantMessaging;
 using Conversa.Net.Xmpp.Xml;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
-using Windows.Security.Cryptography.Certificates;
+using Windows.Foundation;
 
 namespace Conversa.Net.Xmpp.Client
 {
     /// <summary>
     /// Represents a connection to a XMPP server
     /// </summary>
-    public sealed class XmppClient
+    public sealed class XmppTransport
         : IDisposable
     {
         // State change subject
-        private Subject<XmppClientState> stateChanged;
+        private Subject<XmppTransportState> stateChanged;
 
         // Authentication Subjects
         private Subject<SaslAuthenticationFailure> authenticationFailed;
@@ -38,19 +37,19 @@ namespace Conversa.Net.Xmpp.Client
         private Subject<Presence>  presenceStream;        
 
         // Private members
-        private XmppConnectionString connectionString;
-        private XmppAddress          userAddress;
-        private ServerFeatures       serverFeatures;
-        private XmppClientState      state;
-        private ITransport           transport;
-        private ISaslMechanism       saslMechanism;
-        private ContactList          roster;
-        private Activity             activity;
-        private ClientCapabilities   capabilities;
-        private EntityCapabilities   serverCapabilities;
-        private PersonalEventing     personalEventing;
-        private XmppClientPresence   presence;
-        private bool                 isDisposed;
+        private XmppConnectionString  connectionString;
+        private XmppAddress           userAddress;
+        private ServerFeatures        serverFeatures;
+        private XmppTransportState    state;
+        private ITransport            transport;
+        private ISaslMechanism        saslMechanism;
+        private ContactList           roster;
+        private Activity              activity;
+        private ClientCapabilities    capabilities;
+        private EntityCapabilities    serverCapabilities;
+        private PersonalEventing      personalEventing;
+        private XmppTransportPresence presence;
+        private bool                  isDisposed;
 
         // Message Subscriptions
         private ConcurrentDictionary<string, CompositeDisposable> subscriptions;
@@ -58,7 +57,7 @@ namespace Conversa.Net.Xmpp.Client
         /// <summary>
         /// Occurs when the connection state changes
         /// </summary>
-        public IObservable<XmppClientState> StateChanged
+        public IObservable<XmppTransportState> StateChanged
         {
             get { return this.stateChanged.AsObservable(); }
         }
@@ -96,13 +95,61 @@ namespace Conversa.Net.Xmpp.Client
         }
 
         /// <summary>
-        /// Get a vector of SSL server errors to ignore when making an secure connection.
+        /// Gets the configuration of the message transport.
         /// </summary>
-        /// <returns>A vector of SSL server errors to ignore.</returns>
-        public IList<ChainValidationResult> IgnorableServerCertificateErrors
+        public XmppTransportConfiguration Configuration
         {
             get;
             private set;
+        }
+
+        /// <summary>
+        /// Gets a value indicating if the transport is active.
+        /// </summary>
+        public bool IsActive
+        {
+            get { return this.TransportClient != null && this.TransportClient.State != XmppTransportState.Closed; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating if the app is set as a notification provider.
+        /// </summary>
+        public bool IsAppSetAsNotificationProvider
+        {
+            get;
+            private set;
+        } = false;
+
+        /// <summary>
+        /// The friendly name for the transport.
+        /// </summary>
+        public string TransportFriendlyName
+        {
+            get { return "XMPP transport"; }
+        }
+
+        /// <summary>
+        /// The ID of the transport.
+        /// </summary>
+        public string TransportId
+        {
+            get { return "3200721B-17E5-4DB6-B390-A79AAC9B19EB"; }
+        }
+
+        /// <summary>
+        /// Gets the type of the message transport.
+        /// </summary>
+        public XmppTransportKind TransportKind
+        {
+            get { return XmppTransportKind.Custom; }
+        }        
+
+        /// <summary>
+        /// Gets the underlying transport client.
+        /// </summary>
+        public XmppTransport TransportClient
+        {
+            get;
         }
 
         /// <summary>
@@ -132,7 +179,7 @@ namespace Conversa.Net.Xmpp.Client
         /// <summary>
         /// Gets the presence instance associated to the client.
         /// </summary>
-        public XmppClientPresence Presence
+        public XmppTransportPresence Presence
         {
             get { return this.presence; }
         }
@@ -173,7 +220,7 @@ namespace Conversa.Net.Xmpp.Client
         /// <summary>
         /// Gets the current state of the connection.
         /// </summary>
-        public XmppClientState State
+        public XmppTransportState State
         {
             get { return this.state; }
             private set
@@ -191,7 +238,7 @@ namespace Conversa.Net.Xmpp.Client
             get { return connectionString; }
             set
             {
-                if (this.state != XmppClientState.Closed)
+                if (this.state != XmppTransportState.Closed)
                 {
                     throw new XmppException("Connection should be closed");
                 }
@@ -200,21 +247,21 @@ namespace Conversa.Net.Xmpp.Client
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="XmppClient"/> class.
+        /// Initializes a new instance of the <see cref="XmppTransport"/> class.
         /// </summary>
-        public XmppClient()
+        public XmppTransport()
             : this(null)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="XmppClient"/> class.
+        /// Initializes a new instance of the <see cref="XmppTransport"/> class.
         /// </summary>
-        public XmppClient(XmppConnectionString connectionString)
+        public XmppTransport(XmppConnectionString connectionString)
         {
             this.connectionString     = connectionString;
-            this.state                = XmppClientState.Closed;
-            this.stateChanged         = new Subject<XmppClientState>();
+            this.state                = XmppTransportState.Closed;
+            this.stateChanged         = new Subject<XmppTransportState>();
             this.authenticationFailed = new Subject<SaslAuthenticationFailure>();
             this.infoQueryStream      = new Subject<InfoQuery>();
             this.messageStream        = new Subject<Message>();
@@ -224,15 +271,15 @@ namespace Conversa.Net.Xmpp.Client
             this.activity             = new Activity(this);
             this.capabilities         = new ClientCapabilities(this);
             this.personalEventing     = new PersonalEventing(this);
-            this.presence             = new XmppClientPresence(this);
+            this.presence             = new XmppTransportPresence(this);
             this.serverCapabilities   = new EntityCapabilities(this);
         }
 
         /// <summary>
         /// Releases unmanaged resources and performs other cleanup operations before the
-        /// <see cref="XmppClient"/> is reclaimed by garbage collection.
+        /// <see cref="XmppTransport"/> is reclaimed by garbage collection.
         /// </summary>
-        ~XmppClient()
+        ~XmppTransport()
         {
             // Do not re-create Dispose clean-up code here.
             // Calling Dispose(false) is optimal in terms of
@@ -283,13 +330,18 @@ namespace Conversa.Net.Xmpp.Client
                 this.presence           = null;
                 this.serverCapabilities = null;
                 this.serverFeatures     = ServerFeatures.None;
-                this.state              = XmppClientState.Closed;
+                this.state              = XmppTransportState.Closed;
                 this.CloseTransport();
                 this.DisposeSubscriptions();
                 this.ReleaseSubjects();
             }
 
             this.isDisposed = true;
+        }
+
+        public IAsyncAction RequestSetAsNotificationProviderAsync()
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -301,7 +353,7 @@ namespace Conversa.Net.Xmpp.Client
             {
                 throw new XmppException("ConnectionString cannot be null.");
             }
-            if (this.State == XmppClientState.Open)
+            if (this.State == XmppTransportState.Open)
             {
                 throw new XmppException("Connection is already open.");
             }
@@ -310,7 +362,7 @@ namespace Conversa.Net.Xmpp.Client
             this.userAddress = this.connectionString.ToXmppAddress();
 
             // Set the initial state
-            this.State = XmppClientState.Opening;
+            this.State = XmppTransportState.Opening;
 
             // Connect to the server
             this.transport = new TcpTransport();
@@ -320,7 +372,7 @@ namespace Conversa.Net.Xmpp.Client
 
             // Open the connection
             await this.transport
-                      .OpenAsync(this.connectionString, this.IgnorableServerCertificateErrors)
+                      .OpenAsync(this.connectionString, this.Configuration.IgnorableServerCertificateErrors)
                       .ConfigureAwait(false);
         }
 
@@ -330,22 +382,14 @@ namespace Conversa.Net.Xmpp.Client
         /// <returns></returns>
         public async Task CloseAsync()
         {
-            if (this.isDisposed || this.State == XmppClientState.Closed || this.State == XmppClientState.Closing)
+            if (this.isDisposed || this.State == XmppTransportState.Closed || this.State == XmppTransportState.Closing)
             {
                 return;
             }
 
             try
             {
-                this.State = XmppClientState.Closing;
-
-                // Send the XMPP stream close tag
-                await this.CloseStreamAsync().ConfigureAwait(false);
-
-#warning TODO: Wait until the server sends the stream close tag
-
-                // Close the underlying transport
-                this.CloseTransport();
+                await SoftCloseAsync().ConfigureAwait(false);
             }
             catch
             {
@@ -364,8 +408,7 @@ namespace Conversa.Net.Xmpp.Client
                 this.personalEventing   = null;
                 this.presence           = null;
                 this.serverCapabilities = null;
-                this.serverFeatures   = ServerFeatures.None;
-                this.State            = XmppClientState.Closed;
+                this.serverFeatures     = ServerFeatures.None;
 
                 this.ReleaseSubjects();
             }
@@ -373,7 +416,7 @@ namespace Conversa.Net.Xmpp.Client
 
         public async Task SendAsync(InfoQuery request, Action<InfoQuery> onResponse = null, Action<InfoQuery> onError = null)
         {
-            if (this.State != XmppClientState.Open)
+            if (this.State != XmppTransportState.Open)
             {
                 return;
             }
@@ -404,7 +447,7 @@ namespace Conversa.Net.Xmpp.Client
 
         public async Task SendAsync(Presence request, Action<Presence> onResponse = null, Action<Presence> onError = null)
         {
-            if (this.State != XmppClientState.Open)
+            if (this.State != XmppTransportState.Open)
             {
                 return;
             }
@@ -435,7 +478,7 @@ namespace Conversa.Net.Xmpp.Client
 
         public async Task SendAsync(Message request, Action<Message> onResponse = null, Action<Message> onError = null)
         {
-            if (this.State != XmppClientState.Open)
+            if (this.State != XmppTransportState.Open)
             {
                 return;
             }
@@ -467,7 +510,7 @@ namespace Conversa.Net.Xmpp.Client
         public async Task SendAsync<T>(T request, IDisposable onResponse = null, IDisposable onError = null, IDisposable dispose = null)
             where T : class, IStanza
         {
-            if (this.State != XmppClientState.Open)
+            if (this.State != XmppTransportState.Open)
             {
                 return;
             }
@@ -502,6 +545,37 @@ namespace Conversa.Net.Xmpp.Client
             {
                 this.transport.Dispose();
                 this.transport = null;
+            }
+        }
+
+        private async Task SoftCloseAsync()
+        {
+            if (this.isDisposed || this.State == XmppTransportState.Closed || this.State == XmppTransportState.Closing)
+            {
+                return;
+            }
+
+            try
+            {
+                this.State = XmppTransportState.Closing;
+
+                // Send the XMPP stream close tag
+                await this.CloseStreamAsync().ConfigureAwait(false);
+
+#warning TODO: Wait until the server sends the stream close tag
+
+                // Close the underlying transport
+                this.CloseTransport();
+            }
+            catch
+            {
+            }
+            finally
+            {
+                this.transport      = null;
+                this.saslMechanism  = null;
+                this.serverFeatures = ServerFeatures.None;
+                this.State          = XmppTransportState.Closed;
             }
         }
 
@@ -574,13 +648,13 @@ namespace Conversa.Net.Xmpp.Client
         {
             if (state == TransportState.ConnectionFailed)
             {
-                await this.CloseAsync().ConfigureAwait(false);
+                await this.SoftCloseAsync().ConfigureAwait(false);
             }
             else if (state == TransportState.Closed)
             {
-                if (this.State == XmppClientState.Opening || this.State == XmppClientState.Open)
+                if (this.State == XmppTransportState.Opening || this.State == XmppTransportState.Open)
                 {
-                    await this.CloseAsync().ConfigureAwait(false);
+                    await this.SoftCloseAsync().ConfigureAwait(false);
                 }
             }
         }
@@ -791,7 +865,7 @@ namespace Conversa.Net.Xmpp.Client
             else
             {
                 // No more features for negotiation set state as Open
-                this.State = XmppClientState.Open;
+                this.State = XmppTransportState.Open;
 
                 // Discover Server Capabilities
                 await this.DiscoverServerCapabilitiesAsync().ConfigureAwait(false);
@@ -805,7 +879,7 @@ namespace Conversa.Net.Xmpp.Client
 
         private async Task OnStartSaslNegotiationAsync()
         {
-            this.State         = XmppClientState.Authenticating;
+            this.State         = XmppTransportState.Authenticating;
             this.saslMechanism = this.CreateSaslMechanism();
 
             await this.SendAsync(this.saslMechanism.StartSaslNegotiation()).ConfigureAwait(false);
@@ -815,7 +889,7 @@ namespace Conversa.Net.Xmpp.Client
         {
             if (this.saslMechanism.ProcessSuccess(success))
             {
-                this.State         = XmppClientState.Authenticated;
+                this.State         = XmppTransportState.Authenticated;
                 this.saslMechanism = null;
 
                 await this.transport.ResetStreamAsync().ConfigureAwait(false);
@@ -837,9 +911,9 @@ namespace Conversa.Net.Xmpp.Client
 
             this.authenticationFailed.OnNext(new SaslAuthenticationFailure(errorMessage));
 
-            this.State = XmppClientState.AuthenticationFailure;
+            this.State = XmppTransportState.AuthenticationFailure;
 
-            await this.CloseAsync().ConfigureAwait(false);
+            await this.SoftCloseAsync().ConfigureAwait(false);
         }
 
         private async Task OnBindResourceAsync()
@@ -956,16 +1030,5 @@ namespace Conversa.Net.Xmpp.Client
                 }
             }
         }
-
-        //private void SubscribeToClientState()
-        //{
-        //    this.AddSubscription(this.StateChanged
-        //                             .Where(state => state == XmppClientState.Open)
-        //                             .Subscribe(state => this.OnConnected()));
-
-        //    this.AddSubscription(this.StateChanged
-        //                             .Where(state => state == XmppClientState.Closed)
-        //                             .Subscribe(state => this.OnDisconnected()));
-        //}
     }
 }

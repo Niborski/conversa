@@ -15,7 +15,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// </summary>
     public sealed class ContactResourcePresence
     {
-        private XmppClient               client;
+        private XmppTransport               client;
         private Subject<ContactResource> presenceStream;
         private ContactResource          resource;
         private ShowType                 showAs;
@@ -62,7 +62,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// the given session.
         /// </summary>
         /// <param name="session"></param>
-        internal ContactResourcePresence(XmppClient client, ContactResource resource)
+        internal ContactResourcePresence(XmppTransport client, ContactResource resource)
         {
             this.client         = client;
             this.resource       = resource;
@@ -71,7 +71,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
             this.client
                 .StateChanged
-                .Where(state => state == XmppClientState.Closing)
+                .Where(state => state == XmppTransportState.Closing)
                 .Subscribe(state => OnDisconnecting());
         }
 

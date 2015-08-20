@@ -24,7 +24,5 @@
   </Applications>
   <Capabilities>
     <Capability Name="internetClient" />
-    <uap:Capability Name="blockedChatMessages" />
-    <uap:Capability Name="chat" />
   </Capabilities>
 </Package>

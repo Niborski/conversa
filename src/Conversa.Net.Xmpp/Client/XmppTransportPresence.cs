@@ -9,9 +9,9 @@ namespace Conversa.Net.Xmpp.Client
     /// <summary>
     /// XMPP Client Presence
     /// </summary>
-    public sealed class XmppClientPresence
+    public sealed class XmppTransportPresence
     {
-        private XmppClient client;
+        private XmppTransport client;
         private Presence   presence;
 
         public bool IsOffline
@@ -20,10 +20,10 @@ namespace Conversa.Net.Xmpp.Client
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="XmppClientPresence"/> class.
+        /// Initializes a new instance of the <see cref="XmppTransportPresence"/> class.
         /// </summary>
         /// <param name="client"></param>
-        public XmppClientPresence(XmppClient client)
+        public XmppTransportPresence(XmppTransport client)
         {
             this.client = client;
         }

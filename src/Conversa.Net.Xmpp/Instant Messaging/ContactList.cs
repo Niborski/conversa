@@ -24,7 +24,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
        // Private members
-        private XmppClient             client;
+        private XmppTransport             client;
         private ConcurrentBag<Contact> contacts;
 
         /// <summary>
@@ -39,19 +39,19 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactList"/> class
         /// </summary>
-        internal ContactList(XmppClient client)
+        internal ContactList(XmppTransport client)
         {
             this.client   = client;
             this.contacts = new ConcurrentBag<Contact>();
 
             this.client
                 .StateChanged
-                .Where(state => state == XmppClientState.Open)
+                .Where(state => state == XmppTransportState.Open)
                 .Subscribe(async state => await OnConnectedAsync().ConfigureAwait(false));
 
             this.client
                 .StateChanged
-                .Where(state => state == XmppClientState.Closing)
+                .Where(state => state == XmppTransportState.Closing)
                 .Subscribe(state => OnDisconnected());
         }
 

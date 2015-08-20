@@ -20,25 +20,25 @@ namespace Conversa.Net.Xmpp.Eventing
     {
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-        private XmppClient                  client;
+        private XmppTransport                  client;
         private ObservableCollection<Event>	activities;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="XmppSession"/> class
         /// </summary>
-        internal Activity(XmppClient client)
+        internal Activity(XmppTransport client)
         {
             this.client     = client;
             this.activities	= new ObservableCollection<Event>();
 
             this.client
                 .StateChanged
-                .Where(state => state == XmppClientState.Open)
+                .Where(state => state == XmppTransportState.Open)
                 .Subscribe(state => OnConnected());
 
             this.client
                 .StateChanged
-                .Where(state => state == XmppClientState.Closing)
+                .Where(state => state == XmppTransportState.Closing)
                 .Subscribe(state => OnDisconnecting());
         }
 

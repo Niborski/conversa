@@ -22,7 +22,7 @@ namespace Conversa.Net.Xmpp.Capabilities
     public sealed class EntityCapabilities
         : IEntityCapabilitiesInfo
     {
-        private XmppClient                  client;
+        private XmppTransport                  client;
         private Subject<EntityCapabilities> capsChangedStream;
         private XmppAddress                 address;
         private ServiceInfo                 info;
@@ -106,7 +106,7 @@ namespace Conversa.Net.Xmpp.Capabilities
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityCapabilities"/> class.
         /// </summary>
-        internal EntityCapabilities(XmppClient client)
+        internal EntityCapabilities(XmppTransport client)
             : this(client, null, null)
         {
             this.client = client;
@@ -116,7 +116,7 @@ namespace Conversa.Net.Xmpp.Capabilities
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityCapabilities"/> class.
         /// </summary>
-        public EntityCapabilities(XmppClient client, XmppAddress address, string node)
+        public EntityCapabilities(XmppTransport client, XmppAddress address, string node)
         {
             this.client            = client;
             this.address           = address;

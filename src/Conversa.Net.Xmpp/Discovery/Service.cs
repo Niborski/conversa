@@ -10,7 +10,7 @@ namespace Conversa.Net.Xmpp.Discovery
     /// </summary>
     public class Service
     {
-        internal Service(XmppClient client, string address)
+        internal Service(XmppTransport client, string address)
         {
         }
     }

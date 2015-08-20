@@ -19,7 +19,7 @@ namespace Conversa.Net.Xmpp.Eventing
     /// </remarks>
     public sealed class PersonalEventing
     {
-        private XmppClient   client;
+        private XmppTransport   client;
         private List<string> features;
         private bool         isUserTuneEnabled;
 
@@ -52,7 +52,7 @@ namespace Conversa.Net.Xmpp.Eventing
         /// Initializes a new instance of the <see cref="T:PersonalEventing"/> class.
         /// </summary>
         /// <param name="client">XMPP Client instance.</param>
-        internal PersonalEventing(XmppClient client)
+        internal PersonalEventing(XmppTransport client)
         {
             this.client   = client;
             this.features = new List<string>();

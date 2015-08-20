@@ -14,7 +14,7 @@ namespace Conversa.Net.Xmpp.Discovery
     /// </summary>
     public class GatewayService
     {
-        private XmppClient  Client;
+        private XmppTransport  Client;
         private XmppAddress Address;
         private GatewayType type;
 
@@ -31,7 +31,7 @@ namespace Conversa.Net.Xmpp.Discovery
         /// </summary>
         /// <param name="session"></param>
         /// <param name="serviceId"></param>
-        public GatewayService(XmppClient client, string address)
+        public GatewayService(XmppTransport client, string address)
         {
             this.Client  = client;
             this.Address = address;

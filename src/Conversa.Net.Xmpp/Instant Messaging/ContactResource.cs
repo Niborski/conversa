@@ -13,7 +13,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// </summary>
     public sealed class ContactResource
     {
-        private XmppClient              client;
+        private XmppTransport              client;
         private XmppAddress             address;
         private ContactResourcePresence presence;
         private EntityCapabilities      capabilities;
@@ -89,7 +89,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactResource"/> class.
         /// </summary>
-        internal ContactResource(XmppClient client, XmppAddress address, Presence initialPresence)
+        internal ContactResource(XmppTransport client, XmppAddress address, Presence initialPresence)
         {
             var node = ((initialPresence.Capabilities == null) ? null : initialPresence.Capabilities.DiscoveryNode);
 

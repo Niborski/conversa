@@ -18,7 +18,7 @@ namespace Conversa.Net.Xmpp.Discovery
     /// </remarks>
     public sealed class ServiceDiscovery
     {
-        private XmppClient            client;
+        private XmppTransport            client;
         private string                node;
         private List<ServiceIdentity> identities;
         private List<ServiceFeature>  features;
@@ -100,7 +100,7 @@ namespace Conversa.Net.Xmpp.Discovery
         /// <summary>
         /// Initializes a new instance of the <see cref="ServiceDiscovery"/> class.
         /// </summary>
-        public ServiceDiscovery(XmppClient client)
+        public ServiceDiscovery(XmppTransport client)
             : this(client, null)
         {
         }
@@ -108,7 +108,7 @@ namespace Conversa.Net.Xmpp.Discovery
         /// <summary>
         /// Initializes a new instance of the <see cref="ServiceDiscovery"/> class.
         /// </summary>
-        public ServiceDiscovery(XmppClient client, string node)
+        public ServiceDiscovery(XmppTransport client, string node)
         {
             this.client     = client;
             this.node       = node;

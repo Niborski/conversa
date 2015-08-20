@@ -4,12 +4,14 @@
 using Conversa.Net.Xmpp.Blocking;
 using Conversa.Net.Xmpp.Client;
 using Conversa.Net.Xmpp.Core;
+using DevExpress.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
+using Windows.Foundation;
 
 namespace Conversa.Net.Xmpp.InstantMessaging
 {
@@ -17,18 +19,17 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// Represents a <see cref="ContactList"/> contact.
     /// </summary>
     public sealed class Contact
+        : BindableBase
     {
         private Subject<ContactBlockingAction> blockingStream;
         private Subject<ContactResource>       newResourceStream;
         private Subject<ContactResource>       removedResourceStream;
 
-        private XmppClient             client;
-        private string                 name;
-        private string                 displayName;
+        private XmppTransport             client;
         private XmppAddress            address;
-        private RosterSubscriptionType subscription;
         private List<ContactResource>  resources;
         private List<string>           groups;
+        private ChatConversation       conversation;
 
         /// <summary>
         /// Occurs when the contact blocking status changes.
@@ -69,8 +70,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <value>The name.</value>
         public string Name
         {
-            get { return this.name; }
-            set { this.name = value; }
+            get { return GetProperty(() => Name); }
+            set { SetProperty(() => Name, value); }
         }
 
         /// <summary>
@@ -78,8 +79,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public string DisplayName
         {
-            get { return this.displayName; }
-            set { this.displayName = value; }
+            get { return GetProperty(() => DisplayName); }
+            set { SetProperty(() => DisplayName, value); }
         }
 
         /// <summary>
@@ -106,8 +107,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <value>The subscription.</value>
         public RosterSubscriptionType Subscription
         {
-            get { return this.subscription; }
-            set { this.subscription = value; }
+            get { return GetProperty(() => Subscription); }
+            set { SetProperty(() => Subscription, value); }
         }
 
         /// <summary>
@@ -119,6 +120,14 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
+        /// Gets the chat conversation for this contact.
+        /// </summary>
+        public ChatConversation Conversation
+        {
+            get;
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="T:XmppContact"/> class.
         /// </summary>
         /// <param name="client">The XMPP client instance.</param>
@@ -126,7 +135,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <param name="name">The contact name.</param>
         /// <param name="subscription">The contact subscription mode.</param>
         /// <param name="groups">The contact groups.</param>
-        internal Contact(XmppClient             client
+        internal Contact(XmppTransport             client
                        , XmppAddress            address
                        , string                 name
                        , RosterSubscriptionType subscription
@@ -139,6 +148,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             this.blockingStream        = new Subject<ContactBlockingAction>();
             this.newResourceStream     = new Subject<ContactResource>();
             this.removedResourceStream = new Subject<ContactResource>();
+            this.conversation          = new ChatConversation(this);
 
             this.Update(name, subscription, groups);
 
@@ -232,9 +242,9 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
         internal void Update(string name, RosterSubscriptionType subscription, IEnumerable<string> groups)
         {
-            this.name         = ((name == null) ? String.Empty : name);
-            this.displayName  = (!String.IsNullOrEmpty(this.name) ? this.name : this.address.UserName);
-            this.subscription = subscription;
+            this.Name         = ((name == null) ? String.Empty : name);
+            this.DisplayName  = (!String.IsNullOrEmpty(this.Name) ? this.Name : this.address.UserName);
+            this.Subscription = subscription;
 
             if (groups != null && groups.Count() > 0)
             {
