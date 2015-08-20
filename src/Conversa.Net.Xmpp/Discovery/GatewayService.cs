@@ -14,7 +14,6 @@ namespace Conversa.Net.Xmpp.Discovery
     /// </summary>
     public class GatewayService
     {
-        private XmppTransport  Client;
         private XmppAddress Address;
         private GatewayType type;
 
@@ -29,12 +28,10 @@ namespace Conversa.Net.Xmpp.Discovery
         /// <summary>
         /// Initiazes a new instance of the <see cref="GatewayService">XmppGatewayService</see> class.
         /// </summary>
-        /// <param name="session"></param>
-        /// <param name="serviceId"></param>
-        public GatewayService(XmppTransport client, string address)
+        public GatewayService(string address)
         {
-            this.Client  = client;
             this.Address = address;
+
             this.SetGatewayType();
         }
 
@@ -53,15 +50,16 @@ namespace Conversa.Net.Xmpp.Discovery
         /// <param name="password"></param>
         public async Task RegisterAsync(string username, string password)
         {
-            var iq = new InfoQuery
+            var transport = XmppTransportManager.GetTransport();
+            var iq        = new InfoQuery
             {
                 Type     = InfoQueryType.Set
-              , From     = this.Client.UserAddress
+              , From     = transport.UserAddress
               , To       = this.Address
               , Register = new Register { UserName = username, Password = password }
             };
 
-            await this.Client.SendAsync(iq);
+            await transport.SendAsync(iq).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -69,15 +67,16 @@ namespace Conversa.Net.Xmpp.Discovery
         /// </summary>
         public async Task UnregisterAsync()
         {
-            var iq = new InfoQuery
+            var transport = XmppTransportManager.GetTransport();
+            var iq        = new InfoQuery
             {
                 Type     = InfoQueryType.Set
-              , From     = this.Client.UserAddress
+              , From     = transport.UserAddress
               , To       = this.Address
               , Register = new Register { Remove = String.Empty }
             };
 
-            await this.Client.SendAsync(iq);
+            await transport.SendAsync(iq).ConfigureAwait(false);
         }
 
         private void SetGatewayType()

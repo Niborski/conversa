@@ -18,55 +18,53 @@ namespace Conversa.Net.Xmpp.Tests
         [TestMethod]
         public async Task BlockContactTest()
         {
-            var waiter = new AutoResetEvent(false);
+            var waiter    = new AutoResetEvent(false);
+            var transport = XmppTransportManager.GetTransport();
 
-            using (var client = new XmppTransport(ConnectionStringHelper.GetDefaultConnectionString()))
-            {
-                client.ServerCapabilities
-                      .CapsChangedStream
-                      .Subscribe(x => waiter.Set());
+            transport.ConnectionString = ConnectionStringHelper.GetDefaultConnectionString();
+            transport.ServerCapabilities
+                     .CapsChangedStream
+                     .Subscribe(x => waiter.Set());
 
-                await client.OpenAsync();
+            await transport.OpenAsync();
 
-                waiter.WaitOne();
+            waiter.WaitOne();
 
-                var contact = client.Roster.First();
+            var contact = transport.Roster.First();
 
-                contact.BlockingStream
-                       .Where(x => x == ContactBlockingAction.Blocked)
-                       .Subscribe(x => waiter.Set());
+            contact.BlockingStream
+                   .Where(x => x == ContactBlockingAction.Blocked)
+                   .Subscribe(x => waiter.Set());
 
-                await contact.BlockAsync();
+            await contact.BlockAsync();
 
-                waiter.WaitOne();
-            }
+            waiter.WaitOne();
         }
 
         [TestMethod]
         public async Task UnBlockContactTest()
         {
-            var waiter = new AutoResetEvent(false);
+            var waiter    = new AutoResetEvent(false);
+            var transport = XmppTransportManager.GetTransport();
 
-            using (var client = new XmppTransport(ConnectionStringHelper.GetDefaultConnectionString()))
-            {
-                client.ServerCapabilities
-                      .CapsChangedStream
-                      .Subscribe(x => waiter.Set());
+            transport.ConnectionString = ConnectionStringHelper.GetDefaultConnectionString();
+            transport.ServerCapabilities
+                     .CapsChangedStream
+                     .Subscribe(x => waiter.Set());
 
-                await client.OpenAsync();
+            await transport.OpenAsync();
 
-                waiter.WaitOne();
+            waiter.WaitOne();
 
-                var contact = client.Roster.First();
+            var contact = transport.Roster.First();
 
-                contact.BlockingStream
-                       .Where(x => x == ContactBlockingAction.Unblocked)
-                       .Subscribe(x => waiter.Set());
+            contact.BlockingStream
+                   .Where(x => x == ContactBlockingAction.Unblocked)
+                   .Subscribe(x => waiter.Set());
 
-                await contact.UnBlockAsync();
+            await contact.UnBlockAsync();
 
-                waiter.WaitOne();
-            }
+            waiter.WaitOne();
         }
     }
 }

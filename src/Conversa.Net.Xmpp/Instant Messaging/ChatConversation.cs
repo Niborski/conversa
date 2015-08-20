@@ -1,4 +1,5 @@
-﻿using Conversa.Net.Xmpp.Core;
+﻿using Conversa.Net.Xmpp.Client;
+using Conversa.Net.Xmpp.Core;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -82,7 +83,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         internal ChatConversation(Contact owner)
         {
             this.owner = owner;
-            this.store = new ChatMessageStore(this);
+            this.store = XmppTransportManager.RequestStore();;
         }      
 
         /// <summary>

@@ -19,7 +19,6 @@ namespace Conversa.Net.Xmpp.Eventing
     /// </remarks>
     public sealed class PersonalEventing
     {
-        private XmppTransport   client;
         private List<string> features;
         private bool         isUserTuneEnabled;
 
@@ -52,9 +51,8 @@ namespace Conversa.Net.Xmpp.Eventing
         /// Initializes a new instance of the <see cref="T:PersonalEventing"/> class.
         /// </summary>
         /// <param name="client">XMPP Client instance.</param>
-        internal PersonalEventing(XmppTransport client)
+        internal PersonalEventing()
         {
-            this.client   = client;
             this.features = new List<string>();
         }
 
@@ -64,17 +62,17 @@ namespace Conversa.Net.Xmpp.Eventing
         /// <returns></returns>
         internal async Task DiscoverSupportAsync()
         {
-            var iq = new InfoQuery
+            var transport = XmppTransportManager.GetTransport();
+            var iq        = new InfoQuery
             {
                 Type        = InfoQueryType.Get
-              , From        = this.client.UserAddress
-              , To          = this.client.UserAddress.BareAddress
+              , From        = transport.UserAddress
+              , To          = transport.UserAddress.BareAddress
               , ServiceItem = new ServiceItem()
             };
 
-            await this.client
-                      .SendAsync(iq, r => this.OnDiscoverSupport(r), e => this.OnDiscoverError(e))
-                      .ConfigureAwait(false);
+            await transport.SendAsync(iq, r => this.OnDiscoverSupport(r), e => this.OnDiscoverError(e))
+                           .ConfigureAwait(false);
         }
 
         private void OnDiscoverSupport(InfoQuery response)

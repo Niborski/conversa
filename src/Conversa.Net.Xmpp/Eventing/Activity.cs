@@ -20,26 +20,24 @@ namespace Conversa.Net.Xmpp.Eventing
     {
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-        private XmppTransport                  client;
         private ObservableCollection<Event>	activities;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="XmppSession"/> class
         /// </summary>
-        internal Activity(XmppTransport client)
+        internal Activity()
         {
-            this.client     = client;
+            var transport = XmppTransportManager.GetTransport();
+            
             this.activities	= new ObservableCollection<Event>();
 
-            this.client
-                .StateChanged
-                .Where(state => state == XmppTransportState.Open)
-                .Subscribe(state => OnConnected());
+            transport.StateChanged
+                     .Where(state => state == XmppTransportState.Open)
+                     .Subscribe(state => OnConnected());
 
-            this.client
-                .StateChanged
-                .Where(state => state == XmppTransportState.Closing)
-                .Subscribe(state => OnDisconnecting());
+            transport.StateChanged
+                     .Where(state => state == XmppTransportState.Closing)
+                     .Subscribe(state => OnDisconnecting());
         }
 
         /// <summary>
@@ -64,10 +62,11 @@ namespace Conversa.Net.Xmpp.Eventing
 
         private void OnConnected()
         {
-            this.client
-                .MessageStream
-                .Where(m => m.Type == MessageType.Headline || m.Type == MessageType.Normal)
-                .Subscribe(message => { this.OnMessageReceived(message); });
+            var transport = XmppTransportManager.GetTransport();
+            
+            transport.MessageStream
+                     .Where(m => m.Type == MessageType.Headline || m.Type == MessageType.Normal)
+                     .Subscribe(message => { this.OnMessageReceived(message); });
 
             this.activities.CollectionChanged += new NotifyCollectionChangedEventHandler(OnCollectionChanged);
         }

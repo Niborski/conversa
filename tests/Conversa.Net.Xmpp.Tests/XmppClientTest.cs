@@ -15,14 +15,14 @@ namespace Conversa.Net.Xmpp.Tests
         [TestMethod]
         public async Task OpenConnectionTest()
         {
-            using (var client = new XmppTransport(ConnectionStringHelper.GetDefaultConnectionString()))
-            {
-                client.StateChanged.Subscribe(state => Debug.WriteLine("TEST -> Connection state " + state.ToString()));
+            var transport = XmppTransportManager.GetTransport();
 
-                await client.OpenAsync();
+            transport.ConnectionString = ConnectionStringHelper.GetDefaultConnectionString();
+            transport.StateChanged.Subscribe(state => Debug.WriteLine("TEST -> Connection state " + state.ToString()));
 
-                System.Threading.SpinWait.SpinUntil(() => { return client.State == XmppTransportState.Open; });
-            }
+            await transport.OpenAsync();
+
+            System.Threading.SpinWait.SpinUntil(() => { return transport.State == XmppTransportState.Open; });
         }
     }
 }

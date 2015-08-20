@@ -17,7 +17,7 @@ namespace Conversa.Net.Xmpp.Client
         public IList<ChainValidationResult> IgnorableServerCertificateErrors
         {
             get;
-            private set;
+            set;
         }
 
         /// <summary>
@@ -26,7 +26,6 @@ namespace Conversa.Net.Xmpp.Client
         public IReadOnlyDictionary<String, Object> ExtendedProperties
         {
             get;
-            internal set;
         }
 
         /// <summary>
@@ -35,8 +34,7 @@ namespace Conversa.Net.Xmpp.Client
         public int MaxAttachmentCount
         {
             get;
-            internal set;
-        }
+        } = -1;
 
         /// <summary>
         /// Gets the maximum size of an attachment for the transport.
@@ -44,8 +42,7 @@ namespace Conversa.Net.Xmpp.Client
         public int MaxMessageSizeInKilobytes
         {
             get;
-            internal set;
-        }
+        } = -1;
 
         /// <summary>
         /// Gets the maximum number of recipients for the transport.
@@ -54,7 +51,7 @@ namespace Conversa.Net.Xmpp.Client
         {
             get;
             internal set;
-        }
+        } = -1;
 
         /// <summary>
         /// Gets the supported video encoding format for the transport.
@@ -62,9 +59,8 @@ namespace Conversa.Net.Xmpp.Client
         public MediaEncodingProfile SupportedVideoFormat
         {
             get;
-            internal set;
         }
-
+    
         /// <summary>
         /// Initializes a new instance of the <see cref="XmppTransportConfiguration"/> class.
         /// </summary>

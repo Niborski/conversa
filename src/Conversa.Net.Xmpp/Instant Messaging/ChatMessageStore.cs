@@ -13,8 +13,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     {
         // public event TypedEventHandler<ChatMessageStore, ChatMessageChangedEventArgs> MessageChanged;
 
-        private ChatConversation owner;
-
         /// <summary>
         /// Gets the chat message change tracker for the store.
         /// </summary>
@@ -27,9 +25,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// Initializes a new instance with the given <see cref="Contact">owner</see>.
         /// </summary>
         /// <param name="owner">The chat message store owner.</param>
-        internal ChatMessageStore(ChatConversation owner)
+        internal ChatMessageStore()
         {
-            this.owner = owner;
         }
 
         /// <summary>
@@ -104,13 +101,13 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public IAsyncAction SendMessageAsync(ChatMessage chatMessage)
         {
             return AsyncInfo.Run(_ => Task.Run(async () => {
-                var status = this.ValidateMessage(chatMessage);
+                var status    = this.ValidateMessage(chatMessage);
 
                 if (status.Status == ChatMessageValidationStatus.Valid
                  || status.Status == ChatMessageValidationStatus.ValidWithLargeMessage)
                 {
                     var xmppMessage = chatMessage.ToXmpp();
-                    var transport   = await XmppTransportManager.GetTransportAsync();
+                    var transport   = XmppTransportManager.GetTransport();
 
                     chatMessage.RemoteId = xmppMessage.Id;
                     chatMessage.Status   = ChatMessageStatus.Sending;
@@ -127,7 +124,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <returns>The validation result.</returns>
         public ChatMessageValidationResult ValidateMessage(ChatMessage chatMessage)
         {
-            var transport = XmppTransportManager.GetTransportAsync().GetResults();
+            var transport = XmppTransportManager.GetTransport();
             var status    = ChatMessageValidationStatus.Valid;
 
             if (transport == null)

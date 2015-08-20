@@ -23,8 +23,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     {
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-       // Private members
-        private XmppTransport             client;
+        // Private members
         private ConcurrentBag<Contact> contacts;
 
         /// <summary>
@@ -36,23 +35,23 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         {
             get { return this.contacts.SingleOrDefault(contact => contact.Address.BareAddress == address); }
         }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactList"/> class
         /// </summary>
-        internal ContactList(XmppTransport client)
+        internal ContactList()
         {
-            this.client   = client;
             this.contacts = new ConcurrentBag<Contact>();
 
-            this.client
-                .StateChanged
-                .Where(state => state == XmppTransportState.Open)
-                .Subscribe(async state => await OnConnectedAsync().ConfigureAwait(false));
+            var transport = XmppTransportManager.GetTransport();
 
-            this.client
-                .StateChanged
-                .Where(state => state == XmppTransportState.Closing)
-                .Subscribe(state => OnDisconnected());
+            transport.StateChanged
+                     .Where(state => state == XmppTransportState.Open)
+                     .Subscribe(async state => await OnConnectedAsync().ConfigureAwait(false));
+
+            transport.StateChanged
+                     .Where(state => state == XmppTransportState.Closing)
+                     .Subscribe(state => OnDisconnected());
         }
 
         /// <summary>
@@ -62,7 +61,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <param name="name">Contact name</param>
         public async Task AddContactAsync(XmppAddress address, string name)
         {
-            var contact = this[address];
+            var contact   = this[address];
+            var transport = XmppTransportManager.GetTransport();
 
             if (contact != null)
             {
@@ -72,8 +72,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             var iq = new InfoQuery()
             {
                 Type   = InfoQueryType.Set
-              , From   = this.client.UserAddress.BareAddress
-              , To     = this.client.UserAddress.BareAddress
+              , From   = transport.UserAddress.BareAddress
+              , To     = transport.UserAddress.BareAddress
               , Roster = new Roster
                 {
                     Items =
@@ -88,9 +88,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 }
             };
 
-            await this.client
-                      .SendAsync(iq, r => this.OnAddContactResponse(r), e => this.OnAddContactError(e))
-                      .ConfigureAwait(false);
+            await transport.SendAsync(iq, r => this.OnAddContactResponse(r), e => this.OnAddContactError(e))
+                           .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -98,7 +97,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public async Task UpdateContactAsync(XmppAddress address)
         {
-            var contact = this[address];
+            var transport = XmppTransportManager.GetTransport();
+            var contact   = this[address];
 
             if (contact == null)
             {
@@ -108,15 +108,15 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             var iq = new InfoQuery
             {
                 Type   = InfoQueryType.Set
-              , From   = this.client.UserAddress.BareAddress
-              , To     = this.client.UserAddress.BareAddress
+              , From   = transport.UserAddress.BareAddress
+              , To     = transport.UserAddress.BareAddress
               , Roster = new Roster(new RosterItem(contact.Address.BareAddress
                                                  , contact.Name
                                                  , contact.Subscription
                                                  , contact.Groups))
             };
 
-            await this.client.SendAsync(iq).ConfigureAwait(false);
+            await transport.SendAsync(iq).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -124,7 +124,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public async Task RemoveContactAsync(XmppAddress address)
         {
-            var contact = this[address];
+            var transport = XmppTransportManager.GetTransport();
+            var contact   = this[address];
 
             if (contact == null)
             {
@@ -134,15 +135,14 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             var iq = new InfoQuery
             {
                 Type   = InfoQueryType.Set
-              , From   = this.client.UserAddress.BareAddress
-              , To     = this.client.UserAddress.BareAddress
+              , From   = transport.UserAddress.BareAddress
+              , To     = transport.UserAddress.BareAddress
               , Roster = new Roster(new RosterItem { Jid          = address.BareAddress
                                                    , Subscription = RosterSubscriptionType.Remove })
             };
 
-            await this.client
-                      .SendAsync(iq, r => this.OnRemoveContactResponse(r), e => this.OnRemoveContactError(e))
-                      .ConfigureAwait(false);
+            await transport.SendAsync(iq, r => this.OnRemoveContactResponse(r), e => this.OnRemoveContactError(e))
+                           .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -151,7 +151,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <param name="groupName">Name of the group.</param>
         public async Task AddContactToGroupAsync(XmppAddress address, string groupName)
         {
-            var contact = this[address];
+            var transport = XmppTransportManager.GetTransport();
+            var contact   = this[address];
 
             if (contact == null)
             {
@@ -169,7 +170,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , Roster = new Roster(new RosterItem(contact.Address, contact.Name, contact.Subscription, groupName))
             };
 
-            await this.client.SendAsync(iq).ConfigureAwait(false);
+            await transport.SendAsync(iq).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -177,17 +178,17 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public async Task RequestRosterAsync()
         {
-            var iq = new InfoQuery
+            var transport = XmppTransportManager.GetTransport();
+            var iq        = new InfoQuery
             {
                 Type   = InfoQueryType.Get
-              , From   = this.client.UserAddress
-              , To     = this.client.UserAddress.BareAddress
+              , From   = transport.UserAddress
+              , To     = transport.UserAddress.BareAddress
               , Roster = new Roster()
             };
 
-            await this.client
-                      .SendAsync(iq, r => this.OnUpdateRoster(r), e => this.OnRosterError(e))
-                      .ConfigureAwait(false);
+            await transport.SendAsync(iq, r => this.OnUpdateRoster(r), e => this.OnRosterError(e))
+                           .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -202,15 +203,15 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             //    return;
             //}
 
-            var iq = new InfoQuery
+            var transport = XmppTransportManager.GetTransport();
+            var iq        = new InfoQuery
             {
                 Type      = InfoQueryType.Get
               , BlockList = new BlockList()
             };
 
-            await this.client
-                      .SendAsync(iq, r => this.OnBlockedContactsResponse(r), e => this.OnBlockedContactsError(e))
-                      .ConfigureAwait(false);
+            await transport.SendAsync(iq, r => this.OnBlockedContactsResponse(r), e => this.OnBlockedContactsError(e))
+                           .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -224,16 +225,16 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             //    return;
             //}
 
-            var iq = new InfoQuery
+            var transport = XmppTransportManager.GetTransport();
+            var iq        = new InfoQuery
             {
                 Type    = InfoQueryType.Set
-              , From    = this.client.UserAddress
+              , From    = transport.UserAddress
               , Unblock = new Unblock()
             };
 
-            await this.client
-                      .SendAsync(iq, r => this.OnUnBlockAllResponse(r), e => this.OnUnBlockAllError(e))
-                      .ConfigureAwait(false);
+            await transport.SendAsync(iq, r => this.OnUnBlockAllResponse(r), e => this.OnUnBlockAllError(e))
+                           .ConfigureAwait(false);
         }
 
         IEnumerator<Contact> IEnumerable<Contact>.GetEnumerator()
@@ -258,17 +259,21 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
         private void SubscribeToRosterPush()
         {
-            this.client
-                .InfoQueryStream
-                .Where(message => message.To == this.client.UserAddress
-                               && message.Roster != null
-                               && message.IsUpdate)
-                .Subscribe(async message => await this.OnRosterPush(message).ConfigureAwait(false));
+            var transport = XmppTransportManager.GetTransport();
+
+            transport.InfoQueryStream
+                     .Where(message => message.To == transport.UserAddress
+                                    && message.Roster != null
+                                    && message.IsUpdate)
+                     .Subscribe(async message => await this.OnRosterPush(message)
+                     .ConfigureAwait(false));
         }
 
         private async Task OnRosterPush(InfoQuery rosterPush)
         {
-            await this.client.SendAsync(rosterPush.AsResponse()).ConfigureAwait(false);
+            var transport = XmppTransportManager.GetTransport();
+
+            await transport.SendAsync(rosterPush.AsResponse()).ConfigureAwait(false);
         }
 
         private void OnAddContactResponse(InfoQuery response)
@@ -301,7 +306,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 if (contact == null)
                 {
                     // Create the new contact
-                    contact = new Contact(this.client, item.Jid, item.Name, item.Subscription, item.Groups);
+                    contact = new Contact(item.Jid, item.Name, item.Subscription, item.Groups);
 
                     // Add the contact to the roster
                     this.contacts.Add(contact);

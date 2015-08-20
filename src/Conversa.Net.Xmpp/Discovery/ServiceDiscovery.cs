@@ -18,7 +18,6 @@ namespace Conversa.Net.Xmpp.Discovery
     /// </remarks>
     public sealed class ServiceDiscovery
     {
-        private XmppTransport            client;
         private string                node;
         private List<ServiceIdentity> identities;
         private List<ServiceFeature>  features;
@@ -100,17 +99,16 @@ namespace Conversa.Net.Xmpp.Discovery
         /// <summary>
         /// Initializes a new instance of the <see cref="ServiceDiscovery"/> class.
         /// </summary>
-        public ServiceDiscovery(XmppTransport client)
-            : this(client, null)
+        public ServiceDiscovery()
+            : this(null)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ServiceDiscovery"/> class.
         /// </summary>
-        public ServiceDiscovery(XmppTransport client, string node)
+        public ServiceDiscovery(string node)
         {
-            this.client     = client;
             this.node       = node;
             this.identities = new List<ServiceIdentity>();
             this.features   = new List<ServiceFeature>();
@@ -137,7 +135,8 @@ namespace Conversa.Net.Xmpp.Discovery
 
         public async Task SendAsnwerTo(string messageId, XmppAddress to)
         {
-            var iq = new InfoQuery
+            var transport = XmppTransportManager.GetTransport();
+            var iq        = new InfoQuery
             {
                 Id          = messageId
               , Type        = InfoQueryType.Result
@@ -158,7 +157,7 @@ namespace Conversa.Net.Xmpp.Discovery
                 iq.ServiceInfo.Features.Add(feature);
             }
 
-            await this.client.SendAsync(iq).ConfigureAwait(false);
+            await transport.SendAsync(iq).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -166,17 +165,17 @@ namespace Conversa.Net.Xmpp.Discovery
         /// </summary>
         public async Task DiscoverServicesAsync()
         {
-            var iq = new InfoQuery
+            var transport = XmppTransportManager.GetTransport();
+            var iq        = new InfoQuery
             {
                 Type        = InfoQueryType.Get
-              , From        = this.client.UserAddress
+              , From        = transport.UserAddress
               , To          = this.Node
               , ServiceItem = new ServiceItem()
             };
 
-            await this.client
-                      .SendAsync(iq, r => this.OnDiscoverServices(r), e => this.OnError(e))
-                      .ConfigureAwait(false);
+            await transport.SendAsync(iq, r => this.OnDiscoverServices(r), e => this.OnError(e))
+                           .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -184,17 +183,17 @@ namespace Conversa.Net.Xmpp.Discovery
         /// </summary>
         public async Task DiscoverFeaturesAsync()
         {
-            var iq = new InfoQuery
+            var transport = XmppTransportManager.GetTransport();
+            var iq        = new InfoQuery
             {
                 Type        = InfoQueryType.Get
-              , From        = this.client.UserAddress
+              , From        = transport.UserAddress
               , To          = this.Node
               , ServiceInfo = new ServiceInfo()
             };
 
-            await this.client
-                      .SendAsync(iq, r => this.OnDiscoverFeatures(r), e => this.OnError(e))
-                      .ConfigureAwait(false);
+            await transport.SendAsync(iq, r => this.OnDiscoverFeatures(r), e => this.OnError(e))
+                           .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -214,7 +213,7 @@ namespace Conversa.Net.Xmpp.Discovery
 
             foreach (var itemDetail in response.ServiceItem.Items)
             {
-                this.services.Add(new Service(this.client, itemDetail.Jid));
+                this.services.Add(new Service(itemDetail.Jid));
             }
         }
 

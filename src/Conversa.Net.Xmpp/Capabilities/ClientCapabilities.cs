@@ -6,9 +6,9 @@ using Conversa.Net.Xmpp.Core;
 using Conversa.Net.Xmpp.Discovery;
 using Conversa.Net.Xmpp.Registry;
 using System;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Reactive.Linq;
 
 namespace Conversa.Net.Xmpp.Capabilities
 {
@@ -26,17 +26,14 @@ namespace Conversa.Net.Xmpp.Capabilities
 
         private Caps             caps;
         private ServiceDiscovery disco;
-        private XmppTransport       client;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientCapabilities"/> class.
         /// </summary>
-        internal ClientCapabilities(XmppTransport client)
+        internal ClientCapabilities()
         {
-            this.client = client;
-
             // Service Discovery
-            this.disco = new ServiceDiscovery(client, Uri);
+            this.disco = new ServiceDiscovery(Uri);
 
             // Identities
             this.disco.AddIdentity(Category, Name, Type);
@@ -74,35 +71,37 @@ namespace Conversa.Net.Xmpp.Capabilities
 
         private void InitializeSubscriptions()
         {
-            this.client
-                .StateChanged
-                .Where(state => state == XmppTransportState.Open)
-                .Subscribe(async state => await AdvertiseCapabilitiesAsync().ConfigureAwait(false));
+            var transport = XmppTransportManager.GetTransport();
 
-            this.client
-                .InfoQueryStream
-                .Where(message => message.To == this.client.UserAddress
-                               && message.IsRequest
-                               && message.ServiceInfo != null
-                               && message.ServiceInfo.Node == this.disco.Node)
-                .Subscribe(message => this.OnAdvertiseCapabilities(message));
+            transport.StateChanged
+                     .Where(state => state == XmppTransportState.Open)
+                     .Subscribe(async state => await AdvertiseCapabilitiesAsync().ConfigureAwait(false));
+
+            transport.InfoQueryStream
+                     .Where(message => message.To == transport.UserAddress
+                         && message.IsRequest
+                         && message.ServiceInfo != null
+                         && message.ServiceInfo.Node == this.disco.Node)
+                     .Subscribe(message => this.OnAdvertiseCapabilities(message));
         }
 
         private async Task AdvertiseCapabilitiesAsync()
         {
-            var presence = new Presence
+            var transport = XmppTransportManager.GetTransport();
+            var presence  = new Presence
             {
                 Capabilities = this.caps
             };
 
-            await this.client
-                      .SendAsync(presence, async r => await this.OnAdvertiseCapabilities(r), e => this.OnError(e))
-                      .ConfigureAwait(false);
+            await transport.SendAsync(presence, async r => await this.OnAdvertiseCapabilities(r), e => this.OnError(e))
+                           .ConfigureAwait(false);
         }
 
         private async Task OnAdvertiseCapabilities(Presence response)
         {
-            if (response.From != this.client.UserAddress)
+            var transport = XmppTransportManager.GetTransport();
+
+            if (response.From != transport.UserAddress)
             {
                 await this.disco.SendAsnwerTo(response.Id, response.From);
             }

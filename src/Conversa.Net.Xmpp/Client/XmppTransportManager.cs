@@ -1,6 +1,7 @@
-﻿using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
-using Windows.Foundation;
+﻿using Conversa.Net.Xmpp.InstantMessaging;
+using System.Collections.Generic;
+using System.Linq;
+using Windows.ApplicationModel.Core;
 
 namespace Conversa.Net.Xmpp.Client
 {
@@ -9,26 +10,48 @@ namespace Conversa.Net.Xmpp.Client
     /// </summary>
     public sealed class XmppTransportManager
     {
-        private static XmppTransport transport;
+        private static object           syncObject = new object();
+        private static XmppTransport    transport  = null;
+        private static ChatMessageStore store      = null;
 
         /// <summary>
-        /// Asynchronously registers the app as a ChatMessageTransport in order to post messages to the ChatMessageStore.
+        /// Registers the app as a ChatMessageTransport in order to post messages to the ChatMessageStore.
         /// </summary>
         /// <returns>The transport ID for the newly registered ChatMessageTransport.</returns>
-        public static IAsyncOperation<string> RegisterTransportAsync()
+        public static string RegisterTransport()
         {
             transport = new XmppTransport();
 
-            return AsyncInfo.Run(_ => Task.Run<string>(() => { return transport.TransportId; }));
+            transport.RequestTransportInitialization();
+
+            CoreApplication.Exiting += async (s, e) => {
+                await transport.CloseAsync().ConfigureAwait(false);
+                transport = null;
+            };
+
+            return transport.TransportId;;
         }
 
         /// <summary>
-        /// Asynchronously gets the ChatMessageTransport.
+        /// Gets the <see cref="XmppTransport"/>.
         /// </summary>
         /// <returns>An asynchronous operation that returns the transport on successful completion.</returns>
-        public static IAsyncOperation<XmppTransport> GetTransportAsync()
+        public static XmppTransport GetTransport()
         {
-            return AsyncInfo.Run(_ => Task.Run<XmppTransport>(() => { return transport; }));
+            return transport;
+        }
+
+        public static ChatMessageStore RequestStore()
+        {
+            lock (syncObject)
+            {
+                if (store == null)
+                {
+                    store = new ChatMessageStore();
+                }
+            }
+
+            return store;
         }
     }
 }

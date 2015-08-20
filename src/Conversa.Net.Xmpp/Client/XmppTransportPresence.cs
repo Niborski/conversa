@@ -11,8 +11,7 @@ namespace Conversa.Net.Xmpp.Client
     /// </summary>
     public sealed class XmppTransportPresence
     {
-        private XmppTransport client;
-        private Presence   presence;
+        private Presence presence;
 
         public bool IsOffline
         {
@@ -22,10 +21,9 @@ namespace Conversa.Net.Xmpp.Client
         /// <summary>
         /// Initializes a new instance of the <see cref="XmppTransportPresence"/> class.
         /// </summary>
-        /// <param name="client"></param>
-        public XmppTransportPresence(XmppTransport client)
+        /// <param name="transport"></param>
+        public XmppTransportPresence()
         {
-            this.client = client;
         }
 
         /// <summary>
@@ -41,7 +39,9 @@ namespace Conversa.Net.Xmpp.Client
         /// </summary>
         public async Task SetUnavailableAsync()
         {
-            await this.client.SendAsync(new Presence().AsUnavailable()).ConfigureAwait(false);
+            var transport = XmppTransportManager.GetTransport();
+
+            await transport.SendAsync(new Presence().AsUnavailable()).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -71,9 +71,10 @@ namespace Conversa.Net.Xmpp.Client
         /// <param name="priority"></param>
         public async Task SetPresenceAsync(ShowType showAs, string statusMessage, int priority)
         {
+            var transport = XmppTransportManager.GetTransport();
             this.presence = new Presence
             {
-                From              = this.client.UserAddress
+                From              = transport.UserAddress
               , Show              = ShowType.Online
               , ShowSpecified     = true
               , Status            = new Status { Value = statusMessage }
@@ -81,7 +82,7 @@ namespace Conversa.Net.Xmpp.Client
               , PrioritySpecified = true
             };
 
-            await this.client.SendAsync(this.presence).ConfigureAwait(false);
+            await transport.SendAsync(this.presence).ConfigureAwait(false);
         }
 
         /// <summary>

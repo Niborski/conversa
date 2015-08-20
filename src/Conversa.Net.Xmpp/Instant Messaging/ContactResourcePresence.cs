@@ -15,7 +15,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// </summary>
     public sealed class ContactResourcePresence
     {
-        private XmppTransport               client;
         private Subject<ContactResource> presenceStream;
         private ContactResource          resource;
         private ShowType                 showAs;
@@ -62,17 +61,17 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// the given session.
         /// </summary>
         /// <param name="session"></param>
-        internal ContactResourcePresence(XmppTransport client, ContactResource resource)
+        internal ContactResourcePresence(ContactResource resource)
         {
-            this.client         = client;
+            var transport      = XmppTransportManager.GetTransport();
+
             this.resource       = resource;
             this.showAs         = ShowType.Offline;
             this.presenceStream = new Subject<ContactResource>();
 
-            this.client
-                .StateChanged
-                .Where(state => state == XmppTransportState.Closing)
-                .Subscribe(state => OnDisconnecting());
+            transport.StateChanged
+                     .Where(state => state == XmppTransportState.Closing)
+                     .Subscribe(state => OnDisconnecting());
         }
 
         /// <summary>
@@ -81,15 +80,16 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <param name="address">User address</param>
         public async Task GetPresenceAsync()
         {
-            var presence = new Presence
+            var transport = XmppTransportManager.GetTransport();
+            var presence  = new Presence
             {
-                From          = this.client.UserAddress
+                From          = transport.UserAddress
               , To            = this.resource.Address
               , Type          = PresenceType.Probe
               , TypeSpecified = true
             };
 
-            await this.client.SendAsync(presence).ConfigureAwait(false);
+            await transport.SendAsync(presence).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -97,14 +97,15 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public async Task RequestSubscriptionAsync()
         {
-            var presence = new Presence
+            var transport = XmppTransportManager.GetTransport();
+            var presence  = new Presence
             {
                 To            = this.resource.Address
               , Type          = PresenceType.Subscribe
               , TypeSpecified = true
             };
 
-            await this.client.SendAsync(presence).ConfigureAwait(false);
+            await transport.SendAsync(presence).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -112,14 +113,15 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public async Task SubscribedAsync()
         {
-            var presence = new Presence
+            var transport = XmppTransportManager.GetTransport();
+            var presence  = new Presence
             {
                 To            = this.resource.Address
               , Type          = PresenceType.Subscribed
               , TypeSpecified = true
             };
 
-            await this.client.SendAsync(presence).ConfigureAwait(false);
+            await transport.SendAsync(presence).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -127,14 +129,15 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public async Task UnsuscribeAsync()
         {
-            var presence = new Presence
+            var transport = XmppTransportManager.GetTransport();
+            var presence  = new Presence
             {
                 To            = this.resource.Address
               , Type          = PresenceType.Unsubscribe
               , TypeSpecified = true
             };
 
-            await this.client.SendAsync(presence).ConfigureAwait(false);
+            await transport.SendAsync(presence).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -142,14 +145,15 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public async Task UnsuscribedAsync()
         {
-            var presence = new Presence
+            var transport = XmppTransportManager.GetTransport();
+            var presence  = new Presence
             {
                 To            = this.resource.Address
               , Type          = PresenceType.Unsubscribed
               , TypeSpecified = true
             };
 
-            await this.client.SendAsync(presence).ConfigureAwait(false);
+            await transport.SendAsync(presence).ConfigureAwait(false);
         }
 
         private void OnDisconnecting()

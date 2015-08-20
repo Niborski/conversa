@@ -22,7 +22,6 @@ namespace Conversa.Net.Xmpp.Capabilities
     public sealed class EntityCapabilities
         : IEntityCapabilitiesInfo
     {
-        private XmppTransport                  client;
         private Subject<EntityCapabilities> capsChangedStream;
         private XmppAddress                 address;
         private ServiceInfo                 info;
@@ -106,19 +105,17 @@ namespace Conversa.Net.Xmpp.Capabilities
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityCapabilities"/> class.
         /// </summary>
-        internal EntityCapabilities(XmppTransport client)
-            : this(client, null, null)
+        internal EntityCapabilities()
+            : this(null, null)
         {
-            this.client = client;
-            this.info   = new ServiceInfo();
+            this.info = new ServiceInfo();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityCapabilities"/> class.
         /// </summary>
-        public EntityCapabilities(XmppTransport client, XmppAddress address, string node)
+        public EntityCapabilities(XmppAddress address, string node)
         {
-            this.client            = client;
             this.address           = address;
             this.info              = new ServiceInfo { Node = node };
             this.capsChangedStream = new Subject<EntityCapabilities>();
@@ -126,18 +123,18 @@ namespace Conversa.Net.Xmpp.Capabilities
 
         public async Task DiscoverAsync()
         {
+            var transport = XmppTransportManager.GetTransport();
 #warning TODO: Grab Capabilities from storage or send the discovery request
             var iq = new InfoQuery
             {
-                From        = this.client.UserAddress
+                From        = transport.UserAddress
               , To          = this.Address
               , Type        = InfoQueryType.Get
               , ServiceInfo = new ServiceInfo { Node = this.info.Node }
             };
 
-            await this.client
-                      .SendAsync(iq, r => this.OnDiscoverResponse(r), r => this.OnDiscoverError(r))
-                      .ConfigureAwait(false);
+            await transport.SendAsync(iq, r => this.OnDiscoverResponse(r), r => this.OnDiscoverError(r))
+                           .ConfigureAwait(false);
         }
 
         public void Clear()

@@ -108,7 +108,7 @@ namespace Conversa.Net.Xmpp.Client
         /// </summary>
         public bool IsActive
         {
-            get { return this.TransportClient != null && this.TransportClient.State != XmppTransportState.Closed; }
+            get { return this.State != XmppTransportState.Closed; }
         }
 
         /// <summary>
@@ -143,14 +143,6 @@ namespace Conversa.Net.Xmpp.Client
         {
             get { return XmppTransportKind.Custom; }
         }        
-
-        /// <summary>
-        /// Gets the underlying transport client.
-        /// </summary>
-        public XmppTransport TransportClient
-        {
-            get;
-        }
 
         /// <summary>
         /// Gets the roster instance associated to the client.
@@ -249,30 +241,14 @@ namespace Conversa.Net.Xmpp.Client
         /// <summary>
         /// Initializes a new instance of the <see cref="XmppTransport"/> class.
         /// </summary>
-        public XmppTransport()
-            : this(null)
+        internal XmppTransport()
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="XmppTransport"/> class.
-        /// </summary>
-        public XmppTransport(XmppConnectionString connectionString)
-        {
-            this.connectionString     = connectionString;
             this.state                = XmppTransportState.Closed;
             this.stateChanged         = new Subject<XmppTransportState>();
             this.authenticationFailed = new Subject<SaslAuthenticationFailure>();
             this.infoQueryStream      = new Subject<InfoQuery>();
             this.messageStream        = new Subject<Message>();
             this.presenceStream       = new Subject<Presence>();
-            this.subscriptions        = new ConcurrentDictionary<string, CompositeDisposable>();
-            this.roster               = new ContactList(this);
-            this.activity             = new Activity(this);
-            this.capabilities         = new ClientCapabilities(this);
-            this.personalEventing     = new PersonalEventing(this);
-            this.presence             = new XmppTransportPresence(this);
-            this.serverCapabilities   = new EntityCapabilities(this);
         }
 
         /// <summary>
@@ -537,6 +513,18 @@ namespace Conversa.Net.Xmpp.Client
             where T : class
         {
             await this.transport.SendAsync(XmppSerializer.Serialize(message)).ConfigureAwait(false);
+        }
+
+        internal void RequestTransportInitialization()
+        {
+            this.subscriptions        = new ConcurrentDictionary<string, CompositeDisposable>();
+            this.roster               = new ContactList();
+            this.activity             = new Activity();
+            this.capabilities         = new ClientCapabilities();
+            this.personalEventing     = new PersonalEventing();
+            this.presence             = new XmppTransportPresence();
+            this.serverCapabilities   = new EntityCapabilities();
+            this.Configuration        = new XmppTransportConfiguration();
         }
 
         private void CloseTransport()

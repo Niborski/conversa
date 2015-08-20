@@ -11,7 +11,6 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
-using Windows.Foundation;
 
 namespace Conversa.Net.Xmpp.InstantMessaging
 {
@@ -25,11 +24,9 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         private Subject<ContactResource>       newResourceStream;
         private Subject<ContactResource>       removedResourceStream;
 
-        private XmppTransport             client;
         private XmppAddress            address;
         private List<ContactResource>  resources;
         private List<string>           groups;
-        private ChatConversation       conversation;
 
         /// <summary>
         /// Occurs when the contact blocking status changes.
@@ -130,25 +127,21 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Initializes a new instance of the <see cref="T:XmppContact"/> class.
         /// </summary>
-        /// <param name="client">The XMPP client instance.</param>
         /// <param name="address">The contact address.</param>
         /// <param name="name">The contact name.</param>
         /// <param name="subscription">The contact subscription mode.</param>
         /// <param name="groups">The contact groups.</param>
-        internal Contact(XmppTransport             client
-                       , XmppAddress            address
+        internal Contact(XmppAddress            address
                        , string                 name
                        , RosterSubscriptionType subscription
                        , IEnumerable<string>    groups)
         {
-            this.client                = client;
             this.address               = address.BareAddress;
             this.groups                = new List<string>();
             this.resources             = new List<ContactResource>();
             this.blockingStream        = new Subject<ContactBlockingAction>();
             this.newResourceStream     = new Subject<ContactResource>();
             this.removedResourceStream = new Subject<ContactResource>();
-            this.conversation          = new ChatConversation(this);
 
             this.Update(name, subscription, groups);
 
@@ -160,14 +153,15 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public async Task AcceptSubscriptionAsync()
         {
-            var presence = new Presence
+            var transport = XmppTransportManager.GetTransport();
+            var presence  = new Presence
             {
                 To            = this.Address
               , Type          = PresenceType.Subscribed
               , TypeSpecified = true
             };
 
-            await this.client.SendAsync(presence).ConfigureAwait(false);
+            await transport.SendAsync(presence).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -175,6 +169,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public async Task UnsuscribeAsync()
         {
+            var transport = XmppTransportManager.GetTransport();
             var presence = new Presence
             {
                 To            = this.Address
@@ -182,7 +177,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , TypeSpecified = true
             };
 
-            await this.client.SendAsync(presence).ConfigureAwait(false);
+            await transport.SendAsync(presence).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -190,21 +185,22 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public async Task BlockAsync()
         {
-            if (!this.client.ServerCapabilities.SupportsBlocking)
+            var transport = XmppTransportManager.GetTransport();
+
+            if (!transport.ServerCapabilities.SupportsBlocking)
             {
                 return;
             }
 
             var iq = new InfoQuery
             {
-                From  = this.client.UserAddress
+                From  = transport.UserAddress
               , Type  = InfoQueryType.Set
               , Block = new Block(this.Address.BareAddress)
             };
 
-            await this.client
-                      .SendAsync(iq, r => this.OnContactBlocked(r), e => this.OnBlockingError(e))
-                      .ConfigureAwait(false);
+            await transport.SendAsync(iq, r => this.OnContactBlocked(r), e => this.OnBlockingError(e))
+                           .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -212,21 +208,22 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public async Task UnBlockAsync()
         {
-            if (!this.client.ServerCapabilities.SupportsBlocking)
+            var transport = XmppTransportManager.GetTransport();
+
+            if (!transport.ServerCapabilities.SupportsBlocking)
             {
                 return;
             }
 
             var iq = new InfoQuery
             {
-                From    = this.client.UserAddress
+                From    = transport.UserAddress
               , Type    = InfoQueryType.Set
               , Unblock = new Unblock(this.Address.BareAddress)
             };
 
-            await this.client
-                      .SendAsync(iq, r => this.OnContactUnBlocked(r), e => this.OnBlockingError(e))
-                      .ConfigureAwait(false);
+            await transport.SendAsync(iq, r => this.OnContactUnBlocked(r), e => this.OnBlockingError(e))
+                           .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -258,10 +255,11 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
         private void SubscribeToPresenceChanges()
         {
-            this.client
-                .PresenceStream
-                .Where(message => ((XmppAddress)message.From).BareAddress == this.Address && !message.IsError)
-                .Subscribe(async message => await this.OnPresenceChangedAsync(message).ConfigureAwait(false));
+            var transport = XmppTransportManager.GetTransport();
+
+            transport.PresenceStream
+                     .Where(message => ((XmppAddress)message.From).BareAddress == this.Address && !message.IsError)
+                     .Subscribe(async message => await this.OnPresenceChangedAsync(message).ConfigureAwait(false));
         }
 
         private async Task OnPresenceChangedAsync(Presence message)
@@ -270,7 +268,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
             if (resource == null)
             {
-                resource = new ContactResource(this.client, message.From, message);
+                resource = new ContactResource(message.From, message);
 
                 this.resources.Add(resource);
                 this.newResourceStream.OnNext(resource);
@@ -324,14 +322,15 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
         private async Task UnsuscribedAsync()
         {
-            var presence = new Presence
+            var transport = XmppTransportManager.GetTransport();
+            var presence  = new Presence
             {
                 To            = this.Address
               , Type          = PresenceType.Unsubscribed
               , TypeSpecified = true
             };
 
-            await this.client.SendAsync(presence).ConfigureAwait(false);
+            await transport.SendAsync(presence).ConfigureAwait(false);
         }
 
         private void OnContactBlocked(InfoQuery response)

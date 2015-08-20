@@ -13,7 +13,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// </summary>
     public sealed class ContactResource
     {
-        private XmppTransport              client;
         private XmppAddress             address;
         private ContactResourcePresence presence;
         private EntityCapabilities      capabilities;
@@ -89,17 +88,16 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactResource"/> class.
         /// </summary>
-        internal ContactResource(XmppTransport client, XmppAddress address, Presence initialPresence)
+        internal ContactResource(XmppAddress address, Presence initialPresence)
         {
             var node = ((initialPresence.Capabilities == null) ? null : initialPresence.Capabilities.DiscoveryNode);
 
-            this.client   = client;
             this.address  = address;
-            this.presence = new ContactResourcePresence(this.client, this);
+            this.presence = new ContactResourcePresence(this);
 
             if (node != null)
             {
-                this.capabilities = new EntityCapabilities(client, this.Address, node);
+                this.capabilities = new EntityCapabilities(this.Address, node);
             }
 
             this.presence.Update(initialPresence);
@@ -169,17 +167,17 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
         private async Task RequestAvatarAsync()
         {
-            var iq = new InfoQuery
+            var transport = XmppTransportManager.GetTransport();
+            var iq        = new InfoQuery
             {
-                From      = this.client.UserAddress
+                From      = transport.UserAddress
               , To        = this.Address
               , Type      = InfoQueryType.Get
               , VCardData = new VCardData()
             };
 
-            await this.client
-                      .SendAsync(iq, r => this.OnAvatarResponse(r), e => this.OnError(e))
-                      .ConfigureAwait(false);
+            await transport.SendAsync(iq, r => this.OnAvatarResponse(r), e => this.OnError(e))
+                           .ConfigureAwait(false);
         }
 
         private void OnAvatarResponse(InfoQuery response)
