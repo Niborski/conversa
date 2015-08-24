@@ -5,9 +5,10 @@
 
 * Third party dependencies.
 
+    * [**Rx (Reactive Extensions)**] (http://rx.codeplex.com/)
     * [**libidn**](http://www.gnu.org/software/libidn/)
-	* [**Rx (Reactive Extensions)**] (http://rx.codeplex.com/)
-	* [**xUnit**] (http://xunit.github.io/)
+    * [**Template10**](https://github.com/Windows-XAML/Template10)
+    · [**DevExpress.Mvvm.Free**](https://github.com/DevExpress/DevExpress.Mvvm.Free)
 
 * Based on.
-	* BabelIM Protocol implementation
+	* BabelIM XMPP Protocol implementation
