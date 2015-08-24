@@ -4,12 +4,15 @@
 // https://github.com/DevExpress/DevExpress.Mvvm.Free
 // --------------------------------------------------
 
+using Conversa.Common;
+using Conversa.W10.Common;
 using DevExpress.Mvvm.Native;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
 
 namespace DevExpress.Mvvm
 {
@@ -41,6 +44,8 @@ namespace DevExpress.Mvvm
                 return member.Name.Substring(vblocalPrefix.Length);
             return member.Name;
         }
+
+        protected DispatcherWrapper Dispatcher { get { return WindowWrapper.Current().Dispatcher; } }
 
         protected T GetProperty<T>(Expression<Func<T>> expression)
         {
@@ -92,7 +97,9 @@ namespace DevExpress.Mvvm
 
         protected void RaisePropertyChanged([CallerMemberName] string propertyName = null)
         {
-            PropertyChanged.Do(x => x(this, new PropertyChangedEventArgs(propertyName)));
+            var ignored = Dispatcher.DispatchAsync(() => {
+                PropertyChanged.Do(x => x(this, new PropertyChangedEventArgs(propertyName)));
+            });
         }
         protected void RaisePropertyChanged<T>(Expression<Func<T>> expression)
         {
@@ -136,9 +143,20 @@ namespace DevExpress.Mvvm
             RaisePropertyChanged(expression4);
             RaisePropertyChanged(expression5);
         }
+        protected void RaisePropertiesChanged<T1, T2, T3, T4, T5, T6>(Expression<Func<T1>> expression1, Expression<Func<T2>> expression2, Expression<Func<T3>> expression3, Expression<Func<T4>> expression4, Expression<Func<T5>> expression5, Expression<Func<T5>> expression6)
+        {
+            RaisePropertyChanged(expression1);
+            RaisePropertyChanged(expression2);
+            RaisePropertyChanged(expression3);
+            RaisePropertyChanged(expression4);
+            RaisePropertyChanged(expression5);
+            RaisePropertyChanged(expression6);
+        }
 
         PropertyManager propertyManager;
         internal PropertyManager PropertyManager
-        { get { return propertyManager ?? (propertyManager = new PropertyManager()); } }
+        {
+            get { return propertyManager ?? (propertyManager = new PropertyManager()); }
+        }
     }
 }

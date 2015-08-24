@@ -43,7 +43,7 @@ namespace Conversa.Net.Xmpp.Client
         private XmppTransportState    state;
         private ITransport            transport;
         private ISaslMechanism        saslMechanism;
-        private ContactList           roster;
+        private ContactList           people;
         private Activity              activity;
         private ClientCapabilities    capabilities;
         private EntityCapabilities    serverCapabilities;
@@ -147,9 +147,9 @@ namespace Conversa.Net.Xmpp.Client
         /// <summary>
         /// Gets the roster instance associated to the client.
         /// </summary>
-        public ContactList Roster
+        public ContactList Contacts
         {
-            get { return this.roster; }
+            get { return this.people; }
         }
 
         /// <summary>
@@ -182,7 +182,14 @@ namespace Conversa.Net.Xmpp.Client
         /// <value>The server capabilities.</value>
         public IEntityCapabilitiesInfo ServerCapabilities
         {
-            get { return this.serverCapabilities; }
+            get
+            {
+                if (this.state == XmppTransportState.Open)
+                {
+                    throw new XmppException("Connection should be open");
+                }
+                return this.serverCapabilities;
+            }
         }
 
         /// <summary>
@@ -299,7 +306,7 @@ namespace Conversa.Net.Xmpp.Client
                 this.connectionString   = null;
                 this.userAddress        = null;
                 this.saslMechanism      = null;
-                this.roster             = null;
+                this.people             = null;
                 this.activity           = null;
                 this.capabilities       = null;
                 this.personalEventing   = null;
@@ -378,7 +385,7 @@ namespace Conversa.Net.Xmpp.Client
                 this.saslMechanism      = null;
                 this.connectionString   = null;
                 this.userAddress        = null;
-                this.roster             = null;
+                this.people             = null;
                 this.activity           = null;
                 this.capabilities       = null;
                 this.personalEventing   = null;
@@ -517,14 +524,13 @@ namespace Conversa.Net.Xmpp.Client
 
         internal void RequestTransportInitialization()
         {
-            this.subscriptions        = new ConcurrentDictionary<string, CompositeDisposable>();
-            this.roster               = new ContactList();
-            this.activity             = new Activity();
-            this.capabilities         = new ClientCapabilities();
-            this.personalEventing     = new PersonalEventing();
-            this.presence             = new XmppTransportPresence();
-            this.serverCapabilities   = new EntityCapabilities();
-            this.Configuration        = new XmppTransportConfiguration();
+            this.subscriptions    = new ConcurrentDictionary<string, CompositeDisposable>();
+            this.people           = new ContactList();
+            this.activity         = new Activity();
+            this.capabilities     = new ClientCapabilities();
+            this.personalEventing = new PersonalEventing();
+            this.presence         = new XmppTransportPresence();
+            this.Configuration    = new XmppTransportConfiguration();
         }
 
         private void CloseTransport()
@@ -792,8 +798,8 @@ namespace Conversa.Net.Xmpp.Client
             {
                 this.serverFeatures |= ServerFeatures.EntityCapabilities;
                 
-                this.serverCapabilities.Address              = this.UserAddress.DomainName;
-                this.serverCapabilities.ServiceDiscoveryNode = features.EntityCapabilities.DiscoveryNode;
+                this.serverCapabilities = new EntityCapabilities(this.UserAddress.DomainName
+                                                               , features.EntityCapabilities.DiscoveryNode);
             }
 
             await this.NegotiateStreamFeaturesAsync().ConfigureAwait(false);

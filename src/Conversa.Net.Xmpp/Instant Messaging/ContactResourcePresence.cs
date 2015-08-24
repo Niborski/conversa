@@ -3,6 +3,7 @@
 
 using Conversa.Net.Xmpp.Client;
 using Conversa.Net.Xmpp.Core;
+using DevExpress.Mvvm;
 using System;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -14,12 +15,10 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// Contact resource presence handling
     /// </summary>
     public sealed class ContactResourcePresence
+        : BindableBase
     {
         private Subject<ContactResource> presenceStream;
         private ContactResource          resource;
-        private ShowType                 showAs;
-        private int                      priority;
-        private string                   statusMessage;
 
         /// <summary>
         /// Occurs when the contact presence is updated
@@ -35,7 +34,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <value>The priority.</value>
         public int Priority
         {
-            get { return this.priority; }
+            get { return GetProperty(() => Priority); }
+            private set { SetProperty(() => Priority, value); }
         }
 
         /// <summary>
@@ -44,7 +44,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <value>The presence status.</value>
         public ShowType ShowAs
         {
-            get { return this.showAs; }
+            get { return GetProperty(() => ShowAs); }
+            private set { SetProperty(() => ShowAs, value); }
         }
 
         /// <summary>
@@ -53,7 +54,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <value>The presence status message.</value>
         public string StatusMessage
         {
-            get { return this.statusMessage; }
+            get { return GetProperty(() => StatusMessage); }
+            private set { SetProperty(() => StatusMessage, value); }
         }
 
         /// <summary>
@@ -63,11 +65,11 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <param name="session"></param>
         internal ContactResourcePresence(ContactResource resource)
         {
-            var transport      = XmppTransportManager.GetTransport();
+            var transport = XmppTransportManager.GetTransport();
 
             this.resource       = resource;
-            this.showAs         = ShowType.Offline;
             this.presenceStream = new Subject<ContactResource>();
+            this.ShowAs         = ShowType.Offline;
 
             transport.StateChanged
                      .Where(state => state == XmppTransportState.Closing)
@@ -164,23 +166,23 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
         internal void Update(Presence presence)
         {
-            this.showAs = ShowType.Online;
+            this.ShowAs = ShowType.Online;
 
             if (presence.TypeSpecified && presence.Type == PresenceType.Unavailable)
             {
-                this.showAs = ShowType.Offline;
+                this.ShowAs = ShowType.Offline;
             }
             else if (presence.ShowSpecified)
             {
-                this.showAs = presence.Show;
+                this.ShowAs = presence.Show;
             }
 
             if (presence.PrioritySpecified)
             {
-                this.priority = presence.Priority;
+                this.Priority = presence.Priority;
             }
 
-            this.statusMessage = ((presence.Status == null) ? String.Empty : presence.Status.Value);
+            this.StatusMessage = ((presence.Status == null) ? String.Empty : presence.Status.Value);
 
             this.presenceStream.OnNext(this.resource);
         }

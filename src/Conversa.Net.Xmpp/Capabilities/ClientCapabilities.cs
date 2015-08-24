@@ -45,6 +45,7 @@ namespace Conversa.Net.Xmpp.Capabilities
             this.disco.AddFeature(XmppFeatures.ChatStateNotifications);
             this.disco.AddFeature(XmppFeatures.Ping);
             this.disco.AddFeature(XmppFeatures.DnsSrvLookups);
+            this.disco.AddFeature(XmppFeatures.LastActivity);
 
             // this.disco.AddFeature(XmppFeatures.UserMood);
             // this.disco.AddFeature(XmppFeatures.UserMoodWithNotify);

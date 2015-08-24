@@ -501,9 +501,6 @@
     <Compile Include="Multi-User Chat\MucUserInvite.cs" />
     <Compile Include="Multi-User Chat\MucUserItem.cs" />
     <Compile Include="Multi-User Chat\MucUserStatus.cs" />
-    <Compile Include="Mvvm\BindableBase.cs" />
-    <Compile Include="Mvvm\MayBe.cs" />
-    <Compile Include="Mvvm\PropertyManager.cs" />
     <Compile Include="Ping\ping.cs" />
     <Compile Include="Privacy\Privacy.cs" />
     <Compile Include="Privacy\PrivacyAction.cs" />
@@ -577,7 +574,12 @@
     <None Include="XMPP Registry\xdv-datatypes.xml" />
     <None Include="XMPP Registry\xdv-prefixes.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Conversa.Shared\Conversa.Shared.csproj">
+      <Project>{6ddecf31-15ef-4297-9d45-edd35488ad4c}</Project>
+      <Name>Conversa.Shared</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

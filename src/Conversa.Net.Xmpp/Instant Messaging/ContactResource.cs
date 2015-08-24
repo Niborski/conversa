@@ -4,6 +4,10 @@
 using Conversa.Net.Xmpp.Capabilities;
 using Conversa.Net.Xmpp.Client;
 using Conversa.Net.Xmpp.Core;
+using Conversa.Net.Xmpp.Registry;
+using DevExpress.Mvvm;
+using System;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 
 namespace Conversa.Net.Xmpp.InstantMessaging
@@ -12,12 +16,11 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// Represents a contact resource
     /// </summary>
     public sealed class ContactResource
+        : BindableBase
     {
-        private XmppAddress             address;
-        private ContactResourcePresence presence;
-        private EntityCapabilities      capabilities;
-        private string                  avatarHash;
-        private System.IO.Stream        avatar;
+        private XmppAddress        address;
+        private EntityCapabilities capabilities;
+        private string             avatarHash;
 
         /// <summary>
         /// Gets or sets the resource address
@@ -29,28 +32,11 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
-        /// Gets or sets the resource capabilities.
-        /// </summary>
-        /// <value>The capabilities.</value>
-        public EntityCapabilities Capabilities
-        {
-            get { return this.capabilities; }
-        }
-
-        /// <summary>
-        /// Gets the original avatar image
-        /// </summary>
-        public System.IO.Stream Avatar
-        {
-            get { return this.avatar; }
-        }
-
-        /// <summary>
         /// Gets a value indicating whether the presence status is online
         /// </summary>
         public bool IsOnline
         {
-            get { return this.presence.ShowAs == ShowType.Online; }
+            get { return this.Presence.ShowAs == ShowType.Online; }
         }
 
         /// <summary>
@@ -58,7 +44,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public bool IsAway
         {
-            get { return this.presence.ShowAs == ShowType.Away; }
+            get { return this.Presence.ShowAs == ShowType.Away; }
         }
 
         /// <summary>
@@ -66,7 +52,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public bool IsBusy
         {
-            get { return this.presence.ShowAs == ShowType.Busy; }
+            get { return this.Presence.ShowAs == ShowType.Busy; }
         }
 
         /// <summary>
@@ -74,7 +60,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public bool IsExtendedAway
         {
-            get { return this.presence.ShowAs == ShowType.ExtendedAway; }
+            get { return this.Presence.ShowAs == ShowType.ExtendedAway; }
         }
 
         /// <summary>
@@ -82,25 +68,102 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public bool IsOffline
         {
-            get { return this.presence.ShowAs == ShowType.Offline; }
+            get { return this.Presence.ShowAs == ShowType.Offline; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether entity capabilities are supported
+        /// </summary>
+        public bool SupportsEntityCapabilities
+        {
+            get { return (this.capabilities != null); }
+        }
+
+        /// <summary>
+        /// Gets a value that indicates whether user tunes are supported
+        /// </summary>
+        public bool SupportsUserTune
+        {
+            get { return this.capabilities.SupportsFeature(XmppFeatures.UserTune); }
+        }
+
+        /// <summary>
+        /// Gets a value that indicates whether user moods are supported
+        /// </summary>
+        public bool SupportsUserMood
+        {
+            get { return this.capabilities.SupportsFeature(XmppFeatures.UserMood); }
+        }
+
+        /// <summary>
+        /// Gets a value that indicates whether simple communications blocking is supported
+        /// </summary>
+        public bool SupportsBlocking
+        {
+            get { return this.capabilities.SupportsFeature(XmppFeatures.Blocking); }
+        }
+
+        /// <summary>
+        /// Gets a value that indicates if the contact supports MUC
+        /// </summary>
+        public bool SupportsConference
+        {
+            get { return this.capabilities.SupportsFeature(XmppFeatures.MultiUserChat); }
+        }
+
+        /// <summary>
+        /// Gets a value that indicates if the contact supports chat state notifications
+        /// </summary>
+        public bool SupportsChatStateNotifications
+        {
+            get { return this.capabilities.SupportsFeature(XmppFeatures.ChatStateNotifications); }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether last activity queries are supported
+        /// </summary>
+        public bool SupportsLastActivity
+        {
+            get { return this.capabilities.SupportsFeature(XmppFeatures.UserTune); }
+        }
+
+        /// <summary>
+        /// Gets the resource presence.
+        /// </summary>
+        public ContactResourcePresence Presence
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Gets the last activity time (UTC)
+        /// </summary>
+        public ulong? LastActivity
+        {
+            get { return GetProperty(() => LastActivity); }
+            private set {  SetProperty(() => LastActivity, value); }
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactResource"/> class.
         /// </summary>
-        internal ContactResource(XmppAddress address, Presence initialPresence)
+        internal ContactResource(XmppAddress address, Presence initialPresence, bool isDefaultResource = false)
         {
-            var node = ((initialPresence.Capabilities == null) ? null : initialPresence.Capabilities.DiscoveryNode);
-
             this.address  = address;
-            this.presence = new ContactResourcePresence(this);
+            this.Presence = new ContactResourcePresence(this);
 
-            if (node != null)
+            if (!isDefaultResource && initialPresence.Capabilities != null)
             {
-                this.capabilities = new EntityCapabilities(this.Address, node);
+                this.capabilities = new EntityCapabilities(this.Address, initialPresence.Capabilities.DiscoveryNode);
+
+                this.capabilities
+                    .CapsChangedStream
+                    .Take(1)
+                    .Subscribe(caps => OnCapabilitiesChanged());
             }
 
-            this.presence.Update(initialPresence);
+            this.UpdatePresence(initialPresence);
         }
 
         public override string ToString()
@@ -108,9 +171,25 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             return this.address;
         }
 
-        internal async Task UpdateAsync(Presence presence)
+        public async Task DiscoverCapabilitiesAsync()
         {
-            this.presence.Update(presence);
+            await this.capabilities.DiscoverAsync().ConfigureAwait(false);
+        }
+
+        private void OnCapabilitiesChanged()
+        {
+            this.RaisePropertiesChanged<bool,bool,bool,bool,bool,bool>(
+                () => SupportsUserTune
+              , () => SupportsBlocking
+              , () => SupportsConference
+              , () => SupportsChatStateNotifications
+              , () => SupportsLastActivity
+              , () => SupportsUserMood);
+        }
+
+        internal void Update(Presence presence)
+        {
+            this.UpdatePresence(presence);
 
 #warning TODO: Implement Avatar Storage
             //if (this.Presence.ShowAs == ShowType.Offline)
@@ -135,7 +214,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             //}
         }
 
-        private async Task UpdateVCardAvatarAsync(VCardAvatar vcard)
+        private void UpdateVCardAvatarAsync(VCardAvatar vcard)
         {
 #warning TODO: Implement Avatar Storage
             //if (String.IsNullOrEmpty(vcard.Photo) && vcard.Photo.Length == 0)
@@ -185,9 +264,19 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             this.OnVCardMessage(response.VCardData);
         }
 
+        private void UpdatePresence(Presence presence)
+        {
+            this.Presence.Update(presence);
+            this.RaisePropertyChanged(() => Presence);
+
+            if (presence.LastActivity != null && presence.LastActivity.SecondsSpecified)
+            {
+                this.LastActivity = presence.LastActivity.Seconds;
+            }
+        }
+
         private void OnError(InfoQuery error)
         {
-
         }
 
         private void OnVCardMessage(VCardData vCard)
@@ -235,15 +324,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 //            }
 
 //            this.Client.AvatarStorage.Save();
-        }
-
-        private void DisposeAvatarStream()
-        {
-            if (this.avatar != null)
-            {
-                this.avatar.Dispose();
-                this.avatar = null;
-            }
         }
     }
 }

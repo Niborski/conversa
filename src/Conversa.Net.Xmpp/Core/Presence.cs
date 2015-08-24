@@ -6,6 +6,7 @@ namespace Conversa.Net.Xmpp.Core
     using Conversa.Net.Xmpp.Capabilities;
     using Conversa.Net.Xmpp.InstantMessaging;
     using Conversa.Net.Xmpp.MultiUserChat;
+    using Conversa.Net.Xmpp.LastActivity;
     using System.Xml.Schema;
     using System.Xml.Serialization;
 
@@ -60,6 +61,19 @@ namespace Conversa.Net.Xmpp.Core
         /// <remarks/>
         [XmlElementAttribute("c", Namespace = "http://jabber.org/protocol/caps")]
         public Caps Capabilities
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// defines a way to use the Last Activity extension in XMPP presence notifications.
+        /// </summary>
+        /// <remarks>
+        /// XEP-0256: Last Activity in Presence
+        /// </remarks>
+        [XmlElementAttribute("query", Namespace = "jabber:iq:last")]
+        public LastActivity LastActivity
         {
             get;
             set;

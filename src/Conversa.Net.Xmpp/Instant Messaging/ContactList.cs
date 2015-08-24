@@ -8,9 +8,9 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 
 namespace Conversa.Net.Xmpp.InstantMessaging
@@ -19,12 +19,20 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// Contact's Roster
     /// </summary>
     public sealed class ContactList
-        : IEnumerable<Contact>, INotifyCollectionChanged
+        : IEnumerable<Contact>
     {
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
+        private Subject<Tuple<ContactListChangedAction, XmppAddress>> contactListChanged;
 
         // Private members
         private ConcurrentBag<Contact> contacts;
+
+        /// <summary>
+        /// Occurs when a change happens in the contact list.
+        /// </summary>
+        public IObservable<Tuple<ContactListChangedAction, XmppAddress>> ContactListChanged
+        {
+            get { return this.contactListChanged.AsObservable(); }
+        }
 
         /// <summary>
         /// Gets the contact with the given bare address
@@ -41,10 +49,11 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         internal ContactList()
         {
-            this.contacts = new ConcurrentBag<Contact>();
-
             var transport = XmppTransportManager.GetTransport();
 
+            this.contacts           = new ConcurrentBag<Contact>();            
+            this.contactListChanged = new Subject<Tuple<ContactListChangedAction, XmppAddress>>();
+            
             transport.StateChanged
                      .Where(state => state == XmppTransportState.Open)
                      .Subscribe(async state => await OnConnectedAsync().ConfigureAwait(false));
@@ -278,7 +287,12 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
         private void OnAddContactResponse(InfoQuery response)
         {
-            this.CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add));
+            if (response.Type == InfoQueryType.Set)
+            {
+                var item = response.Roster.Items.First();
+
+                this.PublishContactListChanged(ContactListChangedAction.Add, item.Jid);
+            }
         }
 
         private void OnAddContactError(InfoQuery error)
@@ -287,7 +301,12 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
         private void OnRemoveContactResponse(InfoQuery response)
         {
-            this.CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove));
+            if (response.Type == InfoQueryType.Set)
+            {
+                var item = response.Roster.Items.First();
+
+                this.PublishContactListChanged(ContactListChangedAction.Reset, item.Jid);
+            }
         }
 
         private void OnRemoveContactError(InfoQuery error)
@@ -333,7 +352,12 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 }
             }
 
-            this.CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            this.PublishContactListChanged(ContactListChangedAction.Reset);
+        }
+
+        private void PublishContactListChanged(ContactListChangedAction action, string address = "")
+        {
+            this.contactListChanged.OnNext(new Tuple<ContactListChangedAction, XmppAddress>(action, address));
         }
 
         private void OnRosterError(InfoQuery error)

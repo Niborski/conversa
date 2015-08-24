@@ -40,29 +40,6 @@ namespace Conversa.Net.Xmpp.Capabilities
         }
 
         /// <summary>
-        /// Gets the entity address
-        /// </summary>
-        public XmppAddress Address
-        {
-            get { return this.address; }
-            set
-            { 
-                this.address = value; 
-                this.Clear();
-            }
-        }
-
-        public string ServiceDiscoveryNode
-        {
-            get { return this.info.Node; }
-            set 
-            { 
-                this.info = new ServiceInfo { Node = value };
-                this.Clear();
-            }
-        }
-
-        /// <summary>
         /// Gets a value that indicates whether user tunes are supported
         /// </summary>
         public bool SupportsUserTune
@@ -100,6 +77,38 @@ namespace Conversa.Net.Xmpp.Capabilities
         public bool SupportsChatStateNotifications
         {
             get { return this.SupportsFeature(XmppFeatures.ChatStateNotifications); }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether last activity queries are supported
+        /// </summary>
+        public bool SupportsLastActivity
+        {
+            get { return this.SupportsFeature(XmppFeatures.LastActivity); }
+        }
+
+        /// <summary>
+        /// Gets the entity address
+        /// </summary>
+        public XmppAddress Address
+        {
+            get { return this.address; }
+            set
+            { 
+                this.address = value; 
+                this.Clear();
+            }
+        }
+
+        // Gets or sets the service discovery node
+        public string ServiceDiscoveryNode
+        {
+            get { return this.info.Node; }
+            set 
+            { 
+                this.info = new ServiceInfo { Node = value };
+                this.Clear();
+            }
         }
 
         /// <summary>
@@ -176,7 +185,7 @@ namespace Conversa.Net.Xmpp.Capabilities
         {
         }
 
-//        private async Task UpdateCapabilitiesAsync(EntityCapabilities caps)
+//        private void UpdateCapabilitiesAsync(EntityCapabilities caps)
 //        {
 //            // Request capabilities only if they aren't cached yet for this resource
 //            // or the verfiication string differs from the one that is cached
@@ -192,7 +201,7 @@ namespace Conversa.Net.Xmpp.Capabilities
 //                else if ((this.contact.Subscription == RosterSubscriptionType.Both
 //                       || this.contact.Subscription == RosterSubscriptionType.To))
 //#warning TODO: Review
-//                        // && (!this.Presence.TypeSpecified || presence.Type == PresenceType.Unavailable)
+//                // && (!this.Presence.TypeSpecified || presence.Type == PresenceType.Unavailable)
 //                {
 //                    // Discover Entity Capabilities Extension Features
 //                    await this.capabilities.DiscoverAsync().ConfigureAwait(false);

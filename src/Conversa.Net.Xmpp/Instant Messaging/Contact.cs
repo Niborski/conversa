@@ -27,6 +27,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         private XmppAddress            address;
         private List<ContactResource>  resources;
         private List<string>           groups;
+        private IDisposable            lastActivitySequence;
 
         /// <summary>
         /// Occurs when the contact blocking status changes.
@@ -92,10 +93,18 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Gets the list available resources.
         /// </summary>
-        /// <value>The resources.</value>
+        /// <value>The contact resources.</value>
         public IEnumerable<ContactResource> Resources
         {
             get { return this.resources.AsEnumerable(); }
+        }
+
+        /// <summary>
+        /// Gets the contact high priority resource.
+        /// </summary>
+        public ContactResource HighPriorityResource
+        {
+            get { return this.resources.OrderByDescending(x => x.Presence.Priority).FirstOrDefault(); }
         }
 
         /// <summary>
@@ -142,8 +151,9 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             this.blockingStream        = new Subject<ContactBlockingAction>();
             this.newResourceStream     = new Subject<ContactResource>();
             this.removedResourceStream = new Subject<ContactResource>();
-
+            
             this.Update(name, subscription, groups);
+            this.AddDefaultResource();
 
             this.SubscribeToPresenceChanges();
         }
@@ -253,6 +263,23 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             }
         }
 
+        private void AddDefaultResource()
+        {
+            var defaultResource = new XmppAddress(this.address.UserName
+                                                , this.Address.DomainName
+                                                , Guid.NewGuid().ToString());
+
+            var defaultPresence = new Presence
+            {
+                Show              = ShowType.Offline
+              , ShowSpecified     = true
+              , Priority          = -127
+              , PrioritySpecified = true
+            };
+
+            this.resources.Add(new ContactResource(defaultResource, defaultPresence, true));
+        }
+
         private void SubscribeToPresenceChanges()
         {
             var transport = XmppTransportManager.GetTransport();
@@ -260,6 +287,19 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             transport.PresenceStream
                      .Where(message => ((XmppAddress)message.From).BareAddress == this.Address && !message.IsError)
                      .Subscribe(async message => await this.OnPresenceChangedAsync(message).ConfigureAwait(false));
+
+            transport.StateChanged
+                     .Where(state => state == XmppTransportState.Closed)
+                     .Subscribe(state => OnDisconnected());
+        }
+
+        private void OnDisconnected()
+        {
+            if (this.lastActivitySequence != null)
+            {
+                this.lastActivitySequence.Dispose();
+                this.lastActivitySequence = null;
+            }
         }
 
         private async Task OnPresenceChangedAsync(Presence message)
@@ -269,13 +309,13 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             if (resource == null)
             {
                 resource = new ContactResource(message.From, message);
-
+                 
                 this.resources.Add(resource);
                 this.newResourceStream.OnNext(resource);
 
-                if (resource.Capabilities != null)
+                if (resource.SupportsEntityCapabilities)
                 {
-                    await resource.Capabilities.DiscoverAsync().ConfigureAwait(false);
+                    await resource.DiscoverCapabilitiesAsync().ConfigureAwait(false);
                 }
             }
             else
@@ -293,7 +333,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                             break;
 
                         case PresenceType.Unavailable:
-                            await this.UpdateResourceAsync(resource, message).ConfigureAwait(false);
+                            this.UpdateResource(resource, message);
                             break;
 
                         case PresenceType.Unsubscribe:
@@ -303,14 +343,24 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 }
                 else
                 {
-                    await this.UpdateResourceAsync(resource, message).ConfigureAwait(false);
+                    this.UpdateResource(resource, message);
                 }
             }
+
+            this.RaisePropertyChanged(() => Resources);
+            this.RaisePropertyChanged(() => HighPriorityResource);
         }
 
-        private async Task UpdateResourceAsync(ContactResource resource, Presence message)
+        private void CapabilitiesChanged()
         {
-            await resource.UpdateAsync(message).ConfigureAwait(false);
+            //if (res)
+            //_lastPresenceChange = Observable.Interval(TimeSpan.FromSeconds(10))
+            //                                .Subscribe(buffer => this.);
+        }
+
+        private void UpdateResource(ContactResource resource, Presence message)
+        {
+            resource.Update(message);
 
             // Remove the resource information if the contact has gone offline
             if (resource.IsOffline)
@@ -318,6 +368,9 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 this.resources.Remove(resource);
                 this.removedResourceStream.OnNext(resource);
             }
+
+            this.RaisePropertyChanged(() => Resources);
+            this.RaisePropertyChanged(() => HighPriorityResource);
         }
 
         private async Task UnsuscribedAsync()

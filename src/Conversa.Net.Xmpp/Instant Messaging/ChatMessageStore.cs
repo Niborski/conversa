@@ -147,7 +147,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             {
                 status = ChatMessageValidationStatus.NoRecipients;
             }
-            else if (transport.Roster[chatMessage.ThreadingInfo.ContactId] == null)
+            else if (transport.Contacts[chatMessage.ThreadingInfo.ContactId] == null)
             {
                 status = ChatMessageValidationStatus.InvalidRecipients;
             }

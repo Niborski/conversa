@@ -30,7 +30,7 @@ namespace Conversa.Net.Xmpp.Tests
 
             waiter.WaitOne();
 
-            var contact = transport.Roster.First();
+            var contact = transport.Contacts.First();
 
             contact.BlockingStream
                    .Where(x => x == ContactBlockingAction.Blocked)
@@ -56,7 +56,7 @@ namespace Conversa.Net.Xmpp.Tests
 
             waiter.WaitOne();
 
-            var contact = transport.Roster.First();
+            var contact = transport.Contacts.First();
 
             contact.BlockingStream
                    .Where(x => x == ContactBlockingAction.Unblocked)

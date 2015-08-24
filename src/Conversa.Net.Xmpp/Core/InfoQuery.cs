@@ -8,6 +8,7 @@ namespace Conversa.Net.Xmpp.Core
     using Conversa.Net.Xmpp.Discovery;
     using Conversa.Net.Xmpp.InBandRegistration;
     using Conversa.Net.Xmpp.InstantMessaging;
+    using Conversa.Net.Xmpp.LastActivity;
     using Conversa.Net.Xmpp.MultiUserChat;
     using Conversa.Net.Xmpp.PublishSubscribe;
     using Conversa.Net.Xmpp.XmppPing;
@@ -32,6 +33,19 @@ namespace Conversa.Net.Xmpp.Core
         /// </remarks>
         [XmlElementAttribute("command", Namespace = "http://jabber.org/protocol/commands")]
         public Command Command
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// defines an XMPP protocol extension for communicating information about the last activity associated with an XMPP entity
+        /// </summary>
+        /// <remarks>
+        /// XEP-0012: Last Activity
+        /// </remarks>
+        [XmlElementAttribute("query", Namespace = "jabber:iq:last")]
+        public LastActivity LastActivity
         {
             get;
             set;
