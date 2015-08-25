@@ -182,14 +182,7 @@ namespace Conversa.Net.Xmpp.Client
         /// <value>The server capabilities.</value>
         public IEntityCapabilitiesInfo ServerCapabilities
         {
-            get
-            {
-                if (this.state == XmppTransportState.Open)
-                {
-                    throw new XmppException("Connection should be open");
-                }
-                return this.serverCapabilities;
-            }
+            get { return this.serverCapabilities; }
         }
 
         /// <summary>
@@ -524,13 +517,14 @@ namespace Conversa.Net.Xmpp.Client
 
         internal void RequestTransportInitialization()
         {
-            this.subscriptions    = new ConcurrentDictionary<string, CompositeDisposable>();
-            this.people           = new ContactList();
-            this.activity         = new Activity();
-            this.capabilities     = new ClientCapabilities();
-            this.personalEventing = new PersonalEventing();
-            this.presence         = new XmppTransportPresence();
-            this.Configuration    = new XmppTransportConfiguration();
+            this.subscriptions      = new ConcurrentDictionary<string, CompositeDisposable>();
+            this.people             = new ContactList();
+            this.activity           = new Activity();
+            this.capabilities       = new ClientCapabilities();
+            this.personalEventing   = new PersonalEventing();
+            this.presence           = new XmppTransportPresence();
+            this.Configuration      = new XmppTransportConfiguration();
+            this.serverCapabilities = new EntityCapabilities();
         }
 
         private void CloseTransport()
@@ -798,8 +792,8 @@ namespace Conversa.Net.Xmpp.Client
             {
                 this.serverFeatures |= ServerFeatures.EntityCapabilities;
                 
-                this.serverCapabilities = new EntityCapabilities(this.UserAddress.DomainName
-                                                               , features.EntityCapabilities.DiscoveryNode);
+                this.serverCapabilities.Address              = this.UserAddress.DomainName;
+                this.serverCapabilities.ServiceDiscoveryNode = features.EntityCapabilities.DiscoveryNode;
             }
 
             await this.NegotiateStreamFeaturesAsync().ConfigureAwait(false);
@@ -962,7 +956,7 @@ namespace Conversa.Net.Xmpp.Client
 
         private async Task DiscoverServerCapabilitiesAsync()
         {
-            if (this.serverCapabilities != null)
+            if (!String.IsNullOrEmpty(this.serverCapabilities.ServiceDiscoveryNode))
             {
                 await this.serverCapabilities.DiscoverAsync().ConfigureAwait(false);
             }
