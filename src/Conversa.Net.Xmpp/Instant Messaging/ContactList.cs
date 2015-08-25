@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Carlos Guzmán Álvarez. All rights reserved.
 // Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
 
+using Conversa.Collections;
 using Conversa.Net.Xmpp.Blocking;
 using Conversa.Net.Xmpp.Client;
 using Conversa.Net.Xmpp.Core;
@@ -21,7 +22,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     public sealed class ContactList
         : IEnumerable<Contact>
     {
-        private Subject<Tuple<ContactListChangedAction, XmppAddress>> contactListChanged;
+        private Subject<CollectionChangedEventData<Contact>> contactListChanged;
 
         // Private members
         private ConcurrentBag<Contact> contacts;
@@ -29,7 +30,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Occurs when a change happens in the contact list.
         /// </summary>
-        public IObservable<Tuple<ContactListChangedAction, XmppAddress>> ContactListChanged
+        public IObservable<CollectionChangedEventData<Contact>> ContactListChanged
         {
             get { return this.contactListChanged.AsObservable(); }
         }
@@ -52,7 +53,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             var transport = XmppTransportManager.GetTransport();
 
             this.contacts           = new ConcurrentBag<Contact>();            
-            this.contactListChanged = new Subject<Tuple<ContactListChangedAction, XmppAddress>>();
+            this.contactListChanged = new Subject<CollectionChangedEventData<Contact>>();
             
             transport.StateChanged
                      .Where(state => state == XmppTransportState.Open)
@@ -291,7 +292,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             {
                 var item = response.Roster.Items.First();
 
-                this.PublishContactListChanged(ContactListChangedAction.Add, item.Jid);
+                this.PublishContactListChanged(CollectionChangedAction.Add, item.Jid);
             }
         }
 
@@ -305,7 +306,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             {
                 var item = response.Roster.Items.First();
 
-                this.PublishContactListChanged(ContactListChangedAction.Reset, item.Jid);
+                this.PublishContactListChanged(CollectionChangedAction.Reset, item.Jid);
             }
         }
 
@@ -352,12 +353,19 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 }
             }
 
-            this.PublishContactListChanged(ContactListChangedAction.Reset);
+            this.PublishContactListChanged(CollectionChangedAction.Reset);
         }
 
-        private void PublishContactListChanged(ContactListChangedAction action, string address = "")
+        private void PublishContactListChanged(CollectionChangedAction action, string address = "")
         {
-            this.contactListChanged.OnNext(new Tuple<ContactListChangedAction, XmppAddress>(action, address));
+            Contact item = null;
+
+            if (!String.IsNullOrEmpty(address))
+            {
+                item = this[address];
+            }
+
+            this.contactListChanged.OnNext(new CollectionChangedEventData<Contact>(action, item));
         }
 
         private void OnRosterError(InfoQuery error)

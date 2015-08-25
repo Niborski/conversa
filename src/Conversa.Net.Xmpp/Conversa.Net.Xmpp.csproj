@@ -462,7 +462,6 @@
     <Compile Include="Instant Messaging\Contact.cs" />
     <Compile Include="Instant Messaging\ContactBlockingAction.cs" />
     <Compile Include="Instant Messaging\ContactList.cs" />
-    <Compile Include="Instant Messaging\ContactListChangedAction.cs" />
     <Compile Include="Instant Messaging\ContactResource.cs" />
     <Compile Include="Instant Messaging\ContactResourcePresence.cs" />
     <Compile Include="Instant Messaging\RemoteParticipantComposingChangedEventArgs.cs" />

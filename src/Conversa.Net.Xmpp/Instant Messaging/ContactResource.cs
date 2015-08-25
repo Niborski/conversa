@@ -124,7 +124,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public bool SupportsLastActivity
         {
-            get { return this.capabilities.SupportsFeature(XmppFeatures.UserTune); }
+            get { return this.capabilities.SupportsFeature(XmppFeatures.LastActivity); }
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 this.capabilities
                     .CapsChangedStream
                     .Take(1)
-                    .Subscribe(caps => OnCapabilitiesChanged());
+                    .Subscribe(async caps => await OnCapabilitiesChangedAsync().ConfigureAwait(false));
             }
 
             this.UpdatePresence(initialPresence);
@@ -174,17 +174,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public async Task DiscoverCapabilitiesAsync()
         {
             await this.capabilities.DiscoverAsync().ConfigureAwait(false);
-        }
-
-        private void OnCapabilitiesChanged()
-        {
-            this.RaisePropertiesChanged<bool,bool,bool,bool,bool,bool>(
-                () => SupportsUserTune
-              , () => SupportsBlocking
-              , () => SupportsConference
-              , () => SupportsChatStateNotifications
-              , () => SupportsLastActivity
-              , () => SupportsUserMood);
         }
 
         internal void Update(Presence presence)
@@ -212,6 +201,39 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             //{
             //    await this.UpdateVCardAvatarAsync(presence.VCardAvatar).ConfigureAwait(false);
             //}
+        }
+
+        private async Task OnCapabilitiesChangedAsync()
+        {
+            this.RaisePropertiesChanged<bool,bool,bool,bool,bool,bool>(
+                () => SupportsUserTune
+              , () => SupportsBlocking
+              , () => SupportsConference
+              , () => SupportsChatStateNotifications
+              , () => SupportsLastActivity
+              , () => SupportsUserMood);
+
+            if (this.SupportsLastActivity)
+            {
+                var transport = XmppTransportManager.GetTransport();
+                var iq        = new InfoQuery
+                {
+                    From         = transport.UserAddress
+                  , To           = this.Address
+                  , Type         = InfoQueryType.Get
+                  , LastActivity = new Xmpp.LastActivity.LastActivity()
+                };
+
+                await transport.SendAsync(iq, response => OnLastActivityResponse(response)).ConfigureAwait(false);
+            }
+        }
+
+        private void OnLastActivityResponse(InfoQuery response)
+        {
+            if (response.LastActivity != null && response.LastActivity.SecondsSpecified)
+            {
+                this.LastActivity = response.LastActivity.Seconds;
+            }
         }
 
         private void UpdateVCardAvatarAsync(VCardAvatar vcard)
