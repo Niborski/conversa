@@ -304,7 +304,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
         private async Task OnPresenceChangedAsync(Presence message)
         {
-            var resource = this.resources.SingleOrDefault(contactResource => contactResource.Address == message.From);
+            var transport = XmppTransportManager.GetTransport();
+            var resource  = this.resources.SingleOrDefault(contactResource => contactResource.Address == message.From);
 
             if (resource == null)
             {
@@ -313,7 +314,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 this.resources.Add(resource);
                 this.newResourceStream.OnNext(resource);
 
-                if (resource.SupportsEntityCapabilities)
+                if (transport.ServerCapabilities != null && resource.SupportsEntityCapabilities)
                 {
                     await resource.DiscoverCapabilitiesAsync().ConfigureAwait(false);
                 }

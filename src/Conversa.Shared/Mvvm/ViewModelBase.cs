@@ -1,4 +1,9 @@
-﻿using Conversa.Common;
+﻿// Licensed under the The Apache License Version 2.0, January 2004
+// ---------------------------------------------------------------
+// https://github.com/Windows-XAML/Template10
+// ---------------------------------------------------------------
+
+using Conversa.Common;
 using Conversa.Services.NavigationService;
 using Conversa.W10.Common;
 using DevExpress.Mvvm;

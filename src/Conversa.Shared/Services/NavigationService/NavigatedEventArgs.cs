@@ -1,4 +1,9 @@
-﻿using System;
+﻿// Licensed under the The Apache License Version 2.0, January 2004
+// ---------------------------------------------------------------
+// https://github.com/Windows-XAML/Template10
+// ---------------------------------------------------------------
+
+using System;
 using Windows.UI.Xaml.Navigation;
 
 namespace Conversa.Services.NavigationService

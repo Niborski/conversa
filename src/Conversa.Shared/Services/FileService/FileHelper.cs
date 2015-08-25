@@ -1,4 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿// Licensed under the The Apache License Version 2.0, January 2004
+// ---------------------------------------------------------------
+// https://github.com/Windows-XAML/Template10
+// ---------------------------------------------------------------
+
+using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
 using Windows.Storage;
