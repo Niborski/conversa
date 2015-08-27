@@ -1,4 +1,5 @@
-﻿using Conversa.Net.Xmpp.Core;
+﻿using Conversa.Net.Xmpp.Client;
+using Conversa.Net.Xmpp.Core;
 using System;
 using System.Collections.Generic;
 
@@ -9,12 +10,41 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// </summary>
     public sealed class ChatMessage
     {
+        internal static ChatMessage Create(Message message)
+        {
+            return new ChatMessage
+            {
+                  // Attachments           = null
+                  Body                       = message.Body?.Value
+                , EstimatedDownloadSize      = 0
+                , From                       = message.From
+                , IsAutoReply                = false
+                , IsForwardingDisabled       = false
+                , IsIncoming                 = true
+                , IsRead                     = false
+                , IsReceivedDuringQuietHours = false
+                , IsReplyDisabled            = false
+                , IsSeen                     = false
+                , LocalTimestamp             = DateTimeOffset.Now
+                , MessageKind                = ChatMessageKind.Standard
+                , NetworkTimestamp           = DateTimeOffset.Now
+                , Recipients                 = new List<string> { message.To }
+                , RecipientsDeliveryInfos    = null
+                , RemoteId                   = message.Id
+                , ShouldSuppressNotification = false
+                , Status                     = ChatMessageStatus.Received
+                , Subject                    = message.Subject?.Value
+                , ThreadingInfo              = new ChatConversationThreadingInfo()
+            };
+        }
+
         /// <summary>
         /// Gets a list of chat message attachments.
         /// </summary>
         public IList<ChatMessageAttachment> Attachments
         {
             get;
+            private set;
         }
         
         /// <summary>
@@ -41,6 +71,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public string From
         {
             get;
+            private set;
         }
 
         /// <summary>
@@ -66,6 +97,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public bool IsForwardingDisabled
         {
             get;
+            private set;
         }
         
         /// <summary>
@@ -74,6 +106,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public bool IsIncoming
         {
             get;
+            private set;
         }
 
         /// <summary>
@@ -82,6 +115,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public bool IsRead
         {
             get;
+            internal set;
         }
 
         /// <summary>
@@ -99,6 +133,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public bool IsReplyDisabled
         {
             get;
+            private set;
         }
 
         /// <summary>
@@ -111,21 +146,12 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
-        /// Gets or sets a Boolean value indicating if the message is stored on a SIM card.
-        /// </summary>
-        [Obsolete]
-        public bool IsSimMessage
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Gets the local timestamp of the message.
         /// </summary>
         public DateTimeOffset LocalTimestamp
         {
             get;
+            private set;
         }
 
         /// <summary>
@@ -138,20 +164,12 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
-        /// Gets or sets a value indicating the type of message operator, such as SMS, MMS, or RCS.
-        /// </summary>
-        public ChatMessageOperatorKind MessageOperatorKind
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Gets the network timestamp of the message.
         /// </summary>
         public DateTimeOffset NetworkTimestamp
         {
             get;
+            private set;
         }
         
         /// <summary>
@@ -160,6 +178,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public IList<string> Recipients
         {
             get;
+            private set;
         }
 
         /// <summary>
@@ -168,6 +187,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public IList<ChatRecipientDeliveryInfo> RecipientsDeliveryInfos
         {
             get;
+            private set;
         }
 
         /// <summary>
@@ -176,6 +196,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public IReadOnlyDictionary<String, ChatMessageStatus> RecipientSendStatuses
         {
             get;
+            private set;
         }
         
         /// <summary>
@@ -211,6 +232,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public string Subject
         {
             get;
+            internal set;
         }
 
         /// <summary>
@@ -227,7 +249,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public string TransportFriendlyName
         {
-            get;
+            get;            
+            private set;
         }
 
         /// <summary>
@@ -236,7 +259,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public string TransportId
         {
             get;
-            set;
+            private set;
         }
 
         /// <summary>
@@ -244,13 +267,19 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public ChatMessage()
         {
+            var transport = XmppTransportManager.GetTransport();
+
+            this.Attachments           = new List<ChatMessageAttachment>();
+            this.TransportId           = transport.TransportId;
+            this.TransportFriendlyName = TransportFriendlyName;
+            this.Status                = ChatMessageStatus.Draft;
         }
 
         /// <summary>
         /// Converts the current chat message to the XMPP format.
         /// </summary>
         /// <returns>The current chat message to the XMPP format.</returns>
-        public Message ToXmpp()
+        internal Message ToXmpp()
         {
             return new Message
             {

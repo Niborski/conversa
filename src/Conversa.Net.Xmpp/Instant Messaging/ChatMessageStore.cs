@@ -1,17 +1,25 @@
 ﻿using Conversa.Net.Xmpp.Client;
+using Conversa.Net.Xmpp.Core;
+using Conversa.Net.Xmpp.DataStore;
 using System;
-using System.Runtime.InteropServices.WindowsRuntime;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using Windows.Foundation;
 
 namespace Conversa.Net.Xmpp.InstantMessaging
 {
     /// <summary>
-    /// 
+    /// Provides the methods and properties to read, manage and send messages.
     /// </summary>
     public sealed class ChatMessageStore
     {
-        // public event TypedEventHandler<ChatMessageStore, ChatMessageChangedEventArgs> MessageChanged;
+        private Subject<ChatMessage> messageChangedStream;
+
+        public IObservable<ChatMessage> MessageChangedStream
+        {
+            get { return this.messageChangedStream.AsObservable(); }
+        }
 
         /// <summary>
         /// Gets the chat message change tracker for the store.
@@ -19,72 +27,78 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public ChatMessageChangeTracker ChangeTracker
         {
             get;
+            private set;
         }
 
-        /// <summary>
-        /// Initializes a new instance with the given <see cref="Contact">owner</see>.
-        /// </summary>
-        /// <param name="owner">The chat message store owner.</param>
         internal ChatMessageStore()
         {
+            var transport = XmppTransportManager.GetTransport();
+
+            this.messageChangedStream = new Subject<ChatMessage>();
+            this.ChangeTracker        = new ChatMessageChangeTracker();
         }
 
         /// <summary>
-        /// The local ID of the message to be deleted.
+        /// Deletes a message from the chat message store.
         /// </summary>
-        /// <param name="localMessageId"></param>
-        /// <returns>An asynchronous action.</returns>
-        public IAsyncAction DeleteMessageAsync(string localMessageId)
+        /// <param name="localMessageId">The local ID of the message to be deleted.</param>
+        public async Task DeleteMessageAsync(string localMessageId)
         {
-            throw new NotImplementedException();
+            ChatMessage chatMessage = await this.GetMessageAsync(localMessageId).ConfigureAwait(false);
+
+            if (chatMessage != null)
+            {
+                chatMessage.Status = ChatMessageStatus.Deleted;
+
+                await this.SaveMessageAsync(chatMessage).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
-        /// 
+        /// Downloads a message specified by the identifier to the message store.
         /// </summary>
         /// <param name="localChatMessageId">The local ID of the message to be downloaded.</param>
         /// <returns></returns>
-        public IAsyncAction DownloadMessageAsync(string localChatMessageId)
+        public async Task<ChatMessage> DownloadMessageAsync(string localChatMessageId)
         {
             throw new NotImplementedException();
         }
 
         /// <summary>
-        /// 
+        /// Retrieves a message specified by an identifier from the message store.
         /// </summary>
         /// <param name="localChatMessageId"></param>
         /// <returns></returns>
-        public IAsyncOperation<ChatMessage> GetMessageAsync(string localChatMessageId)
+        public async Task<ChatMessage> GetMessageAsync(string localChatMessageId)
         {
-            throw new NotImplementedException();
+            return await GetMessageReader().GetMessageAsync(localChatMessageId).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// 
+        /// Gets a ChatMessageReader class object which provides a message collection from the message store.
         /// </summary>
         /// <returns>The chat message reader.</returns>
         public ChatMessageReader GetMessageReader()
         {
-            throw new NotImplementedException();
-        }
-
-        public ChatMessageReader GetMessageReader(TimeSpan recentTimeLimit)
-        {
-            throw new NotImplementedException();
+            return new ChatMessageReader();
         }
 
         /// <summary>
-        /// 
+        /// Marks a specified message in the store as already read.
         /// </summary>
         /// <param name="localChatMessageId"></param>
         /// <returns></returns>
-        public IAsyncAction MarkMessageReadAsync(string localChatMessageId)
+        public async Task MarkMessageReadAsync(string localChatMessageId)
         {
-            throw new NotImplementedException();
+            ChatMessage chatMessage = await this.GetMessageAsync(localChatMessageId).ConfigureAwait(false);
+
+            chatMessage.IsRead = true;
+
+            await this.SaveMessageAsync(chatMessage).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// 
+        /// Attempts a retry of sending a specified message from the message store.
         /// </summary>
         /// <param name="localChatMessageId">The local ID of the message to be retried.</param>
         /// <returns></returns>
@@ -94,15 +108,15 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
-        /// The chat message to be sent.
+        /// Attempts to send a chat message. The message is saved to the message store as part of the send operation.
         /// </summary>
-        /// <param name="chatMessage"></param>
-        /// <returns></returns>
-        public IAsyncAction SendMessageAsync(ChatMessage chatMessage)
+        /// <param name="chatMessage">The chat message to be sent.</param>
+        public async Task SendMessageAsync(ChatMessage chatMessage)
         {
-            return AsyncInfo.Run(_ => Task.Run(async () => {
-                var status    = this.ValidateMessage(chatMessage);
+            var status = this.ValidateMessage(chatMessage);
 
+            if (!chatMessage.IsIncoming)
+            {
                 if (status.Status == ChatMessageValidationStatus.Valid
                  || status.Status == ChatMessageValidationStatus.ValidWithLargeMessage)
                 {
@@ -110,12 +124,31 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                     var transport   = XmppTransportManager.GetTransport();
 
                     chatMessage.RemoteId = xmppMessage.Id;
-                    chatMessage.Status   = ChatMessageStatus.Sending;
 
-                    await transport.SendAsync(xmppMessage).ConfigureAwait(false);
+                    if (chatMessage.Status == ChatMessageStatus.Draft)
+                    {
+                        chatMessage.Status = ChatMessageStatus.Sending;
+                    }
+                    else
+                    {
+                        chatMessage.Status = ChatMessageStatus.SendRetryNeeded;
+                    }
+
+                    await this.SaveMessageAsync(chatMessage).ConfigureAwait(false);
+
+                    await transport.SendAsync(xmppMessage
+                                            , async message => await OnMessageSent(message).ConfigureAwait(false)
+                                            , async message => await OnMessageError(message).ConfigureAwait(false))
+                                   .ConfigureAwait(false);
                 }
-            }));
-        }
+                else
+                {
+                    chatMessage.Status = ChatMessageStatus.SendRetryNeeded;
+                }
+            }
+
+            await this.SaveMessageAsync(chatMessage).ConfigureAwait(false);
+        }        
 
         /// <summary>
         /// 
@@ -153,6 +186,43 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             }
 
             return new ChatMessageValidationResult(status);
+        }
+
+        private async Task SaveMessageAsync(ChatMessage chatMessage)
+        {
+            await DataSource<ChatMessage>.AddOrUpdateAsync(chatMessage).ConfigureAwait(false);
+        }
+
+        private async Task OnMessageSent(Message message)
+        {
+            ChatMessage chatMessage = await DataSource<ChatMessage>
+                .Query()
+                .Where(m => m.RemoteId == message.Id)
+                .FirstOrDefaultAsync()
+                .ConfigureAwait(false);
+
+            if (chatMessage != null)
+            {
+                chatMessage.Status = ChatMessageStatus.Sent;
+
+                await this.SaveMessageAsync(chatMessage).ConfigureAwait(false);
+            }
+        }
+
+        private async Task OnMessageError(Message message)
+        {
+            ChatMessage chatMessage = await DataSource<ChatMessage>
+                .Query()
+                .Where(m => m.RemoteId == message.Id)
+                .FirstOrDefaultAsync()
+                .ConfigureAwait(false);
+
+            if (chatMessage != null)
+            {
+                chatMessage.Status = ChatMessageStatus.SendFailed;
+
+                await this.SaveMessageAsync(chatMessage).ConfigureAwait(false);
+            }
         }
     }
 }

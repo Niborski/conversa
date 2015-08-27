@@ -70,7 +70,7 @@ namespace Conversa.Net.Xmpp.Core
         private string bareAddress;
         private string address;
 
-        public string Addresss
+        public string Address
         {
             get { return this.address; }
         }

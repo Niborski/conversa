@@ -110,6 +110,9 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <None Include="Data Store\Conversa.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="project.json" />
     <None Include="Schemas\RFC6120-6121\bind.xsd">
       <SubType>Designer</SubType>
@@ -375,6 +378,7 @@
     <Compile Include="Core\StreamFeatures.Custom.cs" />
     <Compile Include="Core\XmppAddress.cs" />
     <Compile Include="Core\XmppCodes.cs" />
+    <Compile Include="Data Store\DataSource.cs" />
     <Compile Include="DataForms\DataForm.cs" />
     <Compile Include="DataForms\DataFormField.cs" />
     <Compile Include="DataForms\DataFormFieldItem.cs" />
@@ -439,14 +443,11 @@
     <Compile Include="Instant Messaging\ChatMessageAttachment.cs" />
     <Compile Include="Instant Messaging\ChatMessageBlocking.cs" />
     <Compile Include="Instant Messaging\ChatMessageChange.cs" />
-    <Compile Include="Instant Messaging\ChatMessageChangedDeferral.cs" />
-    <Compile Include="Instant Messaging\ChatMessageChangedEventArgs.cs" />
     <Compile Include="Instant Messaging\ChatMessageChangeReader.cs" />
     <Compile Include="Instant Messaging\ChatMessageChangeTracker.cs" />
     <Compile Include="Instant Messaging\ChatMessageChangeType.cs" />
     <Compile Include="Instant Messaging\ChatMessageKind.cs" />
     <Compile Include="Client\XmppTransportManager.cs" />
-    <Compile Include="Instant Messaging\ChatMessageOperatorKind.cs" />
     <Compile Include="Instant Messaging\ChatMessageReader.cs" />
     <Compile Include="Instant Messaging\ChatMessageStatus.cs" />
     <Compile Include="Instant Messaging\ChatMessageStore.cs" />
@@ -579,6 +580,15 @@
       <Name>Conversa.Shared</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <SDKReference Include="Microsoft.VCLibs, Version=14.0">
+      <Name>Visual C++ 2015 Runtime for Universal Windows Platform Apps</Name>
+    </SDKReference>
+    <SDKReference Include="SQLite.UAP.2015, Version=3.8.11.1">
+      <Name>SQLite for Universal App Platform</Name>
+    </SDKReference>
+  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

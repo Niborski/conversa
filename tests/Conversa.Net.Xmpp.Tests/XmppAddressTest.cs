@@ -19,7 +19,7 @@ namespace Conversa.Net.Xmpp.Tests
             Assert.AreEqual("alice"               , xjid.UserName);
             Assert.AreEqual("wonderland.lit"      , xjid.DomainName);
             Assert.AreEqual("RabbitHole"          , xjid.ResourceName);
-            Assert.AreEqual(sjid                  , xjid.Addresss);
+            Assert.AreEqual(sjid                  , xjid.Address);
             Assert.AreEqual("alice@wonderland.lit", xjid.BareAddress);
         }
 
@@ -33,7 +33,7 @@ namespace Conversa.Net.Xmpp.Tests
             Assert.AreEqual("alice"               , xjid.UserName);
             Assert.AreEqual("wonderland.lit"      , xjid.DomainName);
             Assert.AreEqual("RabbitHole"          , xjid.ResourceName);
-            Assert.AreEqual(sjid                  , xjid.Addresss);
+            Assert.AreEqual(sjid                  , xjid.Address);
             Assert.AreEqual(ojid                  , sjid);
             Assert.AreEqual("alice@wonderland.lit", xjid.BareAddress);
         }               
@@ -47,7 +47,7 @@ namespace Conversa.Net.Xmpp.Tests
             Assert.AreEqual("alice"         , xjid.UserName);
             Assert.AreEqual("wonderland.lit", xjid.DomainName);
             Assert.AreEqual(String.Empty    , xjid.ResourceName);
-            Assert.AreEqual(sjid            , xjid.Addresss);
+            Assert.AreEqual(sjid            , xjid.Address);
             Assert.AreEqual(sjid            , xjid.BareAddress);
         }
 
@@ -61,7 +61,7 @@ namespace Conversa.Net.Xmpp.Tests
             Assert.AreEqual("alice"         , xjid.UserName);
             Assert.AreEqual("wonderland.lit", xjid.DomainName);
             Assert.AreEqual(String.Empty    , xjid.ResourceName);
-            Assert.AreEqual(sjid            , xjid.Addresss);
+            Assert.AreEqual(sjid            , xjid.Address);
             Assert.AreEqual(sjid            , ojid);
             Assert.AreEqual(sjid            , xjid.BareAddress);
         }

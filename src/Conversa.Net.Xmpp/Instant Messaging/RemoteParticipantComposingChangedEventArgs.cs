@@ -9,7 +9,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// </summary>
     [MarshalingBehavior(MarshalingType.Agile)]
     [Threading(ThreadingModel.Both)]
-    public sealed class RemoteParticipantComposingChangedEventArgs
+    public sealed class RemoteParticipantComposingChangedEventData
         : EventArgs
     {
         /// <summary>
@@ -37,9 +37,9 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RemoteParticipantComposingChangedEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="RemoteParticipantComposingChangedEventData"/> class.
         /// </summary>
-        public RemoteParticipantComposingChangedEventArgs()
+        public RemoteParticipantComposingChangedEventData()
         {
         }
     }

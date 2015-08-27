@@ -2,6 +2,8 @@
 using Conversa.Net.Xmpp.Core;
 using System;
 using System.Collections.Generic;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -13,11 +15,19 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// </summary>
     public sealed class ChatConversation
     {
-        public event TypedEventHandler<ChatConversation, RemoteParticipantComposingChangedEventArgs> RemoteParticipantComposingChanged;
+        public static ChatConversation Create(Contact contact)
+        {
+            return new ChatConversation(contact);
+        }
 
-        private Contact          owner;
+        private Subject<RemoteParticipantComposingChangedEventData> remoteParticipantComposingChangedStream;
         private ChatMessageStore store;
-        
+       
+        public IObservable<RemoteParticipantComposingChangedEventData> RemoteParticipantComposingChangedStream
+        {
+            get { return this.remoteParticipantComposingChangedStream.AsObservable(); }
+        }
+
         /// <summary>
         /// Gets a Boolean value indicating if there are unread messages in the ChatConversation.
         /// </summary>
@@ -31,8 +41,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public string Id
         {
-            get { return this.owner.Address; }
-        }
+            get;
+        } = Guid.NewGuid().ToString();
         
         /// <summary>
         /// Gets or puts a Boolean value indicating if the ChatConversation is muted.
@@ -49,14 +59,15 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public string MostRecentMessageId
         {
             get;
+            private set;
         }
 
         /// <summary>
         /// Gets a list of all the participants in the conversation.
         /// </summary>
-        public IList<XmppAddress> Participants
+        public IEnumerable<XmppAddress> Participants
         {
-            get;
+            get { return this.ThreadingInfo.Participants; }
         }
 
         /// <summary>
@@ -79,11 +90,29 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatConversation"/> class.
         /// </summary>
-        /// <param name="owner">The conversation owner.</param>
-        internal ChatConversation(Contact owner)
+        /// <param name="contact">The conversation contact.</param>
+        internal ChatConversation(Contact contact)
         {
-            this.owner = owner;
-            this.store = XmppTransportManager.RequestStore();;
+            var transport = XmppTransportManager.GetTransport();
+
+            this.remoteParticipantComposingChangedStream = new Subject<RemoteParticipantComposingChangedEventData>();
+
+            this.ThreadingInfo = new ChatConversationThreadingInfo
+            {
+                ContactId       = contact.Address
+              , ConversationId  = this.Id
+              , Custom          = null
+              , Kind            = ChatConversationThreadingKind.ContactId
+            };
+
+            this.ThreadingInfo.Participants.Add(transport.UserAddress);
+            this.ThreadingInfo.Participants.Add(contact.Address);
+
+            this.store = XmppTransportManager.RequestStore();
+            this.store.ChangeTracker.Enable();
+
+            transport.MessageStream
+                     .Subscribe(async message => await OnMessageReceived(message).ConfigureAwait(false));            
         }      
 
         /// <summary>
@@ -110,7 +139,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <returns>The ChatMessageReader for this ChatConversation.</returns>
         public ChatMessageReader GetMessageReader()
         {
-            return this.store.GetMessageReader();
+            throw new NotImplementedException();
         }
         
         /// <summary>
@@ -155,22 +184,27 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
-        /// Asynchronously saves the ChatConversation.
-        /// </summary>
-        /// <returns>An async action indicating that the operation has completed.</returns>
-        public IAsyncAction SaveAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// The chat message to be sent.
         /// </summary>
         /// <param name="chatMessage"></param>
         /// <returns></returns>
-        public IAsyncAction SendMessageAsync(ChatMessage chatMessage)
+        public async Task SendMessageAsync(ChatMessage chatMessage)
         {
-            return AsyncInfo.Run(_ => Task.Run(async () => {  await this.store.SendMessageAsync(chatMessage); }));
+            if (chatMessage.ThreadingInfo == null)
+            {
+                chatMessage.ThreadingInfo = this.ThreadingInfo;
+            }
+
+            chatMessage.Subject = this.Subject;
+
+            await this.store.SendMessageAsync(chatMessage).ConfigureAwait(false);
+        }
+
+        private async Task OnMessageReceived(Message message)
+        {
+            var chatMessage = ChatMessage.Create(message);
+
+            await this.store.SendMessageAsync(chatMessage).ConfigureAwait(false);
         }
     }
 }

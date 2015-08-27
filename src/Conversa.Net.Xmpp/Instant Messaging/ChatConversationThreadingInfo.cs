@@ -57,13 +57,10 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public ChatConversationThreadingInfo()
         {
+            this.Participants = new List<XmppAddress>();
         }
 
-        /// <summary>
-        /// Converts the current conversation threading info to XMPP format.
-        /// </summary>
-        /// <returns>The current conversation threading info as an XMPP message thread.</returns>
-        public MessageThread ToXmpp()
+        internal MessageThread ToXmpp()
         {
             return null;
         }

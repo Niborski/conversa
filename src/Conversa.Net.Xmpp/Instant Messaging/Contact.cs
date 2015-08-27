@@ -126,14 +126,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
-        /// Gets the chat conversation for this contact.
-        /// </summary>
-        public ChatConversation Conversation
-        {
-            get;
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="T:XmppContact"/> class.
         /// </summary>
         /// <param name="address">The contact address.</param>

@@ -3,24 +3,37 @@
 namespace Conversa.Net.Xmpp.InstantMessaging
 {
     /// <summary>
-    /// 
+    /// Provides methods to enable and retrieve message change revisions.
     /// </summary>
     public sealed class ChatMessageChangeTracker
     {
-        public void Enable()
+        private bool enabled;
+        private ChatMessageChangeReader reader;
+
+        public ChatMessageChangeTracker()
         {
-            throw new NotImplementedException();
         }
 
         /// <summary>
-        /// Gets the change reader associated with the change tracker.
+        /// Enables change tracking for the messages in the message store.
+        /// </summary>
+        public void Enable()
+        {
+            this.enabled = true;
+        }
+
+        /// <summary>
+        /// Returns a ChatMessageChangeReader class object which provides a collection of message revisions from the message store.
         /// </summary>
         /// <returns>The change reader associated with the change tracker.</returns>
         public ChatMessageChangeReader GetChangeReader()
         {
-            throw new NotImplementedException();
+            return this.reader;
         }
 
+        /// <summary>
+        /// Resets change tracking for the messages in the message store. The first revision begins with the next message change.
+        /// </summary>
         public void Reset()
         {
             throw new NotImplementedException();
