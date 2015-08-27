@@ -139,7 +139,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <returns>The ChatMessageReader for this ChatConversation.</returns>
         public ChatMessageReader GetMessageReader()
         {
-            throw new NotImplementedException();
+            return this.store.GetMessageReader();
         }
         
         /// <summary>

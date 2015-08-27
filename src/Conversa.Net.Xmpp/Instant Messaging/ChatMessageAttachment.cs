@@ -1,4 +1,5 @@
-﻿using Windows.Storage.Streams;
+﻿using SQLite.Net.Attributes;
+using Windows.Storage.Streams;
 
 namespace Conversa.Net.Xmpp.InstantMessaging
 {
@@ -10,6 +11,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Gets or sets the data stream for the attachment.
         /// </summary>
+        [Ignore]
         public IRandomAccessStreamReference DataStreamReference
         {
             get;
@@ -55,6 +57,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Gets or sets the thumbnail image for the attachment.
         /// </summary>
+        [Ignore]
         public IRandomAccessStreamReference Thumbnail
         {
             get;

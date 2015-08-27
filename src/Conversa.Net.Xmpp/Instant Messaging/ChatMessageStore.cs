@@ -16,6 +16,11 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     {
         private Subject<ChatMessage> messageChangedStream;
 
+        static ChatMessageStore()
+        {
+            DataSource<ChatMessage>.CreateTable();
+        }
+
         public IObservable<ChatMessage> MessageChangedStream
         {
             get { return this.messageChangedStream.AsObservable(); }

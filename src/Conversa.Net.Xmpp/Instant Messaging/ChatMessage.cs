@@ -1,5 +1,7 @@
 ﻿using Conversa.Net.Xmpp.Client;
 using Conversa.Net.Xmpp.Core;
+using SQLite.Net.Attributes;
+using SQLiteNetExtensions.Attributes;
 using System;
 using System.Collections.Generic;
 
@@ -28,7 +30,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 , LocalTimestamp             = DateTimeOffset.Now
                 , MessageKind                = ChatMessageKind.Standard
                 , NetworkTimestamp           = DateTimeOffset.Now
-                , Recipients                 = new List<string> { message.To }
+                , Recipients                 = new List<XmppAddress> { message.To }
                 , RecipientsDeliveryInfos    = null
                 , RemoteId                   = message.Id
                 , ShouldSuppressNotification = false
@@ -41,7 +43,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Gets a list of chat message attachments.
         /// </summary>
-        public IList<ChatMessageAttachment> Attachments
+        [OneToMany(CascadeOperations = CascadeOperation.All)]      // One to many relationship with Valuation
+        public List<ChatMessageAttachment> Attachments
         {
             get;
             private set;
@@ -59,7 +62,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Gets or sets the estimated size of a file to be sent or recieved.
         /// </summary>
-        public ulong EstimatedDownloadSize
+        public long EstimatedDownloadSize
         {
             get;
             set;
@@ -77,6 +80,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Gets the ID of the message.
         /// </summary>
+        [PrimaryKey]
         public string Id
         {
             get;
@@ -171,11 +175,12 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             get;
             private set;
         }
-        
+
         /// <summary>
         /// Gets the list of recipients of the message.
         /// </summary>
-        public IList<string> Recipients
+        [TextBlob("Recipients")]
+        public List<XmppAddress> Recipients
         {
             get;
             private set;
@@ -184,7 +189,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Gets the delivery info for the recipient of the ChatMessage.
         /// </summary>
-        public IList<ChatRecipientDeliveryInfo> RecipientsDeliveryInfos
+        [OneToMany(CascadeOperations = CascadeOperation.All)]      // One to many relationship with Valuation
+        public List<ChatRecipientDeliveryInfo> RecipientsDeliveryInfos
         {
             get;
             private set;
@@ -193,6 +199,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Gets the list of send statuses for the message.
         /// </summary>
+        [OneToMany(CascadeOperations = CascadeOperation.All)]      // One to many relationship with Valuation
         public IReadOnlyDictionary<String, ChatMessageStatus> RecipientSendStatuses
         {
             get;
@@ -238,6 +245,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Gets or sets the conversation threading info for the ChatMessage.
         /// </summary>
+        [OneToOne]
         public ChatConversationThreadingInfo ThreadingInfo
         {
             get;

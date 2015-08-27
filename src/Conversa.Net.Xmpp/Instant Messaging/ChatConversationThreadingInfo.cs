@@ -11,7 +11,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Gets or sets the Contact.Id for the remote participant.
         /// </summary>
-        public XmppAddress ContactId
+        public string ContactId
         {
             get;
             set;

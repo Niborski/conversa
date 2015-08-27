@@ -110,9 +110,6 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <None Include="Data Store\Conversa.db">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="project.json" />
     <None Include="Schemas\RFC6120-6121\bind.xsd">
       <SubType>Designer</SubType>

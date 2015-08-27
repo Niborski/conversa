@@ -15,6 +15,15 @@ namespace Conversa.Net.Xmpp.DataStore
         static readonly SQLitePlatformWinRT            Platform   = new SQLite.Net.Platform.WinRT.SQLitePlatformWinRT();
         static readonly Func<SQLiteConnectionWithLock> Factory    = new Func<SQLiteConnectionWithLock> (() => new SQLiteConnectionWithLock(Platform, ConnString));
 
+        public static void CreateTable()
+        {
+            using (var db = new SQLiteConnection(Platform, StorePath))
+            {
+                // Create the tables if they don't exist
+                db.CreateTable<T>();
+            }            
+        }
+
         public static AsyncTableQuery<T> Query()
         {
             var store = new SQLiteAsyncConnection(Factory);
