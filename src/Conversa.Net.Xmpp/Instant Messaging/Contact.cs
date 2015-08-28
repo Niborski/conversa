@@ -259,7 +259,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         {
             var defaultResource = new XmppAddress(this.address.UserName
                                                 , this.Address.DomainName
-                                                , Guid.NewGuid().ToString());
+                                                , IdentifierGenerator.Generate());
 
             var defaultPresence = new Presence
             {

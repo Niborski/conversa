@@ -968,7 +968,7 @@ namespace Conversa.Net.Xmpp.Client
 
             subscription.Add(onMessage);
 
-            this.subscriptions.TryAdd(Guid.NewGuid().ToString(), subscription);
+            this.subscriptions.TryAdd(IdentifierGenerator.Generate(), subscription);
         }
 
         private void AddSubscription(string messageId

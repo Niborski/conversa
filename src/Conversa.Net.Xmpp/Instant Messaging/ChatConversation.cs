@@ -42,7 +42,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public string Id
         {
             get;
-        } = Guid.NewGuid().ToString();
+        } = IdentifierGenerator.Generate();
         
         /// <summary>
         /// Gets or puts a Boolean value indicating if the ChatConversation is muted.
@@ -65,9 +65,15 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Gets a list of all the participants in the conversation.
         /// </summary>
-        public IEnumerable<XmppAddress> Participants
+        public IEnumerable<string> Participants
         {
-            get { return this.ThreadingInfo.Participants; }
+            get
+            {
+                foreach (string participant in this.ThreadingInfo.Participants)
+                {
+                    yield return participant;
+                }
+            }
         }
 
         /// <summary>
@@ -99,7 +105,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
             this.ThreadingInfo = new ChatConversationThreadingInfo
             {
-                ContactId       = contact.Address
+                Id              = IdentifierGenerator.Generate()
+              , ContactId       = contact.Address
               , ConversationId  = this.Id
               , Custom          = null
               , Kind            = ChatConversationThreadingKind.ContactId
@@ -196,7 +203,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 chatMessage.ThreadingInfo = this.ThreadingInfo;
             }
 
-            chatMessage.Id      = Guid.NewGuid().ToString();
+            chatMessage.Id      = IdentifierGenerator.Generate();
             chatMessage.From    = XmppTransportManager.GetTransport().UserAddress;
             chatMessage.Subject = this.Subject;
 

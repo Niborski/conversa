@@ -1,7 +1,4 @@
 ﻿using Conversa.Net.Xmpp.DataStore;
-using SQLite.Net;
-using SQLite.Net.Async;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

@@ -40,9 +40,9 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         /// <param name="address">The contact bare address</param>
         /// <returns></returns>
-        public Contact this[string address]
+        public Contact this[XmppAddress address]
         {
-            get { return this.contacts.SingleOrDefault(contact => contact.Address.BareAddress == address); }
+            get { return this.contacts.SingleOrDefault(contact => contact.Address.BareAddress == address.BareAddress); }
         }
 
         /// <summary>

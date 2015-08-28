@@ -1,4 +1,7 @@
-﻿namespace Conversa.Net.Xmpp.InstantMessaging
+﻿using System;
+using System.Linq.Expressions;
+
+namespace Conversa.Net.Xmpp.InstantMessaging
 {
     /// <summary>
     /// Represents the criteria for finding chat messages.
@@ -6,9 +9,9 @@
     public sealed class ChatQueryOptions
     {
         /// <summary>
-        /// Gets or sets the string to search for the in ChatMessageStore.
+        /// Gets or sets the expression to search for the in ChatMessageStore.
         /// </summary>
-        public string SearchString
+        public Expression<Func<ChatMessage, bool>> Predicate
         {
             get;
             set;

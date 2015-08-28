@@ -1,6 +1,7 @@
 ﻿using SQLite.Net;
 using SQLite.Net.Async;
 using SQLite.Net.Platform.WinRT;
+using SQLiteNetExtensionsAsync.Extensions;
 using System;
 using System.IO;
 using System.Threading;
@@ -23,7 +24,7 @@ namespace Conversa.Net.Xmpp.DataStore
             using (var db = new SQLiteConnection(Platform, StorePath))
             {
                 // Create the tables if they don't exist
-                db.CreateTable<T>();
+                db.CreateTable<T>(SQLite.Net.Interop.CreateFlags.AllImplicit);
             }
         }
 
@@ -40,7 +41,7 @@ namespace Conversa.Net.Xmpp.DataStore
 
             var store = new SQLiteAsyncConnection(Factory);
 
-            await store.InsertOrReplaceAsync(item).ConfigureAwait(false);
+            await store.InsertOrReplaceWithChildrenAsync(item, recursive: true).ConfigureAwait(false);
 
             Semaphore.Release();
         }

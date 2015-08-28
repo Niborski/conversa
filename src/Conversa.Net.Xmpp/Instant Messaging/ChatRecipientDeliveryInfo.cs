@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Conversa.Net.Xmpp.Core;
+using SQLite.Net.Attributes;
+using SQLiteNetExtensions.Attributes;
+using System;
 
 namespace Conversa.Net.Xmpp.InstantMessaging
 {
@@ -7,6 +10,20 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// </summary>
     public sealed class ChatRecipientDeliveryInfo
     {
+        [PrimaryKey]
+        public string Id
+        {
+            get;
+            set;
+        }
+
+        [ForeignKey(typeof(ChatMessage))]
+        public string ChatMessageId
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Gets or sets the time the message was sent to the recipient.
         /// </summary>
@@ -22,6 +39,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public bool IsErrorPermanent
         {
             get;
+            internal set;
         }
 
         /// <summary>
@@ -39,6 +57,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public ChatMessageStatus Status
         {
             get;
+            internal set;
         }
         
         /// <summary>
@@ -56,6 +75,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public int TransportErrorCode
         {
             get;
+            internal set;
         }
 
         /// <summary>
@@ -64,6 +84,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public XmppTransportErrorCodeCategory TransportErrorCodeCategory
         {
             get;
+            internal set;
         }
 
         /// <summary>
@@ -72,6 +93,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public XmppTransportInterpretedErrorCode TransportInterpretedErrorCode
         {
             get;
+            internal set;
         }
 
         /// <summary>

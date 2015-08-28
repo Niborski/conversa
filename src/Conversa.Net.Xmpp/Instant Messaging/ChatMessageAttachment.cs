@@ -1,4 +1,5 @@
 ﻿using SQLite.Net.Attributes;
+using SQLiteNetExtensions.Attributes;
 using Windows.Storage.Streams;
 
 namespace Conversa.Net.Xmpp.InstantMessaging
@@ -8,6 +9,20 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// </summary>
     public sealed class ChatMessageAttachment
     {
+        [PrimaryKey]
+        public string Id
+        {
+            get;
+            set;
+        }
+
+        [ForeignKey(typeof(ChatMessage))]
+        public string ChatMessageId
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Gets or sets the data stream for the attachment.
         /// </summary>

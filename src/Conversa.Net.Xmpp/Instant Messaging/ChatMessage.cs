@@ -1,8 +1,10 @@
 ﻿using Conversa.Net.Xmpp.Client;
 using Conversa.Net.Xmpp.Core;
+using DevExpress.Mvvm;
 using SQLite.Net.Attributes;
 using SQLiteNetExtensions.Attributes;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Conversa.Net.Xmpp.InstantMessaging
@@ -11,13 +13,13 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// Represents a chat message.
     /// </summary>
     public sealed class ChatMessage
-        : IEquatable<ChatMessage>
+        : BindableBase, IEquatable<ChatMessage>
     {
         internal static ChatMessage Create(Message message)
         {
-            return new ChatMessage
+            var chatMessage = new ChatMessage
             {
-                  Id                         = Guid.NewGuid().ToString()
+                  Id                         = IdentifierGenerator.Generate()
                 , Body                       = message.Body?.Value
                 , EstimatedDownloadSize      = 0
                 , From                       = message.From
@@ -31,24 +33,49 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 , LocalTimestamp             = DateTimeOffset.Now
                 , MessageKind                = ChatMessageKind.Standard
                 , NetworkTimestamp           = DateTimeOffset.Now
-                , Recipients                 = new List<XmppAddress> { message.To }
-                , RecipientsDeliveryInfos    = null
+                , RecipientsDeliveryInfos    = new List<ChatRecipientDeliveryInfo>
+                  {
+                      new ChatRecipientDeliveryInfo
+                      {
+                           Id                            = IdentifierGenerator.Generate()
+                         , DeliveryTime                  = null
+                         , IsErrorPermanent              = false
+                         , ReadTime                      = DateTimeOffset.UtcNow
+                         , Status                        = ChatMessageStatus .Received
+                         , TransportAddress              = message.To
+                         , TransportErrorCode            = 0
+                         , TransportErrorCodeCategory    = XmppTransportErrorCodeCategory .None
+                         , TransportInterpretedErrorCode = XmppTransportInterpretedErrorCode.None
+                      }
+                  }
                 , RemoteId                   = message.Id
                 , ShouldSuppressNotification = false
                 , Status                     = ChatMessageStatus.Received
                 , Subject                    = message.Subject?.Value
-                , ThreadingInfo              = new ChatConversationThreadingInfo()
+                , ThreadingInfo              = new ChatConversationThreadingInfo
+                  {
+                       Id             = IdentifierGenerator.Generate()
+                     , ContactId      = message.To
+                     , ConversationId = message.Thread?.Value
+                     , Custom         = null
+                     , Kind           = ChatConversationThreadingKind.ContactId
+                  }
             };
+
+            chatMessage.ThreadingInfo.Participants.Add(message.To);
+            chatMessage.ThreadingInfo.Participants.Add(message.From);
+
+            return chatMessage;
         }
 
         /// <summary>
         /// Gets a list of chat message attachments.
         /// </summary>
-        [OneToMany(CascadeOperations = CascadeOperation.All)]      // One to many relationship with Valuation
+        [OneToMany(CascadeOperations = CascadeOperation.All)]
         public List<ChatMessageAttachment> Attachments
         {
-            get;
-            private set;
+            get { return GetProperty(() => Attachments); }
+            set { SetProperty(() => Attachments, value); }
         }
 
         [Ignore]
@@ -62,8 +89,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public string Body
         {
-            get;
-            set;
+            get { return GetProperty(() => Body); }
+            set { SetProperty(() => Body, value); }
         }
 
         /// <summary>
@@ -71,24 +98,23 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public long EstimatedDownloadSize
         {
-            get;
-            set;
+            get { return GetProperty(() => EstimatedDownloadSize); }
+            set { SetProperty(() => EstimatedDownloadSize, value); }
         }
 
         /// <summary>
         /// Gets the sender of the message.
         /// </summary>
-        [TextBlob("From")]
-        public XmppAddress From
+        public string From
         {
-            get;
-            internal set;
+            get { return GetProperty(() => From); }
+            set { SetProperty(() => From, value); }
         }
 
         [Ignore]
         public Contact Sender
         {
-            get { return XmppTransportManager.GetTransport().Contacts[this.From?.BareAddress]; }
+            get { return XmppTransportManager.GetTransport().Contacts[this.From]; }
         }
 
         /// <summary>
@@ -97,8 +123,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         [PrimaryKey]
         public string Id
         {
-            get;
-            internal set;
+            get { return GetProperty(() => Id); }
+            set { SetProperty(() => Id, value); }
         }
 
         /// <summary>
@@ -106,8 +132,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public bool IsAutoReply
         {
-            get;
-            set;
+            get { return GetProperty(() => IsAutoReply); }
+            set { SetProperty(() => IsAutoReply, value); }
         }
                 
         /// <summary>
@@ -115,8 +141,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public bool IsForwardingDisabled
         {
-            get;
-            private set;
+            get { return GetProperty(() => IsForwardingDisabled); }
+            private set { SetProperty(() => IsForwardingDisabled, value); }
         }
         
         /// <summary>
@@ -124,8 +150,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public bool IsIncoming
         {
-            get;
-            private set;
+            get { return GetProperty(() => IsIncoming); }
+            private set { SetProperty(() => IsIncoming, value); }
         }
 
         /// <summary>
@@ -133,8 +159,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public bool IsRead
         {
-            get;
-            internal set;
+            get { return GetProperty(() => IsRead); }
+            internal set { SetProperty(() => IsRead, value); }
         }
 
         /// <summary>
@@ -142,8 +168,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public bool IsReceivedDuringQuietHours
         {
-            get;
-            set;
+            get { return GetProperty(() => IsReceivedDuringQuietHours); }
+            set { SetProperty(() => IsReceivedDuringQuietHours, value); }
         }
 
         /// <summary>
@@ -151,8 +177,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public bool IsReplyDisabled
         {
-            get;
-            private set;
+            get { return GetProperty(() => IsReplyDisabled); }
+            private set { SetProperty(() => IsReplyDisabled, value); }
         }
 
         /// <summary>
@@ -160,8 +186,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public bool IsSeen
         {
-            get;
-            set;
+            get { return GetProperty(() => IsSeen); }
+            set { SetProperty(() => IsSeen, value); }
         }
 
         /// <summary>
@@ -169,8 +195,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public DateTimeOffset LocalTimestamp
         {
-            get;
-            private set;
+            get { return GetProperty(() => LocalTimestamp); }
+            private set { SetProperty(() => LocalTimestamp, value); }
         }
 
         /// <summary>
@@ -178,8 +204,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public ChatMessageKind MessageKind
         {
-            get;
-            set;
+            get { return GetProperty(() => MessageKind); }
+            set { SetProperty(() => MessageKind, value); }
         }
 
         /// <summary>
@@ -187,38 +213,46 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public DateTimeOffset NetworkTimestamp
         {
-            get;
-            private set;
+            get { return GetProperty(() => NetworkTimestamp); }
+            private set { SetProperty(() => NetworkTimestamp, value); }
         }
 
         /// <summary>
         /// Gets the list of recipients of the message.
         /// </summary>
-        [TextBlob("Recipients")]
-        public List<XmppAddress> Recipients
+        [Ignore]
+        public IEnumerable<string> Recipients
         {
-            get;
-            private set;
+            get
+            {
+                // First participant is always the current connected user
+                foreach (var participant in this.ThreadingInfo.Participants.Skip(1))
+                {
+                    yield return participant;
+                }
+            }
         }
 
         /// <summary>
         /// Gets the delivery info for the recipient of the ChatMessage.
         /// </summary>
-        [OneToMany(CascadeOperations = CascadeOperation.All)]      // One to many relationship with Valuation
+        [OneToMany(CascadeOperations = CascadeOperation.All)]
         public List<ChatRecipientDeliveryInfo> RecipientsDeliveryInfos
         {
-            get;
-            private set;
+            get { return GetProperty(() => RecipientsDeliveryInfos); }
+            internal set { SetProperty(() => RecipientsDeliveryInfos, value); }
         }
 
         /// <summary>
         /// Gets the list of send statuses for the message.
         /// </summary>
-        [OneToMany(CascadeOperations = CascadeOperation.All)]      // One to many relationship with Valuation
+        [Ignore]
         public IReadOnlyDictionary<String, ChatMessageStatus> RecipientSendStatuses
         {
-            get;
-            private set;
+            get
+            {
+                return this.RecipientsDeliveryInfos?.ToDictionary(x => x.TransportAddress, x => x.Status);
+            }
         }
         
         /// <summary>
@@ -226,8 +260,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public string RemoteId
         {
-            get;
-            set;
+            get { return GetProperty(() => RemoteId); }
+            set { SetProperty(() => RemoteId, value); }
         }
         
         /// <summary>
@@ -235,8 +269,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public bool ShouldSuppressNotification
         {
-            get;
-            set;
+            get { return GetProperty(() => ShouldSuppressNotification); }
+            set { SetProperty(() => ShouldSuppressNotification, value); }
         }
 
         /// <summary>
@@ -244,8 +278,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public ChatMessageStatus Status
         {
-            get;
-            internal set;
+            get { return GetProperty(() => Status); }
+            internal set { SetProperty(() => Status, value); }
         }
 
         /// <summary>
@@ -253,36 +287,18 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public string Subject
         {
-            get;
-            internal set;
+            get { return GetProperty(() => Subject); }
+            internal set { SetProperty(() => Subject, value); }
         }
 
         /// <summary>
         /// Gets or sets the conversation threading info for the ChatMessage.
         /// </summary>
-        [OneToOne]
+        [OneToOne(CascadeOperations = CascadeOperation.All)]
         public ChatConversationThreadingInfo ThreadingInfo
         {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets the transport friendly name of the message.
-        /// </summary>
-        public string TransportFriendlyName
-        {
-            get;            
-            private set;
-        }
-
-        /// <summary>
-        /// Gets or sets the transport ID of the message.
-        /// </summary>
-        public string TransportId
-        {
-            get;
-            private set;
+            get { return GetProperty(() => ThreadingInfo); }
+            set { SetProperty(() => ThreadingInfo, value); }
         }
 
         /// <summary>
@@ -290,12 +306,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public ChatMessage()
         {
-            var transport = XmppTransportManager.GetTransport();
-
-            this.Attachments           = new List<ChatMessageAttachment>();
-            this.TransportId           = transport.TransportId;
-            this.TransportFriendlyName = TransportFriendlyName;
-            this.Status                = ChatMessageStatus.Draft;
+            this.Attachments = new List<ChatMessageAttachment>();
+            this.Status      = ChatMessageStatus.Draft;
         }
 
         /// <summary>
@@ -316,13 +328,12 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                     Value    = this.Body
                   , Language = null
                 }
-              , Thread = this.ThreadingInfo?.ToXmpp()
-              , Delay = null
-              , From  = this.From
-              , Id    = Guid.NewGuid().ToString()
-              , To    = this.ThreadingInfo?.ContactId
-              , Type  = MessageType.Chat
-              , Lang  = null
+              , Delay  = null
+              , From   = this.From
+              , Thread = new MessageThread { Value = this.ThreadingInfo?.ConversationId }
+              , To     = this.ThreadingInfo.ContactId
+              , Type   = MessageType.Chat
+              , Lang   = null
             };
         }
 

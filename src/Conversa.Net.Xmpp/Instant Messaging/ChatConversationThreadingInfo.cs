@@ -1,4 +1,6 @@
 ﻿using Conversa.Net.Xmpp.Core;
+using SQLite.Net.Attributes;
+using SQLiteNetExtensions.Attributes;
 using System.Collections.Generic;
 
 namespace Conversa.Net.Xmpp.InstantMessaging
@@ -8,6 +10,20 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// </summary>
     public sealed class ChatConversationThreadingInfo
     {
+        [PrimaryKey]
+        public string Id
+        {
+            get;
+            set;
+        }
+
+        [ForeignKey(typeof(ChatMessage))]
+        public string ChatMessageId
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Gets or sets the Contact.Id for the remote participant.
         /// </summary>
@@ -47,7 +63,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Gets the list of participants in the ChatConversation.
         /// </summary>
-        public IList<XmppAddress> Participants
+        public IList<string> Participants
         {
             get;
         }
@@ -57,12 +73,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public ChatConversationThreadingInfo()
         {
-            this.Participants = new List<XmppAddress>();
-        }
-
-        internal MessageThread ToXmpp()
-        {
-            return null;
+            this.Participants = new List<string>();
         }
     }
 }

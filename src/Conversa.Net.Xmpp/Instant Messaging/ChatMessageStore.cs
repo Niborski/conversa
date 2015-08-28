@@ -2,6 +2,7 @@
 using Conversa.Net.Xmpp.Core;
 using Conversa.Net.Xmpp.DataStore;
 using System;
+using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
@@ -17,7 +18,10 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         private Subject<ChatMessage> messageChangedStream;
 
         static ChatMessageStore()
-        {
+        {   
+            DataSource<ChatMessageAttachment>.CreateTable();
+            DataSource<ChatConversationThreadingInfo>.CreateTable();         
+            DataSource<ChatRecipientDeliveryInfo>.CreateTable();
             DataSource<ChatMessage>.CreateTable();
         }
 
@@ -128,7 +132,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                     var xmppMessage = chatMessage.ToXmpp();
                     var transport   = XmppTransportManager.GetTransport();
 
-                    chatMessage.RemoteId = xmppMessage.Id;
+                    chatMessage.RemoteId                = xmppMessage.Id;
+                    chatMessage.RecipientsDeliveryInfos = new List<ChatRecipientDeliveryInfo>();
 
                     if (chatMessage.Status == ChatMessageStatus.Draft)
                     {
@@ -139,6 +144,23 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                         chatMessage.Status = ChatMessageStatus.SendRetryNeeded;
                     }
 
+                    foreach (var recipient in chatMessage.Recipients)
+                    {
+                        var deliveryInfo = new ChatRecipientDeliveryInfo
+                        {
+                             Id                            = IdentifierGenerator.Generate()
+                           , DeliveryTime                  = DateTimeOffset.UtcNow
+                           , IsErrorPermanent              = false
+                           , Status                        = chatMessage.Status
+                           , TransportAddress              = recipient
+                           , TransportErrorCode            = 0
+                           , TransportErrorCodeCategory    = XmppTransportErrorCodeCategory.None
+                           , TransportInterpretedErrorCode = XmppTransportInterpretedErrorCode.None
+                        };
+
+                        chatMessage.RecipientsDeliveryInfos.Add(deliveryInfo);
+                    }
+                   
                     await this.SaveMessageAsync(chatMessage).ConfigureAwait(false);
 
                     await transport.SendAsync(xmppMessage
@@ -210,6 +232,11 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             {
                 chatMessage.Status = ChatMessageStatus.Sent;
 
+                foreach (var deliveryInfo in chatMessage.RecipientsDeliveryInfos)
+                {
+                    deliveryInfo.Status = chatMessage.Status;
+                }
+
                 await this.SaveMessageAsync(chatMessage).ConfigureAwait(false);
             }
         }
@@ -225,6 +252,19 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             if (chatMessage != null)
             {
                 chatMessage.Status = ChatMessageStatus.SendFailed;
+
+                foreach (var deliveryInfo in chatMessage.RecipientsDeliveryInfos)
+                {
+                    deliveryInfo.ReadTime                      = DateTimeOffset.UtcNow;
+                    deliveryInfo.Status                        = chatMessage.Status;
+                    deliveryInfo.IsErrorPermanent              = false;
+                    deliveryInfo.TransportErrorCode            = message.Error.Code;
+
+                    // TODO: Test code needs to be changed
+                    deliveryInfo.IsErrorPermanent              = true;
+                    deliveryInfo.TransportErrorCodeCategory    = XmppTransportErrorCodeCategory.None;
+                    deliveryInfo.TransportInterpretedErrorCode = XmppTransportInterpretedErrorCode.InvalidRecipientAddress;
+                }
 
                 await this.SaveMessageAsync(chatMessage).ConfigureAwait(false);
             }
