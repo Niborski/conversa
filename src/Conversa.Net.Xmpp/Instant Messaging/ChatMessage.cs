@@ -11,13 +11,14 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// Represents a chat message.
     /// </summary>
     public sealed class ChatMessage
+        : IEquatable<ChatMessage>
     {
         internal static ChatMessage Create(Message message)
         {
             return new ChatMessage
             {
-                  // Attachments           = null
-                  Body                       = message.Body?.Value
+                  Id                         = Guid.NewGuid().ToString()
+                , Body                       = message.Body?.Value
                 , EstimatedDownloadSize      = 0
                 , From                       = message.From
                 , IsAutoReply                = false
@@ -49,6 +50,12 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             get;
             private set;
         }
+
+        [Ignore]
+        public bool HasAttachments
+        {
+            get { return (this.Attachments?.Count > 0); }
+        }
         
         /// <summary>
         /// Gets or sets the body of the chat message.
@@ -67,14 +74,21 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             get;
             set;
         }
- 
+
         /// <summary>
         /// Gets the sender of the message.
         /// </summary>
-        public string From
+        [TextBlob("From")]
+        public XmppAddress From
         {
             get;
-            private set;
+            internal set;
+        }
+
+        [Ignore]
+        public Contact Sender
+        {
+            get { return XmppTransportManager.GetTransport().Contacts[this.From?.BareAddress]; }
         }
 
         /// <summary>
@@ -84,7 +98,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public string Id
         {
             get;
-        } = Guid.NewGuid().ToString();
+            internal set;
+        }
 
         /// <summary>
         /// Gets or sets a Boolean value indicating if the message is an auto-reply.
@@ -309,6 +324,39 @@ namespace Conversa.Net.Xmpp.InstantMessaging
               , Type  = MessageType.Chat
               , Lang  = null
             };
+        }
+
+        public bool Equals(ChatMessage other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            return (this.Id.Equals(other.Id));
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+            if (obj.GetType() != GetType())
+            {
+                return false;
+            }
+
+            return Equals(obj as ChatMessage);
+        }
+
+        public override int GetHashCode()
+        {
+            return (13 * 397) ^ this.Id.GetHashCode();
         }
     }
 }

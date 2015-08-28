@@ -112,6 +112,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             this.store.ChangeTracker.Enable();
 
             transport.MessageStream
+                     .Where(message => !message.IsError)
                      .Subscribe(async message => await OnMessageReceived(message).ConfigureAwait(false));            
         }      
 
@@ -195,6 +196,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 chatMessage.ThreadingInfo = this.ThreadingInfo;
             }
 
+            chatMessage.Id      = Guid.NewGuid().ToString();
+            chatMessage.From    = XmppTransportManager.GetTransport().UserAddress;
             chatMessage.Subject = this.Subject;
 
             await this.store.SendMessageAsync(chatMessage).ConfigureAwait(false);

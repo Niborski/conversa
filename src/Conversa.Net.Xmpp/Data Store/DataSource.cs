@@ -3,11 +3,12 @@ using SQLite.Net.Async;
 using SQLite.Net.Platform.WinRT;
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Conversa.Net.Xmpp.DataStore
 {
-    public static class DataSource<T>
+    static class DataSource<T>
         where T: class
     {
         static readonly string                         StorePath  = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "Data Store\\Conversa.db");
@@ -15,13 +16,15 @@ namespace Conversa.Net.Xmpp.DataStore
         static readonly SQLitePlatformWinRT            Platform   = new SQLite.Net.Platform.WinRT.SQLitePlatformWinRT();
         static readonly Func<SQLiteConnectionWithLock> Factory    = new Func<SQLiteConnectionWithLock> (() => new SQLiteConnectionWithLock(Platform, ConnString));
 
+        static SemaphoreSlim Semaphore = new SemaphoreSlim(1);
+
         public static void CreateTable()
         {
             using (var db = new SQLiteConnection(Platform, StorePath))
             {
                 // Create the tables if they don't exist
                 db.CreateTable<T>();
-            }            
+            }
         }
 
         public static AsyncTableQuery<T> Query()
@@ -33,9 +36,13 @@ namespace Conversa.Net.Xmpp.DataStore
 
         public static async Task AddOrUpdateAsync(T item)
         {
+            await Semaphore.WaitAsync();
+
             var store = new SQLiteAsyncConnection(Factory);
 
-            await store.InsertOrReplaceAsync(item);
+            await store.InsertOrReplaceAsync(item).ConfigureAwait(false);
+
+            Semaphore.Release();
         }
     }
 }
