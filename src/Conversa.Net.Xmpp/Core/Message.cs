@@ -106,11 +106,23 @@ namespace Conversa.Net.Xmpp.Core
         }
 
         /// <remarks/>
+        [XmlIgnore]
+        public XmppAddress FromAddress
+        {
+            get;
+            private set;
+        }
+
+        private string from;
         [XmlAttributeAttribute("from")]
         public string From
         {
-            get;
-            set;
+            get { return from; }
+            set
+            {
+                this.from        = value;
+                this.FromAddress = value;    
+            }
         }
 
         /// <remarks/>
@@ -121,12 +133,24 @@ namespace Conversa.Net.Xmpp.Core
             set;
         }
 
+        [XmlIgnore]
+        public string ToAddress
+        {
+            get;
+            set;
+        }
+
+        private string to;
         /// <remarks/>
         [XmlAttributeAttribute("to")]
         public string To
         {
-            get;
-            set;
+            get { return to; }
+            set
+            {
+                this.to        = value;
+                this.ToAddress = value;
+            }
         }
 
         /// <remarks/>

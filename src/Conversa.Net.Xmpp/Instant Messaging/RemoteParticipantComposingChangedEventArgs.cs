@@ -1,4 +1,7 @@
-﻿using Conversa.Net.Xmpp.Core;
+﻿// Copyright (c) Carlos Guzmán Álvarez. All rights reserved.
+// Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
+
+using Conversa.Net.Xmpp.Core;
 using System;
 using Windows.Foundation.Metadata;
 
@@ -39,8 +42,13 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Initializes a new instance of the <see cref="RemoteParticipantComposingChangedEventData"/> class.
         /// </summary>
-        public RemoteParticipantComposingChangedEventData()
+        public RemoteParticipantComposingChangedEventData(XmppAddress participantAddress
+                                                        , bool        isComposing
+                                                        , string      transportId = null)
         {
+            this.IsComposing        = isComposing;
+            this.ParticipantAddress = participantAddress;
+            this.TransportId        = transportId;
         }
     }
 }

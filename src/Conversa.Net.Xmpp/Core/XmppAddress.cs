@@ -4,6 +4,9 @@
 using Gnu.Inet.Encoding;
 using System;
 using System.Text.RegularExpressions;
+using System.Xml.Serialization;
+using System.Xml;
+using System.Xml.Schema;
 
 namespace Conversa.Net.Xmpp.Core
 {
@@ -12,7 +15,7 @@ namespace Conversa.Net.Xmpp.Core
     /// </summary>
     /// <remarks>http://tools.ietf.org/html/rfc6122</remarks>
     public sealed class XmppAddress 
-        : IEquatable<String>, IEquatable<XmppAddress>
+        : IEquatable<String>, IEquatable<XmppAddress>, IXmlSerializable
     {
         /// <summary>
         /// Regex used to parse XMPP Address (JID) strings
@@ -325,6 +328,21 @@ namespace Conversa.Net.Xmpp.Core
             {
                 this.address += "/" + this.ResourceName;
             }
+        }
+
+        XmlSchema IXmlSerializable.GetSchema()
+        {
+            throw new NotImplementedException();
+        }
+
+        void IXmlSerializable.ReadXml(XmlReader reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IXmlSerializable.WriteXml(XmlWriter writer)
+        {
+            throw new NotImplementedException();
         }
     }
 }

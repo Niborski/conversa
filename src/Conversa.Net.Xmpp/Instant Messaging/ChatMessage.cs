@@ -1,11 +1,14 @@
-﻿using Conversa.Net.Xmpp.Client;
+﻿// Copyright (c) Carlos Guzmán Álvarez. All rights reserved.
+// Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
+
+using Conversa.Net.Xmpp.Client;
 using Conversa.Net.Xmpp.Core;
 using DevExpress.Mvvm;
 using SQLite.Net.Attributes;
 using SQLiteNetExtensions.Attributes;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Conversa.Net.Xmpp.InstantMessaging
 {

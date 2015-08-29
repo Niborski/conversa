@@ -14,6 +14,7 @@ namespace Conversa.Net.Xmpp.ChatStates
     [XmlTypeAttribute(Namespace = "http://jabber.org/protocol/chatstates")]
     [XmlRootAttribute("composing", Namespace = "http://jabber.org/protocol/chatstates", IsNullable = false)]
     public partial class ComposingChatState
+        : IChatState
     {
         public ComposingChatState()
         {

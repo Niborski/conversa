@@ -1,4 +1,7 @@
-﻿using SQLite.Net.Attributes;
+﻿// Copyright (c) Carlos Guzmán Álvarez. All rights reserved.
+// Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
+
+using SQLite.Net.Attributes;
 using SQLiteNetExtensions.Attributes;
 using Windows.Storage.Streams;
 

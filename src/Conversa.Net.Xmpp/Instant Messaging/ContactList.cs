@@ -272,7 +272,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             var transport = XmppTransportManager.GetTransport();
 
             transport.InfoQueryStream
-                     .Where(message => message.To == transport.UserAddress
+                     .Where(message => message.To     == transport.UserAddress
                                     && message.Roster != null
                                     && message.IsUpdate)
                      .Subscribe(async message => await this.OnRosterPush(message)

@@ -299,6 +299,7 @@
     <Compile Include="ChatStates\ActiveChatState.cs" />
     <Compile Include="ChatStates\ComposingChatState.cs" />
     <Compile Include="ChatStates\GoneChatState.cs" />
+    <Compile Include="ChatStates\IChatState.cs" />
     <Compile Include="ChatStates\InactiveChatState.cs" />
     <Compile Include="ChatStates\PausedChatState.cs" />
     <Compile Include="Client\Authentication\ISaslMechanism.cs" />
@@ -455,7 +456,6 @@
     <Compile Include="Instant Messaging\ChatMessageValidationResult.cs" />
     <Compile Include="Instant Messaging\ChatMessageValidationStatus.cs" />
     <Compile Include="Instant Messaging\ChatRecipientDeliveryInfo.cs" />
-    <Compile Include="Instant Messaging\ChatSearchReader.cs" />
     <Compile Include="Client\XmppTransportErrorCodeCategory.cs" />
     <Compile Include="Client\XmppTransportInterpretedErrorCode.cs" />
     <Compile Include="Instant Messaging\Contact.cs" />

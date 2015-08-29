@@ -1,10 +1,16 @@
-﻿using Conversa.Net.Xmpp.Client;
+﻿// Copyright (c) Carlos Guzmán Álvarez. All rights reserved.
+// Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
+
+using Conversa.Net.Xmpp.ChatStates;
+using Conversa.Net.Xmpp.Client;
 using Conversa.Net.Xmpp.Core;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 
@@ -21,11 +27,23 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         private Subject<RemoteParticipantComposingChangedEventData> remoteParticipantComposingChangedStream;
-        private ChatMessageStore store;
+        private Subject<ChatMessage> incomingChatMessageStream;
+        private ChatMessageStore     store;
        
+        /// <summary>
+        /// Occurs when the remote user has started or finished typing.
+        /// </summary>
         public IObservable<RemoteParticipantComposingChangedEventData> RemoteParticipantComposingChangedStream
         {
             get { return this.remoteParticipantComposingChangedStream.AsObservable(); }
+        }
+
+        /// <summary>
+        /// Occurs when an incoming chat message has been received.
+        /// </summary>
+        public IObservable<ChatMessage> IncomingChatMessageStream
+        {
+            get { return this.incomingChatMessageStream.AsObservable(); }
         }
 
         /// <summary>
@@ -102,6 +120,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             var transport = XmppTransportManager.GetTransport();
 
             this.remoteParticipantComposingChangedStream = new Subject<RemoteParticipantComposingChangedEventData>();
+            this.incomingChatMessageStream = new Subject<ChatMessage>();
 
             this.ThreadingInfo = new ChatConversationThreadingInfo
             {
@@ -119,7 +138,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             this.store.ChangeTracker.Enable();
 
             transport.MessageStream
-                     .Where(message => !message.IsError)
+                     .Where(message => message.IsChat && message.FromAddress.BareAddress == contact.Address)
                      .Subscribe(async message => await OnMessageReceived(message).ConfigureAwait(false));            
         }      
 
@@ -231,9 +250,24 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
         private async Task OnMessageReceived(Message message)
         {
-            var chatMessage = ChatMessage.Create(message);
+            var chatStates = message.Items.OfType<IChatState>().ToList();
 
-            await this.store.SendMessageAsync(chatMessage).ConfigureAwait(false);
+            if (chatStates.Count > 0)
+            {
+                var data = new RemoteParticipantComposingChangedEventData(message.From, chatStates[0] is ComposingChatState);
+
+                this.remoteParticipantComposingChangedStream.OnNext(data);
+            }
+
+            if (message.Body != null)
+            {
+                var chatMessage = ChatMessage.Create(message);
+
+                this.incomingChatMessageStream.OnNext(chatMessage);
+                this.incomingChatMessageStream.OnCompleted();
+
+                await this.store.SendMessageAsync(chatMessage).ConfigureAwait(false);
+            }
         }
     }
 }

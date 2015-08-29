@@ -249,10 +249,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             {
                 this.groups.AddRange(groups);
             }
-            else
-            {
-                this.groups.Add("Contacts");
-            }
         }
 
         private void AddDefaultResource()
@@ -277,7 +273,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             var transport = XmppTransportManager.GetTransport();
 
             transport.PresenceStream
-                     .Where(message => ((XmppAddress)message.From).BareAddress == this.Address && !message.IsError)
+                     .Where(message => message.FromAddress.BareAddress == this.Address && !message.IsError)
                      .Subscribe(async message => await this.OnPresenceChangedAsync(message).ConfigureAwait(false));
 
             transport.StateChanged
