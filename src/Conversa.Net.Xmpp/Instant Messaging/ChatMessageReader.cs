@@ -1,5 +1,7 @@
 ﻿using Conversa.Net.Xmpp.DataStore;
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Conversa.Net.Xmpp.InstantMessaging
@@ -20,26 +22,17 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <returns></returns>
         public async Task<ChatMessage> GetMessageAsync(string localChatMessageId)
         {
-            return await DataSource<ChatMessage>
-                .Query()
-                .Where(m => m.Id == localChatMessageId)
-                .FirstOrDefaultAsync()
-                .ConfigureAwait(false);
+            return await DataSource<ChatMessage>.FirstOrDefaultAsync(m => m.Id == localChatMessageId).ConfigureAwait(false);
         }
 
-        public async Task<IReadOnlyList<ChatMessage>> ReadBatchAsync()
+        public async Task<IReadOnlyList<ChatMessage>> ReadBatchAsync(Expression<Func<ChatMessage, bool>> predicate = null)
         {
-            return await ReadBatchAsync(10).ConfigureAwait(false);
+            return await ReadBatchAsync(10, predicate).ConfigureAwait(false);
         }
 
-        public async Task<IReadOnlyList<ChatMessage>> ReadBatchAsync(int count)
+        public async Task<IReadOnlyList<ChatMessage>> ReadBatchAsync(int count, Expression<Func<ChatMessage, bool>> predicate = null)
         {
-            return await DataSource<ChatMessage>
-                .Query()
-                .OrderByDescending(m => m.LocalTimestamp)
-                .Take(count)
-                .ToListAsync()
-                .ConfigureAwait(false);
+            return await DataSource<ChatMessage>.ReadBatchAsync(count, predicate, m => m.LocalTimestamp).ConfigureAwait(false);
         }
     }
 }

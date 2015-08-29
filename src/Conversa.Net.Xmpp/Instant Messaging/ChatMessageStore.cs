@@ -16,14 +16,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     public sealed class ChatMessageStore
     {
         private Subject<ChatMessage> messageChangedStream;
-
-        static ChatMessageStore()
-        {   
-            DataSource<ChatMessageAttachment>.CreateTable();
-            DataSource<ChatConversationThreadingInfo>.CreateTable();         
-            DataSource<ChatRecipientDeliveryInfo>.CreateTable();
-            DataSource<ChatMessage>.CreateTable();
-        }
+        private ChatMessageReader    messageReader;
 
         public IObservable<ChatMessage> MessageChangedStream
         {
@@ -45,6 +38,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
             this.messageChangedStream = new Subject<ChatMessage>();
             this.ChangeTracker        = new ChatMessageChangeTracker();
+            this.messageReader        = new ChatMessageReader();
         }
 
         /// <summary>
@@ -89,7 +83,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <returns>The chat message reader.</returns>
         public ChatMessageReader GetMessageReader()
         {
-            return new ChatMessageReader();
+            return this.messageReader;
         }
 
         /// <summary>
@@ -101,9 +95,12 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         {
             ChatMessage chatMessage = await this.GetMessageAsync(localChatMessageId).ConfigureAwait(false);
 
-            chatMessage.IsRead = true;
+            if (chatMessage != null)
+            {
+                chatMessage.IsRead = true;
 
-            await this.SaveMessageAsync(chatMessage).ConfigureAwait(false);
+                await this.SaveMessageAsync(chatMessage).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -132,8 +129,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                     var xmppMessage = chatMessage.ToXmpp();
                     var transport   = XmppTransportManager.GetTransport();
 
-                    chatMessage.RemoteId                = xmppMessage.Id;
-                    chatMessage.RecipientsDeliveryInfos = new List<ChatRecipientDeliveryInfo>();
+                    chatMessage.RemoteId = xmppMessage.Id;                    
 
                     if (chatMessage.Status == ChatMessageStatus.Draft)
                     {
@@ -144,19 +140,9 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                         chatMessage.Status = ChatMessageStatus.SendRetryNeeded;
                     }
 
-                    foreach (var recipient in chatMessage.Recipients)
+                    foreach (var deliveryInfo in chatMessage.RecipientsDeliveryInfos)
                     {
-                        var deliveryInfo = new ChatRecipientDeliveryInfo
-                        {
-                             Id                            = IdentifierGenerator.Generate()
-                           , DeliveryTime                  = DateTimeOffset.UtcNow
-                           , IsErrorPermanent              = false
-                           , Status                        = chatMessage.Status
-                           , TransportAddress              = recipient
-                           , TransportErrorCode            = 0
-                           , TransportErrorCodeCategory    = XmppTransportErrorCodeCategory.None
-                           , TransportInterpretedErrorCode = XmppTransportInterpretedErrorCode.None
-                        };
+                        deliveryInfo.Status = chatMessage.Status;
 
                         chatMessage.RecipientsDeliveryInfos.Add(deliveryInfo);
                     }
@@ -222,11 +208,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
         private async Task OnMessageSent(Message message)
         {
-            ChatMessage chatMessage = await DataSource<ChatMessage>
-                .Query()
-                .Where(m => m.RemoteId == message.Id)
-                .FirstOrDefaultAsync()
-                .ConfigureAwait(false);
+            var chatMessage = await DataSource<ChatMessage>.FirstOrDefaultAsync(x => x.RemoteId == message.Id).ConfigureAwait(false);
 
             if (chatMessage != null)
             {
@@ -243,11 +225,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
         private async Task OnMessageError(Message message)
         {
-            ChatMessage chatMessage = await DataSource<ChatMessage>
-                .Query()
-                .Where(m => m.RemoteId == message.Id)
-                .FirstOrDefaultAsync()
-                .ConfigureAwait(false);
+            var chatMessage = await DataSource<ChatMessage>.FirstOrDefaultAsync(x => x.RemoteId == message.Id).ConfigureAwait(false);
 
             if (chatMessage != null)
             {

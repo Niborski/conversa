@@ -376,6 +376,8 @@
     <Compile Include="Core\XmppAddress.cs" />
     <Compile Include="Core\XmppCodes.cs" />
     <Compile Include="Data Store\DataSource.cs" />
+    <Compile Include="Data Store\DataStore.cs" />
+    <Compile Include="Data Store\PredicateExpressions.cs" />
     <Compile Include="DataForms\DataForm.cs" />
     <Compile Include="DataForms\DataFormField.cs" />
     <Compile Include="DataForms\DataFormFieldItem.cs" />
@@ -452,7 +454,6 @@
     <Compile Include="Client\XmppTransportKind.cs" />
     <Compile Include="Instant Messaging\ChatMessageValidationResult.cs" />
     <Compile Include="Instant Messaging\ChatMessageValidationStatus.cs" />
-    <Compile Include="Instant Messaging\ChatQueryOptions.cs" />
     <Compile Include="Instant Messaging\ChatRecipientDeliveryInfo.cs" />
     <Compile Include="Instant Messaging\ChatSearchReader.cs" />
     <Compile Include="Client\XmppTransportErrorCodeCategory.cs" />

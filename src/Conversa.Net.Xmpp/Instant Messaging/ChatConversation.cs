@@ -106,7 +106,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             this.ThreadingInfo = new ChatConversationThreadingInfo
             {
                 Id              = IdentifierGenerator.Generate()
-              , ContactId       = contact.Address
+              , ContactId       = contact.Address.BareAddress
               , ConversationId  = this.Id
               , Custom          = null
               , Kind            = ChatConversationThreadingKind.ContactId
@@ -115,7 +115,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             this.ThreadingInfo.Participants.Add(transport.UserAddress);
             this.ThreadingInfo.Participants.Add(contact.Address);
 
-            this.store = XmppTransportManager.RequestStore();
+            this.store = XmppTransportManager.RequestStore(contact.Address.BareAddress);
             this.store.ChangeTracker.Enable();
 
             transport.MessageStream
@@ -203,9 +203,28 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 chatMessage.ThreadingInfo = this.ThreadingInfo;
             }
 
-            chatMessage.Id      = IdentifierGenerator.Generate();
-            chatMessage.From    = XmppTransportManager.GetTransport().UserAddress;
-            chatMessage.Subject = this.Subject;
+            chatMessage.Id                      = IdentifierGenerator.Generate();
+            chatMessage.From                    = XmppTransportManager.GetTransport().UserAddress;
+            chatMessage.Subject                 = this.Subject;
+            chatMessage.Status                  = ChatMessageStatus.Draft;
+            chatMessage.RecipientsDeliveryInfos = new List<ChatRecipientDeliveryInfo>();
+            
+            foreach (var participant in this.Participants)
+            {
+                var deliveryInfo = new ChatRecipientDeliveryInfo
+                {
+                      Id                            = IdentifierGenerator.Generate()
+                    , DeliveryTime                  = DateTimeOffset.UtcNow
+                    , IsErrorPermanent              = false
+                    , Status                        = chatMessage.Status
+                    , TransportAddress              = participant
+                    , TransportErrorCode            = 0
+                    , TransportErrorCodeCategory    = XmppTransportErrorCodeCategory.None
+                    , TransportInterpretedErrorCode = XmppTransportInterpretedErrorCode.None
+                };
+
+                chatMessage.RecipientsDeliveryInfos.Add(deliveryInfo);
+            }
 
             await this.store.SendMessageAsync(chatMessage).ConfigureAwait(false);
         }

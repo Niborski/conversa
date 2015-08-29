@@ -1,4 +1,5 @@
-﻿using Conversa.Net.Xmpp.InstantMessaging;
+﻿using Conversa.Net.Xmpp.Core;
+using Conversa.Net.Xmpp.InstantMessaging;
 using System.Collections.Generic;
 using System.Linq;
 using Windows.ApplicationModel.Core;
@@ -41,7 +42,7 @@ namespace Conversa.Net.Xmpp.Client
             return transport;
         }
 
-        public static ChatMessageStore RequestStore()
+        public static ChatMessageStore RequestStore(XmppAddress address)
         {
             lock (syncObject)
             {
