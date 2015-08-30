@@ -297,6 +297,7 @@
     <Compile Include="Capabilities\EntityCapabilities.cs" />
     <Compile Include="Capabilities\IEntityCapabilitiesInfo.cs" />
     <Compile Include="ChatStates\ActiveChatState.cs" />
+    <Compile Include="ChatStates\ChatStateType.cs" />
     <Compile Include="ChatStates\ComposingChatState.cs" />
     <Compile Include="ChatStates\GoneChatState.cs" />
     <Compile Include="ChatStates\IChatState.cs" />

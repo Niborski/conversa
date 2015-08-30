@@ -31,9 +31,8 @@ namespace Conversa.Net.Xmpp.DataStore
             }
         }
 
-        public static async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>>   predicate
-                                                      , Expression<Func<T, object>> orderExpr = null
-                                                      , bool                        recursive = false)
+        public static async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate
+                                                      , bool                      recursive = false)
         {
             var store = new SQLiteAsyncConnection(Factory);
             var items = await store.GetAllWithChildrenAsync(predicate, recursive).ConfigureAwait(false);
@@ -41,31 +40,12 @@ namespace Conversa.Net.Xmpp.DataStore
             return items.FirstOrDefault();
         }
 
-        public static async Task<List<T>> ReadBatchAsync(int                         count
-                                                       , Expression<Func<T, bool>>   predicate = null
-                                                       , Expression<Func<T, object>> orderExpr = null)
+        public static async Task<List<T>> ReadBatchAsync(int                       count
+                                                       , Expression<Func<T, bool>> predicate = null)
         {
             var store = new SQLiteAsyncConnection(Factory);
-            var query = store.Table<T>();
 
-            if (predicate != null)
-            {
-                query = query.Where(predicate);
-            }
-
-            if (orderExpr != null)
-            {
-                query = query.OrderByDescending(orderExpr);
-            }
-
-            var items = await query.Take(count).ToListAsync().ConfigureAwait(false);
-
-            foreach (T item in items)
-            {
-                await store.GetChildrenAsync(item).ConfigureAwait(false);
-            }
-
-            return items;
+            return await store.GetAllWithChildrenAsync(predicate, true).ConfigureAwait(false);
         }
 
         public static async Task AddOrUpdateAsync(T item)

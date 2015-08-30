@@ -125,7 +125,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             this.ThreadingInfo = new ChatConversationThreadingInfo
             {
                 Id              = IdentifierGenerator.Generate()
-              , ContactId       = contact.Address.BareAddress
+              , ContactId       = contact.Address
               , ConversationId  = this.Id
               , Custom          = null
               , Kind            = ChatConversationThreadingKind.ContactId
@@ -191,10 +191,9 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Call this to indicate that the local participant has started or has completed typing.
         /// </summary>
-        /// <param name="transportId">Specifies the ChatMessageTransport to use.</param>
         /// <param name="participantAddress">The address of the remote participant.</param>
         /// <param name="isComposing">True if the local participant is typing, otherwise false.</param>
-        public void NotifyLocalParticipantComposing(string transportId, XmppAddress participantAddress, bool isComposing)
+        public async Task NotifyLocalParticipantComposing(XmppAddress participantAddress, bool isComposing)
         {
             throw new NotImplementedException();
         }
@@ -202,12 +201,29 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Locally triggers the event that indicates that a remote participant is typing.
         /// </summary>
-        /// <param name="transportId">Specifies the ChatMessageTransport to use.</param>
         /// <param name="participantAddress">The address of the remote participant.</param>
         /// <param name="isComposing">True if the remote participant is typing, otherwise false.</param>
-        public void NotifyRemoteParticipantComposing(string transportId, XmppAddress participantAddress, bool isComposing)
+        public async Task NotifyRemoteParticipantComposingAsync(XmppAddress participantAddress, bool isComposing)
         {
-            throw new NotImplementedException();
+            var transport = XmppTransportManager.GetTransport();
+            var message   = new Message
+            {
+                Id   = IdentifierGenerator.Generate()
+              , Type = MessageType.Chat
+              , From = transport.UserAddress
+              , To   = this.ThreadingInfo.ContactId
+            };
+
+            if (isComposing)
+            {
+                message.Items.Add(ChatStateType.Composing);
+            }
+            else
+            {
+                message.Items.Add(ChatStateType.Inactive);
+            }
+
+            await transport.SendAsync(message).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -227,6 +243,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             chatMessage.Subject                 = this.Subject;
             chatMessage.Status                  = ChatMessageStatus.Draft;
             chatMessage.RecipientsDeliveryInfos = new List<ChatRecipientDeliveryInfo>();
+            chatMessage.LocalTimestamp          = DateTimeOffset.UtcNow;
             
             foreach (var participant in this.Participants)
             {
@@ -267,6 +284,13 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                 this.incomingChatMessageStream.OnCompleted();
 
                 await this.store.SendMessageAsync(chatMessage).ConfigureAwait(false);
+
+                chatMessage.Status = ChatMessageStatus.Received;
+            }
+
+            if (message.From != this.ThreadingInfo.ContactId)
+            {
+                this.ThreadingInfo.ContactId = message.FromAddress;
             }
         }
     }

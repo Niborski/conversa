@@ -44,7 +44,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                          , DeliveryTime                  = null
                          , IsErrorPermanent              = false
                          , ReadTime                      = DateTimeOffset.UtcNow
-                         , Status                        = ChatMessageStatus .Received
+                         , Status                        = ChatMessageStatus.Received
                          , TransportAddress              = message.To
                          , TransportErrorCode            = 0
                          , TransportErrorCodeCategory    = XmppTransportErrorCodeCategory .None
@@ -199,7 +199,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public DateTimeOffset LocalTimestamp
         {
             get { return GetProperty(() => LocalTimestamp); }
-            private set { SetProperty(() => LocalTimestamp, value); }
+            set { SetProperty(() => LocalTimestamp, value); }
         }
 
         /// <summary>
@@ -311,6 +311,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         {
             this.Attachments = new List<ChatMessageAttachment>();
             this.Status      = ChatMessageStatus.Draft;
+            this.Id          = IdentifierGenerator.Generate();
         }
 
         /// <summary>

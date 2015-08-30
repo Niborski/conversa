@@ -6,7 +6,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     public enum ChatMessageStatus : int
     {
         Draft                 = 0
-      , Sending               = 1	
+      , Sending               = 1
       , Sent                  = 2	
       , SendRetryNeeded       = 3	
       , SendFailed            = 4	
@@ -18,6 +18,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
       , Declined              = 10	
       , Cancelled             = 11
       , Recalled              = 12
-      , ReceiveRetryNeeded    =  13	
+      , ReceiveRetryNeeded    = 13	
     }
 }

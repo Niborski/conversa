@@ -35,7 +35,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
         public async Task<IReadOnlyList<ChatMessage>> ReadBatchAsync(int count, Expression<Func<ChatMessage, bool>> predicate = null)
         {
-            return await DataSource<ChatMessage>.ReadBatchAsync(count, predicate, m => m.LocalTimestamp).ConfigureAwait(false);
+            return await DataSource<ChatMessage>.ReadBatchAsync(count, predicate).ConfigureAwait(false);
         }
     }
 }

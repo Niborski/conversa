@@ -145,24 +145,33 @@ namespace Conversa.Net.Xmpp.InstantMessaging
                     foreach (var deliveryInfo in chatMessage.RecipientsDeliveryInfos)
                     {
                         deliveryInfo.Status = chatMessage.Status;
-
-                        chatMessage.RecipientsDeliveryInfos.Add(deliveryInfo);
                     }
-                   
+
                     await this.SaveMessageAsync(chatMessage).ConfigureAwait(false);
 
                     await transport.SendAsync(xmppMessage
-                                            , async message => await OnMessageSent(message).ConfigureAwait(false)
+                                            , null
                                             , async message => await OnMessageError(message).ConfigureAwait(false))
                                    .ConfigureAwait(false);
+
+                    chatMessage.Status = ChatMessageStatus.Sent;
+
+                    foreach (var deliveryInfo in chatMessage.RecipientsDeliveryInfos)
+                    {
+                        deliveryInfo.Status = chatMessage.Status;
+                    }
+
+                    await this.SaveMessageAsync(chatMessage).ConfigureAwait(false);
                 }
                 else
                 {
                     chatMessage.Status = ChatMessageStatus.SendRetryNeeded;
                 }
             }
-
-            await this.SaveMessageAsync(chatMessage).ConfigureAwait(false);
+            else
+            {
+                await this.SaveMessageAsync(chatMessage).ConfigureAwait(false);
+            }
         }        
 
         /// <summary>
@@ -206,23 +215,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         private async Task SaveMessageAsync(ChatMessage chatMessage)
         {
             await DataSource<ChatMessage>.AddOrUpdateAsync(chatMessage).ConfigureAwait(false);
-        }
-
-        private async Task OnMessageSent(Message message)
-        {
-            var chatMessage = await DataSource<ChatMessage>.FirstOrDefaultAsync(x => x.RemoteId == message.Id).ConfigureAwait(false);
-
-            if (chatMessage != null)
-            {
-                chatMessage.Status = ChatMessageStatus.Sent;
-
-                foreach (var deliveryInfo in chatMessage.RecipientsDeliveryInfos)
-                {
-                    deliveryInfo.Status = chatMessage.Status;
-                }
-
-                await this.SaveMessageAsync(chatMessage).ConfigureAwait(false);
-            }
         }
 
         private async Task OnMessageError(Message message)
