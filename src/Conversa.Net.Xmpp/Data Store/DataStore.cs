@@ -10,6 +10,7 @@ namespace Conversa.Net.Xmpp.DataStore
             DataSource<ChatConversationThreadingInfo>.CreateTable();         
             DataSource<ChatRecipientDeliveryInfo>.CreateTable();
             DataSource<ChatMessage>.CreateTable();
+            DataSource<ChatConversation>.CreateTable();
         }
     }
 }

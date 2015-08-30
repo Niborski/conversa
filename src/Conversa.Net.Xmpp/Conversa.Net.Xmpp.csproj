@@ -438,6 +438,7 @@
     <Compile Include="Instant Messaging\ChatCapabilities.cs" />
     <Compile Include="Instant Messaging\ChatCapabilitiesManager.cs" />
     <Compile Include="Instant Messaging\ChatConversation.cs" />
+    <Compile Include="Instant Messaging\ChatConversationReader.cs" />
     <Compile Include="Instant Messaging\ChatConversationThreadingInfo.cs" />
     <Compile Include="Instant Messaging\ChatConversationThreadingKind.cs" />
     <Compile Include="Instant Messaging\ChatMessage.cs" />
@@ -454,11 +455,15 @@
     <Compile Include="Instant Messaging\ChatMessageStore.cs" />
     <Compile Include="Client\XmppTransportConfiguration.cs" />
     <Compile Include="Client\XmppTransportKind.cs" />
+    <Compile Include="Instant Messaging\ChatMessageStoreChangedEventData.cs" />
     <Compile Include="Instant Messaging\ChatMessageValidationResult.cs" />
     <Compile Include="Instant Messaging\ChatMessageValidationStatus.cs" />
+    <Compile Include="Instant Messaging\ChatQueryOptions.cs" />
     <Compile Include="Instant Messaging\ChatRecipientDeliveryInfo.cs" />
     <Compile Include="Client\XmppTransportErrorCodeCategory.cs" />
     <Compile Include="Client\XmppTransportInterpretedErrorCode.cs" />
+    <Compile Include="Instant Messaging\ChatSearchReader.cs" />
+    <Compile Include="Instant Messaging\ChatStoreChangedEventKind.cs" />
     <Compile Include="Instant Messaging\Contact.cs" />
     <Compile Include="Instant Messaging\ContactBlockingAction.cs" />
     <Compile Include="Instant Messaging\ContactList.cs" />

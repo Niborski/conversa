@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Carlos Guzmán Álvarez. All rights reserved.
+// Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
+
+using System;
 using System.Collections.Generic;
 using Windows.Media.MediaProperties;
 using Windows.Security.Cryptography.Certificates;

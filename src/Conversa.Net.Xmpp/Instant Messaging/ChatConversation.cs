@@ -4,13 +4,14 @@
 using Conversa.Net.Xmpp.ChatStates;
 using Conversa.Net.Xmpp.Client;
 using Conversa.Net.Xmpp.Core;
+using DevExpress.Mvvm;
+using SQLite.Net.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 
@@ -20,6 +21,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// Represents a conversation in a chat client.
     /// </summary>
     public sealed class ChatConversation
+        : BindableBase
     {
         public static ChatConversation Create(Contact contact)
         {
@@ -29,10 +31,11 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         private Subject<RemoteParticipantComposingChangedEventData> remoteParticipantComposingChangedStream;
         private Subject<ChatMessage> incomingChatMessageStream;
         private ChatMessageStore     store;
-       
+
         /// <summary>
         /// Occurs when the remote user has started or finished typing.
         /// </summary>
+        [Ignore]
         public IObservable<RemoteParticipantComposingChangedEventData> RemoteParticipantComposingChangedStream
         {
             get { return this.remoteParticipantComposingChangedStream.AsObservable(); }
@@ -41,6 +44,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Occurs when an incoming chat message has been received.
         /// </summary>
+        [Ignore]
         public IObservable<ChatMessage> IncomingChatMessageStream
         {
             get { return this.incomingChatMessageStream.AsObservable(); }
@@ -51,24 +55,27 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         public bool HasUnreadMessages
         {
-            get;
-        } = false;
+            get { return GetProperty(() => HasUnreadMessages); }
+            private set { SetProperty(() => HasUnreadMessages, value); }
+        }
 
         /// <summary>
         /// Gets the unique identifier for the ChatConversation.
         /// </summary>
+        [PrimaryKey]
         public string Id
         {
-            get;
-        } = IdentifierGenerator.Generate();
+            get { return GetProperty(() => Id); }
+            private set { SetProperty(() => Id, value); }
+        }
         
         /// <summary>
         /// Gets or puts a Boolean value indicating if the ChatConversation is muted.
         /// </summary>
         public bool IsConversationMuted
         {
-            get;
-            set;
+            get { return GetProperty(() => IsConversationMuted); }
+            set { SetProperty(() => IsConversationMuted, value); }
         }
 
         /// <summary>
@@ -77,12 +84,12 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public string MostRecentMessageId
         {
             get;
-            private set;
         }
 
         /// <summary>
         /// Gets a list of all the participants in the conversation.
         /// </summary>
+        [Ignore]
         public IEnumerable<string> Participants
         {
             get
@@ -95,20 +102,22 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
-        /// Read/write	Gets or puts the subject of a group conversation.
+        /// Gets or puts the subject of a group conversation.
         /// </summary>
         public string Subject
         {
-            get;
-            set;
+            get { return GetProperty(() => Subject); }
+            set { SetProperty(() => Subject, value); }
         }
-         
+
         /// <summary>
         /// Gets the threading info for the ChatConversation.
         /// </summary>
+        [Ignore]
         public ChatConversationThreadingInfo ThreadingInfo
         {
-            get;
+            get { return GetProperty(() => ThreadingInfo); }
+            private set { SetProperty(() => ThreadingInfo, value); }
         }
 
         /// <summary>
@@ -120,7 +129,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             var transport = XmppTransportManager.GetTransport();
 
             this.remoteParticipantComposingChangedStream = new Subject<RemoteParticipantComposingChangedEventData>();
-            this.incomingChatMessageStream = new Subject<ChatMessage>();
+            this.incomingChatMessageStream               = new Subject<ChatMessage>();
 
             this.ThreadingInfo = new ChatConversationThreadingInfo
             {

@@ -2,9 +2,7 @@
 // Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
 
 using Conversa.Net.Xmpp.DataStore;
-using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Conversa.Net.Xmpp.InstantMessaging
@@ -14,28 +12,30 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// </summary>
     public sealed class ChatMessageReader
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChatMessageReader"/> class.
+        /// </summary>
         internal ChatMessageReader()
         {
         }
 
         /// <summary>
-        /// Retrieves a message specified by an identifier from the message store.
+        /// Returns a batch list of chat messages from the message store.
         /// </summary>
-        /// <param name="localChatMessageId"></param>
+        /// <returns>An asynchronous operation that returns a list of chat messages upon successful completion.</returns>
+        public async Task<IReadOnlyList<ChatMessage>> ReadBatchAsync()
+        {
+            return await ReadBatchAsync(10).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Returns a batch list of chat messages from the message store limited to the specified size.
+        /// </summary>
+        /// <param name="count"></param>
         /// <returns></returns>
-        public async Task<ChatMessage> GetMessageAsync(string localChatMessageId)
+        public async Task<IReadOnlyList<ChatMessage>> ReadBatchAsync(int count)
         {
-            return await DataSource<ChatMessage>.FirstOrDefaultAsync(m => m.Id == localChatMessageId).ConfigureAwait(false);
-        }
-
-        public async Task<IReadOnlyList<ChatMessage>> ReadBatchAsync(Expression<Func<ChatMessage, bool>> predicate = null)
-        {
-            return await ReadBatchAsync(10, predicate).ConfigureAwait(false);
-        }
-
-        public async Task<IReadOnlyList<ChatMessage>> ReadBatchAsync(int count, Expression<Func<ChatMessage, bool>> predicate = null)
-        {
-            return await DataSource<ChatMessage>.ReadBatchAsync(count, predicate).ConfigureAwait(false);
+            return await DataSource<ChatMessage>.ReadBatchAsync(count).ConfigureAwait(false);
         }
     }
 }

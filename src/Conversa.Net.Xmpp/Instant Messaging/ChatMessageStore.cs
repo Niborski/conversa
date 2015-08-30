@@ -17,12 +17,24 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// </summary>
     public sealed class ChatMessageStore
     {
-        private Subject<ChatMessage> messageChangedStream;
-        private ChatMessageReader    messageReader;
+        private Subject<ChatMessage>                      messageChangedStream;
+        private Subject<ChatMessageStoreChangedEventData> storeChangedStream;
+        private ChatMessageReader                         messageReader;
 
+        /// <summary>
+        /// An event that occurs when a message in the message store is changed.
+        /// </summary>
         public IObservable<ChatMessage> MessageChangedStream
         {
             get { return this.messageChangedStream.AsObservable(); }
+        }
+
+        /// <summary>
+        /// Occurs when something in the <see cref="ChatMessageStore"/> has changed.
+        /// </summary>
+        public IObservable<ChatMessageStoreChangedEventData> StoreChangedStream
+        {
+            get  { return this.storeChangedStream.AsObservable(); }
         }
 
         /// <summary>
@@ -34,6 +46,9 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             private set;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChatMessageStore"/> class.
+        /// </summary>
         internal ChatMessageStore()
         {
             var transport = XmppTransportManager.GetTransport();
@@ -42,7 +57,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             this.ChangeTracker        = new ChatMessageChangeTracker();
             this.messageReader        = new ChatMessageReader();
         }
-
+ 
         /// <summary>
         /// Deletes a message from the chat message store.
         /// </summary>
@@ -70,13 +85,52 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }
 
         /// <summary>
+        /// Asynchronously gets a ChatConversation by ID.
+        /// </summary>
+        /// <param name="conversationId">The ID of the conversation to retrieve.</param>
+        /// <returns>The ChatConversation specified by the conversationId parameter.</returns>
+        public async Task<ChatConversation> GetConversationAsync(string conversationId)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Asynchronously gets a conversation based on a threading info object.
+        /// </summary>
+        /// <param name="threadingInfo">The threading info that identifies the conversation.</param>
+        /// <returns>The conversation identified by the threadingInfo parameter.</returns>
+        public async Task<ChatConversation> GetConversationFromThreadingInfoAsync(ChatConversationThreadingInfo threadingInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public ChatConversationReader GetConversationReader()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Retrieves a message specified by an identifier from the message store.
         /// </summary>
         /// <param name="localChatMessageId"></param>
         /// <returns></returns>
         public async Task<ChatMessage> GetMessageAsync(string localChatMessageId)
         {
-            return await GetMessageReader().GetMessageAsync(localChatMessageId).ConfigureAwait(false);
+            return await DataSource<ChatMessage>.FirstOrDefaultAsync(m => m.Id == localChatMessageId).ConfigureAwait(false);
+        }
+        
+        /// <summary>
+        /// Retrieves a message specified by its remote ID from the message store.
+        /// </summary>
+        /// <param name="remoteId">The <see cref="T:ChatMessage.RemoteId"/> of the <see cref="ChatMessage"/> to retrieve.</param>
+        /// <returns>The message.</returns>
+        public async Task<ChatMessage> GetMessageByRemoteIdAsync(string remoteId)
+        {
+            return await DataSource<ChatMessage>.FirstOrDefaultAsync(m => m.RemoteId == remoteId).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -86,6 +140,34 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public ChatMessageReader GetMessageReader()
         {
             return this.messageReader;
+        }
+
+        /// <summary>
+        /// Gets a new or existing ChatSearchReader to be used to search for messages.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public ChatSearchReader GetSearchReader(ChatQueryOptions value)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Asynchronously gets the number of unread chat messages.
+        /// </summary>
+        /// <returns>The number of unread chat messages.</returns>
+        public async Task<Int32> GetUnseenCountAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Asynchronously marks all transport messages as seen.
+        /// </summary>
+        /// <returns>An async action indicating that the operation has finished.</returns>
+        public async Task MarkAsSeenAsync()
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -113,6 +195,16 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public IAsyncAction RetrySendMessageAsync(string localChatMessageId)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Asynchronously saves a message to the <see cref="ChatMessageStore"/>.
+        /// </summary>
+        /// <param name="chatMessage">The message to save.</param>
+        /// <returns>An async action indicating that the operation has finished.</returns>
+        public async Task SaveMessageAsync(ChatMessage chatMessage)
+        {
+            await DataSource<ChatMessage>.AddOrUpdateAsync(chatMessage).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -175,6 +267,26 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }        
 
         /// <summary>
+        /// Asynchronously attempts to cancel downloading the specified message.
+        /// </summary>
+        /// <param name="localChatMessageId">The ID of the message to stop downloading.</param>
+        /// <returns>An async action indicating that the operation has completed.</returns>
+        public async Task<bool> TryCancelDownloadMessageAsync(string localChatMessageId)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Asynchronously attempts to cancel sending the specified message.
+        /// </summary>
+        /// <param name="localChatMessageId">The ID of the message to stop sending.</param>
+        /// <returns>An async action indicating that the operation has completed.</returns>
+        public async Task<bool> TryCancelSendMessageAsync(string localChatMessageId)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="chatMessage">The chat message to validate.</param>
@@ -212,14 +324,9 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             return new ChatMessageValidationResult(status);
         }
 
-        private async Task SaveMessageAsync(ChatMessage chatMessage)
-        {
-            await DataSource<ChatMessage>.AddOrUpdateAsync(chatMessage).ConfigureAwait(false);
-        }
-
         private async Task OnMessageError(Message message)
         {
-            var chatMessage = await DataSource<ChatMessage>.FirstOrDefaultAsync(x => x.RemoteId == message.Id).ConfigureAwait(false);
+            var chatMessage = await this.GetMessageByRemoteIdAsync(message.Id).ConfigureAwait(false);
 
             if (chatMessage != null)
             {

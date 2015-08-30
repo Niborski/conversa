@@ -1,7 +1,8 @@
-﻿using Conversa.Net.Xmpp.Core;
+﻿// Copyright (c) Carlos Guzmán Álvarez. All rights reserved.
+// Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
+
+using Conversa.Net.Xmpp.Core;
 using Conversa.Net.Xmpp.InstantMessaging;
-using System.Collections.Generic;
-using System.Linq;
 using Windows.ApplicationModel.Core;
 
 namespace Conversa.Net.Xmpp.Client

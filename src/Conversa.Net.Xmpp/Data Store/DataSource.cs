@@ -40,12 +40,11 @@ namespace Conversa.Net.Xmpp.DataStore
             return items.FirstOrDefault();
         }
 
-        public static async Task<List<T>> ReadBatchAsync(int                       count
-                                                       , Expression<Func<T, bool>> predicate = null)
+        public static async Task<List<T>> ReadBatchAsync(int count)
         {
             var store = new SQLiteAsyncConnection(Factory);
 
-            return await store.GetAllWithChildrenAsync(predicate, true).ConfigureAwait(false);
+            return await store.GetAllWithChildrenAsync<T>().ConfigureAwait(false);
         }
 
         public static async Task AddOrUpdateAsync(T item)
