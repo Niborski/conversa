@@ -152,15 +152,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         }      
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <returns>An asynchronous operation that returns a ChatMessageStore on successful completion.</returns>
-        public IAsyncOperation<ChatMessageStore> RequestStoreAsync()
-        {
-            return AsyncInfo.Run(_ => Task.Run<ChatMessageStore>(() => { return store; }));
-        }
-
-        /// <summary>
         /// Asynchronously deletes all of the messages in the ChatConversation and the conversation itself.
         /// </summary>
         /// <returns>An async action indicating that the operation has completed.</returns>
@@ -204,16 +195,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <param name="isComposing">True if the local participant is typing, otherwise false.</param>
         public async Task NotifyLocalParticipantComposing(XmppAddress participantAddress, bool isComposing)
         {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Locally triggers the event that indicates that a remote participant is typing.
-        /// </summary>
-        /// <param name="participantAddress">The address of the remote participant.</param>
-        /// <param name="isComposing">True if the remote participant is typing, otherwise false.</param>
-        public async Task NotifyRemoteParticipantComposingAsync(XmppAddress participantAddress, bool isComposing)
-        {
             var transport = XmppTransportManager.GetTransport();
             var message   = new Message
             {
@@ -233,6 +214,19 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             }
 
             await transport.SendAsync(message).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Locally triggers the event that indicates that a remote participant is typing.
+        /// </summary>
+        /// <param name="participantAddress">The address of the remote participant.</param>
+        /// <param name="isComposing">True if the remote participant is typing, otherwise false.</param>
+        public async Task NotifyRemoteParticipantComposingAsync(XmppAddress participantAddress, bool isComposing)
+        {
+            await Task.Run(() => {
+                var data = new RemoteParticipantComposingChangedEventData(participantAddress, isComposing);
+                this.remoteParticipantComposingChangedStream.OnNext(data);
+            });
         }
 
         /// <summary>
@@ -280,9 +274,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
             if (chatStates.Count > 0)
             {
-                var data = new RemoteParticipantComposingChangedEventData(message.From, chatStates[0] is ComposingChatState);
-
-                this.remoteParticipantComposingChangedStream.OnNext(data);
+                bool isComposing = (chatStates.OfType<ComposingChatState>().Count() > 0);
+                await this.NotifyLocalParticipantComposing(message.From, isComposing).ConfigureAwait(false);
             }
 
             if (message.Body != null)

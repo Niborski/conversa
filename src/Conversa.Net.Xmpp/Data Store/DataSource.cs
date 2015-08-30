@@ -90,6 +90,10 @@ namespace Conversa.Net.Xmpp.DataStore
             return await ReadBatchAsync<ChatMessage>(count).ConfigureAwait(false);
         }
 
+        internal static async Task SaveConversationAsync(ChatConversation chatConversation)
+        {
+            await AddOrUpdateAsync<ChatConversation>(chatConversation).ConfigureAwait(false);
+        }
 
         internal static async Task SaveMessageAsync(ChatMessage chatMessage)
         {
