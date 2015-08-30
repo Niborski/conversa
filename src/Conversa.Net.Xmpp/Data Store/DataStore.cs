@@ -6,11 +6,11 @@ namespace Conversa.Net.Xmpp.DataStore
     {
         public static void Create()
         {
-            DataSource<ChatMessageAttachment>.CreateTable();
-            DataSource<ChatConversationThreadingInfo>.CreateTable();         
-            DataSource<ChatRecipientDeliveryInfo>.CreateTable();
-            DataSource<ChatMessage>.CreateTable();
-            DataSource<ChatConversation>.CreateTable();
+            DataSource.CreateTable<ChatMessageAttachment>();
+            DataSource.CreateTable<ChatConversationThreadingInfo>();
+            DataSource.CreateTable<ChatRecipientDeliveryInfo>();
+            DataSource.CreateTable<ChatMessage>();
+            DataSource.CreateTable<ChatConversation>();
         }
     }
 }

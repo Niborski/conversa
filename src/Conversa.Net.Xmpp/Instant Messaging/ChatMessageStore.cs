@@ -54,6 +54,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             var transport = XmppTransportManager.GetTransport();
 
             this.messageChangedStream = new Subject<ChatMessage>();
+            this.storeChangedStream   = new Subject<ChatMessageStoreChangedEventData>();
             this.ChangeTracker        = new ChatMessageChangeTracker();
             this.messageReader        = new ChatMessageReader();
         }
@@ -64,13 +65,11 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <param name="localMessageId">The local ID of the message to be deleted.</param>
         public async Task DeleteMessageAsync(string localMessageId)
         {
-            ChatMessage chatMessage = await this.GetMessageAsync(localMessageId).ConfigureAwait(false);
+            int count = await DataSource.DeleteMessageAsync(localMessageId).ConfigureAwait(false);
 
-            if (chatMessage != null)
+            if (count != 0)
             {
-                chatMessage.Status = ChatMessageStatus.Deleted;
-
-                await this.SaveMessageAsync(chatMessage).ConfigureAwait(false);
+                this.PublishStoreChange(localMessageId, ChatStoreChangedEventKind.MessageDeleted);
             }
         }
 
@@ -91,7 +90,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <returns>The ChatConversation specified by the conversationId parameter.</returns>
         public async Task<ChatConversation> GetConversationAsync(string conversationId)
         {
-            throw new NotImplementedException();
+            return await DataSource.GetConversationAsync(conversationId).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -101,7 +100,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <returns>The conversation identified by the threadingInfo parameter.</returns>
         public async Task<ChatConversation> GetConversationFromThreadingInfoAsync(ChatConversationThreadingInfo threadingInfo)
         {
-            throw new NotImplementedException();
+            return await DataSource.GetConversationFromThreadingInfoAsync(threadingInfo).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -120,7 +119,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <returns></returns>
         public async Task<ChatMessage> GetMessageAsync(string localChatMessageId)
         {
-            return await DataSource<ChatMessage>.FirstOrDefaultAsync(m => m.Id == localChatMessageId).ConfigureAwait(false);
+            return await DataSource.GetMessageAsync(localChatMessageId).ConfigureAwait(false);
         }
         
         /// <summary>
@@ -130,7 +129,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <returns>The message.</returns>
         public async Task<ChatMessage> GetMessageByRemoteIdAsync(string remoteId)
         {
-            return await DataSource<ChatMessage>.FirstOrDefaultAsync(m => m.RemoteId == remoteId).ConfigureAwait(false);
+            return await DataSource.GetMessageByRemoteIdAsync(remoteId).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -156,9 +155,9 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// Asynchronously gets the number of unread chat messages.
         /// </summary>
         /// <returns>The number of unread chat messages.</returns>
-        public async Task<Int32> GetUnseenCountAsync()
+        public async Task<int> GetUnseenCountAsync()
         {
-            throw new NotImplementedException();
+            return await DataSource.GetUnseenCountAsync().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -167,7 +166,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <returns>An async action indicating that the operation has finished.</returns>
         public async Task MarkAsSeenAsync()
         {
-            throw new NotImplementedException();
+            await DataSource.MarkMessagesAsSeenAsync().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -177,14 +176,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <returns></returns>
         public async Task MarkMessageReadAsync(string localChatMessageId)
         {
-            ChatMessage chatMessage = await this.GetMessageAsync(localChatMessageId).ConfigureAwait(false);
-
-            if (chatMessage != null)
-            {
-                chatMessage.IsRead = true;
-
-                await this.SaveMessageAsync(chatMessage).ConfigureAwait(false);
-            }
+            await DataSource.MarkMessageReadAsync(localChatMessageId).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -204,7 +196,17 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <returns>An async action indicating that the operation has finished.</returns>
         public async Task SaveMessageAsync(ChatMessage chatMessage)
         {
-            await DataSource<ChatMessage>.AddOrUpdateAsync(chatMessage).ConfigureAwait(false);
+            int count = await DataSource.GetCountAsync<ChatMessage>(m => m.Id == chatMessage.Id).ConfigureAwait(false);
+            var kind  = ChatStoreChangedEventKind.MessageModified;
+            
+            await DataSource.SaveMessageAsync(chatMessage).ConfigureAwait(false);
+
+            if (count == 0)
+            {
+                kind = ChatStoreChangedEventKind.MessageCreated;
+            }
+
+            this.PublishStoreChange(chatMessage.Id, kind);
         }
 
         /// <summary>
@@ -347,6 +349,11 @@ namespace Conversa.Net.Xmpp.InstantMessaging
 
                 await this.SaveMessageAsync(chatMessage).ConfigureAwait(false);
             }
+        }
+
+        private void PublishStoreChange(string id, ChatStoreChangedEventKind kind)
+        {
+            this.storeChangedStream.OnNext(new ChatMessageStoreChangedEventData(id, kind));
         }
     }
 }

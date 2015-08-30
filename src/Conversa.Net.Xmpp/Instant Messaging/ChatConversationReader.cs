@@ -1,10 +1,9 @@
 ﻿// Copyright (c) Carlos Guzmán Álvarez. All rights reserved.
 // Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
 
-using System;
+using Conversa.Net.Xmpp.DataStore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Windows.Foundation.Metadata;
 
 namespace Conversa.Net.Xmpp.InstantMessaging
 {
@@ -13,16 +12,13 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// </summary>
     public sealed class ChatConversationReader
     {
-        private string conversationId;
-
         /// <summary>
         /// Asynchronously reads batches of conversations from the ChatMessageStore.
         /// </summary>
         /// <returns>The list of conversations.</returns>
-        [RemoteAsync]
         public async Task<IReadOnlyList<ChatConversation>> ReadBatchAsync()
         {
-            throw new NotImplementedException();
+            return await ReadBatchAsync(10).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -30,10 +26,9 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// </summary>
         /// <param name="count">Specifies the size of the batch to read.</param>
         /// <returns>The list of conversations.</returns>
-        [RemoteAsync]
         public async Task<IReadOnlyList<ChatConversation>> ReadBatchAsync(int count)
         {
-            throw new NotImplementedException();
+            return await DataSource.ReadConversationBatchAsync(count).ConfigureAwait(false);
         }
 
         /// <summary>

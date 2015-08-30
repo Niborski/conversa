@@ -27,8 +27,12 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatMessageStoreChangedEventData"/> class.
         /// </summary>
-        internal ChatMessageStoreChangedEventData()
+        /// <param name="id">The ID of the object that changed.</param>
+        /// <param name="kind">The type of change that happened.</param>
+        internal ChatMessageStoreChangedEventData(string id, ChatStoreChangedEventKind kind)
         {
+            this.Id   = id;
+            this.Kind = kind;
         }
     }
 }
