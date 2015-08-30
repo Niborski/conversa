@@ -379,7 +379,6 @@
     <Compile Include="Core\XmppCodes.cs" />
     <Compile Include="Data Store\DataSource.cs" />
     <Compile Include="Data Store\DataStore.cs" />
-    <Compile Include="Data Store\PredicateExpressions.cs" />
     <Compile Include="DataForms\DataForm.cs" />
     <Compile Include="DataForms\DataFormField.cs" />
     <Compile Include="DataForms\DataFormFieldItem.cs" />
