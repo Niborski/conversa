@@ -4,11 +4,10 @@
 using Conversa.Net.Xmpp.Client;
 using Conversa.Net.Xmpp.Core;
 using DevExpress.Mvvm;
-using SQLite.Net.Attributes;
-using SQLiteNetExtensions.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Velox.DB;
 
 namespace Conversa.Net.Xmpp.InstantMessaging
 {
@@ -74,14 +73,14 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Gets a list of chat message attachments.
         /// </summary>
-        [OneToMany(CascadeOperations = CascadeOperation.All)]
+        [Relation.OneToMany(ForeignKey = "ChatMessageId")]
         public List<ChatMessageAttachment> Attachments
         {
             get { return GetProperty(() => Attachments); }
             set { SetProperty(() => Attachments, value); }
         }
 
-        [Ignore]
+        [Column.Ignore]
         public bool HasAttachments
         {
             get { return (this.Attachments?.Count > 0); }
@@ -114,7 +113,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             set { SetProperty(() => From, value); }
         }
 
-        [Ignore]
+        [Column.Ignore]
         public Contact Sender
         {
             get { return XmppTransportManager.GetTransport().Contacts[this.From]; }
@@ -123,7 +122,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Gets the ID of the message.
         /// </summary>
-        [PrimaryKey]
+        [Column.PrimaryKey, Column.Name("ChatMessageId")]
         public string Id
         {
             get { return GetProperty(() => Id); }
@@ -223,7 +222,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Gets the list of recipients of the message.
         /// </summary>
-        [Ignore]
+        [Column.Ignore]
         public IEnumerable<string> Recipients
         {
             get
@@ -239,7 +238,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Gets the delivery info for the recipient of the ChatMessage.
         /// </summary>
-        [OneToMany(CascadeOperations = CascadeOperation.All)]
+        [Relation.OneToMany(ForeignKey = "ChatMessageId")]
         public List<ChatRecipientDeliveryInfo> RecipientsDeliveryInfos
         {
             get { return GetProperty(() => RecipientsDeliveryInfos); }
@@ -249,7 +248,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Gets the list of send statuses for the message.
         /// </summary>
-        [Ignore]
+        [Column.Ignore]
         public IReadOnlyDictionary<String, ChatMessageStatus> RecipientSendStatuses
         {
             get
@@ -297,7 +296,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Gets or sets the conversation threading info for the ChatMessage.
         /// </summary>
-        [OneToOne(CascadeOperations = CascadeOperation.All)]
+        [Relation.OneToOne]
         public ChatConversationThreadingInfo ThreadingInfo
         {
             get { return GetProperty(() => ThreadingInfo); }
@@ -311,7 +310,6 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         {
             this.Attachments = new List<ChatMessageAttachment>();
             this.Status      = ChatMessageStatus.Draft;
-            this.Id          = IdentifierGenerator.Generate();
         }
 
         /// <summary>

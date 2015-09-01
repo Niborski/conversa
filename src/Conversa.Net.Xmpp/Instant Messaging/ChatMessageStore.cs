@@ -65,9 +65,9 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <param name="localMessageId">The local ID of the message to be deleted.</param>
         public async Task DeleteMessageAsync(string localMessageId)
         {
-            int count = await DataSource.DeleteMessageAsync(localMessageId).ConfigureAwait(false);
+            bool deleted = await DataSource.DeleteMessageAsync(localMessageId).ConfigureAwait(false);
 
-            if (count != 0)
+            if (deleted)
             {
                 this.PublishStoreChange(localMessageId, ChatStoreChangedEventKind.MessageDeleted);
             }
@@ -155,7 +155,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// Asynchronously gets the number of unread chat messages.
         /// </summary>
         /// <returns>The number of unread chat messages.</returns>
-        public async Task<int> GetUnseenCountAsync()
+        public async Task<long> GetUnseenCountAsync()
         {
             return await DataSource.GetUnseenCountAsync().ConfigureAwait(false);
         }
@@ -196,8 +196,8 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <returns>An async action indicating that the operation has finished.</returns>
         public async Task SaveMessageAsync(ChatMessage chatMessage)
         {
-            int count = await DataSource.GetCountAsync<ChatMessage>(m => m.Id == chatMessage.Id).ConfigureAwait(false);
-            var kind  = ChatStoreChangedEventKind.MessageModified;
+            long count = await DataSource.GetCountAsync<ChatMessage>(m => m.Id == chatMessage.Id).ConfigureAwait(false);
+            var  kind  = ChatStoreChangedEventKind.MessageModified;
             
             await DataSource.SaveMessageAsync(chatMessage).ConfigureAwait(false);
 

@@ -1,8 +1,7 @@
 ﻿// Copyright (c) Carlos Guzmán Álvarez. All rights reserved.
 // Licensed under the New BSD License (BSD). See LICENSE file in the project root for full license information.
 
-using SQLite.Net.Attributes;
-using SQLiteNetExtensions.Attributes;
+using Velox.DB;
 using Windows.Storage.Streams;
 
 namespace Conversa.Net.Xmpp.InstantMessaging
@@ -12,14 +11,14 @@ namespace Conversa.Net.Xmpp.InstantMessaging
     /// </summary>
     public sealed class ChatMessageAttachment
     {
-        [PrimaryKey]
+        [Column.PrimaryKey, Column.Name("AttachmentId")]
         public string Id
         {
             get;
             set;
         }
 
-        [ForeignKey(typeof(ChatMessage))]
+        [Column.Name("MessageId")]
         public string ChatMessageId
         {
             get;
@@ -29,7 +28,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Gets or sets the data stream for the attachment.
         /// </summary>
-        [Ignore]
+        [Column.Ignore]
         public IRandomAccessStreamReference DataStreamReference
         {
             get;
@@ -75,7 +74,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Gets or sets the thumbnail image for the attachment.
         /// </summary>
-        [Ignore]
+        [Column.Ignore]
         public IRandomAccessStreamReference Thumbnail
         {
             get;

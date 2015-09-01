@@ -5,14 +5,13 @@ using Conversa.Net.Xmpp.ChatStates;
 using Conversa.Net.Xmpp.Client;
 using Conversa.Net.Xmpp.Core;
 using DevExpress.Mvvm;
-using SQLite.Net.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Velox.DB;
 using Windows.Foundation;
 
 namespace Conversa.Net.Xmpp.InstantMessaging
@@ -35,7 +34,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Occurs when the remote user has started or finished typing.
         /// </summary>
-        [Ignore]
+        [Column.Ignore]
         public IObservable<RemoteParticipantComposingChangedEventData> RemoteParticipantComposingChangedStream
         {
             get { return this.remoteParticipantComposingChangedStream.AsObservable(); }
@@ -44,7 +43,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Occurs when an incoming chat message has been received.
         /// </summary>
-        [Ignore]
+        [Column.Ignore]
         public IObservable<ChatMessage> IncomingChatMessageStream
         {
             get { return this.incomingChatMessageStream.AsObservable(); }
@@ -62,11 +61,11 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Gets the unique identifier for the ChatConversation.
         /// </summary>
-        [PrimaryKey]
+        [Column.PrimaryKey, Column.Name("ConversationId")]
         public string Id
         {
             get { return GetProperty(() => Id); }
-            private set { SetProperty(() => Id, value); }
+            set { SetProperty(() => Id, value); }
         }
         
         /// <summary>
@@ -89,7 +88,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Gets a list of all the participants in the conversation.
         /// </summary>
-        [Ignore]
+        [Column.Ignore]
         public IEnumerable<string> Participants
         {
             get
@@ -113,7 +112,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <summary>
         /// Gets the threading info for the ChatConversation.
         /// </summary>
-        [Ignore]
+        [Column.Ignore]
         public ChatConversationThreadingInfo ThreadingInfo
         {
             get { return GetProperty(() => ThreadingInfo); }
@@ -236,17 +235,20 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         /// <returns></returns>
         public async Task SendMessageAsync(ChatMessage chatMessage)
         {
-            if (chatMessage.ThreadingInfo == null)
-            {
-                chatMessage.ThreadingInfo = this.ThreadingInfo;
-            }
-
             chatMessage.Id                      = IdentifierGenerator.Generate();
             chatMessage.From                    = XmppTransportManager.GetTransport().UserAddress;
             chatMessage.Subject                 = this.Subject;
             chatMessage.Status                  = ChatMessageStatus.Draft;
             chatMessage.RecipientsDeliveryInfos = new List<ChatRecipientDeliveryInfo>();
             chatMessage.LocalTimestamp          = DateTimeOffset.UtcNow;
+            chatMessage.ThreadingInfo           = new ChatConversationThreadingInfo
+            {
+                Id              = chatMessage.Id
+              , ContactId       = this.ThreadingInfo.ContactId
+              , ConversationId  = this.ThreadingInfo.ConversationId
+              , Custom          = this.ThreadingInfo.Custom
+              , Kind            = this.ThreadingInfo.Kind
+            };
             
             foreach (var participant in this.Participants)
             {

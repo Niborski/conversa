@@ -1,8 +1,4 @@
 ﻿using Conversa.Net.Xmpp.InstantMessaging;
-using SQLite.Net;
-using SQLite.Net.Async;
-using SQLite.Net.Platform.WinRT;
-using SQLiteNetExtensionsAsync.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,32 +6,32 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Velox.DB;
+using Velox.DB.Sqlite;
 
 namespace Conversa.Net.Xmpp.DataStore
 {
     internal static class DataSource
     {
-        private static readonly string                         StorePath  = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "Data Store\\Conversa.db");
-        private static readonly SQLiteConnectionString         ConnString = new SQLiteConnectionString(StorePath, false);
-        private static readonly SQLitePlatformWinRT            Platform   = new SQLite.Net.Platform.WinRT.SQLitePlatformWinRT();
-        private static readonly Func<SQLiteConnectionWithLock> Factory    = new Func<SQLiteConnectionWithLock> (() => new SQLiteConnectionWithLock(Platform, ConnString));
-
-        static SemaphoreSlim Semaphore = new SemaphoreSlim(1);
+        private static readonly string StorePath = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "Data Store\\Conversa.db");
+        private static SemaphoreSlim Semaphore   = new SemaphoreSlim(1);
 
         public static void CreateTable<T>()
             where T : class
         {
-            using (var db = new SQLiteConnection(Platform, StorePath))
+            using (var provider = new SqliteDataProvider(StorePath))
             {
-                // Create the tables if they don't exist
-                db.CreateTable<T>(SQLite.Net.Interop.CreateFlags.AllImplicit);
+                using (var context = new Vx.Context(provider))
+                {
+                    context.CreateTable<T>();
+                }
             }
         }
 
-        internal static async Task<int> DeleteMessageAsync(string localMessageId)
+        internal static async Task<bool> DeleteMessageAsync(string localMessageId)
         {
-            var chatMessage = await GetMessageAsync(localMessageId).ConfigureAwait(false);
-            int result      = 0;
+            var  chatMessage = await GetMessageAsync(localMessageId).ConfigureAwait(false);
+            bool result      = false;
 
             if (chatMessage != null)
             {
@@ -52,7 +48,20 @@ namespace Conversa.Net.Xmpp.DataStore
 
         internal static async Task<ChatConversation> GetConversationFromThreadingInfoAsync(ChatConversationThreadingInfo threadingInfo)
         {
-            throw new NotImplementedException();
+            return await Task.Run<ChatConversation>(() => 
+            {
+                using (var provider = new SqliteDataProvider(StorePath))
+                {
+                    using (var context = new Vx.Context(provider))
+                    {
+                        var q = from conversation in context.DataSet<ChatConversation>()
+                                where conversation.Id == threadingInfo.Id
+                                select conversation;
+
+                        return q.FirstOrDefault();
+                    }
+                }
+            }).ConfigureAwait(false);
         }
 
         internal static async Task<ChatMessage> GetMessageAsync(string localChatMessageId)
@@ -65,39 +74,73 @@ namespace Conversa.Net.Xmpp.DataStore
             return await FirstOrDefaultAsync<ChatMessage>(m => m.RemoteId == remoteId).ConfigureAwait(false);
         }
 
-        internal static async Task<int> GetUnseenCountAsync()
+        internal static async Task<long> GetUnseenCountAsync()
         {
             return await GetCountAsync<ChatMessage>(m => !m.IsSeen).ConfigureAwait(false);
         }
 
         internal static async Task MarkMessagesAsSeenAsync()
         {
-            var store = new SQLiteAsyncConnection(Factory);
-            var items = await store.Table<ChatMessage>().Where(m => !m.IsSeen).ToListAsync().ConfigureAwait(false);
+            await Task.Run(() => 
+            {
+                using (var provider = new SqliteDataProvider(StorePath))
+                {
+                    using (var context = new Vx.Context(provider))
+                    {
+                        var q = from message in context.DataSet<ChatMessage>()
+                                where !message.IsSeen
+                                select message;
 
-            items.ForEach(m => m.IsSeen = true);
-            
-            await store.UpdateAllAsync(items).ConfigureAwait(false);
+                        foreach (var message in q)
+                        {
+                            message.IsSeen = true;
+                            context.Update(message);
+                        }
+                    }
+                }
+            }).ConfigureAwait(false);
         }
 
         internal static async Task<List<ChatConversation>> ReadConversationBatchAsync(int count)
         {
-            return await ReadBatchAsync<ChatConversation>(count).ConfigureAwait(false);
+            return await ReadBatchAsync<ChatConversation>(count, c => c.ThreadingInfo).ConfigureAwait(false);
         }
 
         internal static async Task<List<ChatMessage>> ReadMessageBatchAsync(int count)
         {
-            return await ReadBatchAsync<ChatMessage>(count).ConfigureAwait(false);
+            return await ReadBatchAsync<ChatMessage>(count
+                                                   , m => m.Attachments
+                                                   , m => m.RecipientsDeliveryInfos
+                                                   , m => m.ThreadingInfo
+                                                   ).ConfigureAwait(false);
         }
 
         internal static async Task SaveConversationAsync(ChatConversation chatConversation)
         {
-            await AddOrUpdateAsync<ChatConversation>(chatConversation).ConfigureAwait(false);
+            var count = await GetCountAsync<ChatConversation>(m => m.Id == chatConversation.Id).ConfigureAwait(false);
+
+            if (count == 0)
+            {
+                await AddAsync<ChatConversation>(chatConversation).ConfigureAwait(false);
+            }            
+            else
+            {
+                await UpdateAsync<ChatConversation>(chatConversation).ConfigureAwait(false);
+            }
         }
 
         internal static async Task SaveMessageAsync(ChatMessage chatMessage)
         {
-            await AddOrUpdateAsync<ChatMessage>(chatMessage).ConfigureAwait(false);
+            var count = await GetCountAsync<ChatMessage>(m => m.Id == chatMessage.Id).ConfigureAwait(false);
+
+            if (count == 0)
+            {
+                await AddAsync<ChatMessage>(chatMessage).ConfigureAwait(false);
+            }            
+            else
+            {
+                await UpdateAsync<ChatMessage>(chatMessage).ConfigureAwait(false);
+            }
         }
 
         internal static async Task MarkMessageReadAsync(string localChatMessageId)
@@ -108,59 +151,113 @@ namespace Conversa.Net.Xmpp.DataStore
             {
                 chatMessage.IsRead = true;
 
-                await AddOrUpdateAsync(chatMessage).ConfigureAwait(false);
+                await UpdateAsync(chatMessage).ConfigureAwait(false);
             }
         }
 
-        internal static async Task<int> GetCountAsync<T>(Expression<Func<T, bool>> predicate)
+        internal static async Task<long> GetCountAsync<T>(Expression<Func<T, bool>> predicate)
             where T : class
         {
-            var store = new SQLiteAsyncConnection(Factory);
-
-            return await store.Table<T>().Where(predicate).CountAsync().ConfigureAwait(false);
+            return await Task.Run<long>(() =>
+            {
+                using (var provider = new SqliteDataProvider(StorePath))
+                {
+                    using (var context = new Vx.Context(provider))
+                    {
+                        return context.DataSet<T>().Where(predicate).Count();
+                    }
+                }
+            }).ConfigureAwait(false);
         }
 
-        private static async Task<int> DeleteAsync<T>(T item)
+        private static async Task<bool> DeleteAsync<T>(T item)
             where T: class
         {
             await Semaphore.WaitAsync();
 
-            var store = new SQLiteAsyncConnection(Factory);
-            int count = await store.DeleteAsync<T>(item).ConfigureAwait(false);
+            bool deleted = await Task.Run<bool>(() =>
+            {
+                using (var provider = new SqliteDataProvider(StorePath))
+                {
+                    using (var context = new Vx.Context(provider))
+                    {
+                        return context.Delete<T>(item);
+                    }
+                }
+            }).ConfigureAwait(false);
 
             Semaphore.Release();
 
-            return count;
+            return deleted;
         }
 
-        private static async Task AddOrUpdateAsync<T>(T item)
+        private static async Task AddAsync<T>(T item)
             where T : class
         {
             await Semaphore.WaitAsync();
 
-            var store = new SQLiteAsyncConnection(Factory);
-
-            await store.InsertOrReplaceWithChildrenAsync(item, recursive: true).ConfigureAwait(false);
+            await Task.Run(() =>
+            {
+                using (var provider = new SqliteDataProvider(StorePath))
+                {
+                    using (var context = new Vx.Context(provider))
+                    {
+                        context.Insert<T>(item, true);
+                    }
+                }
+            }).ConfigureAwait(false);
 
             Semaphore.Release();
         }
 
-        private static async Task<List<T>> ReadBatchAsync<T>(int count)
+        private static async Task UpdateAsync<T>(T item)
+            where T : class
+        {
+            await Semaphore.WaitAsync();
+
+            await Task.Run(() =>
+            {
+                using (var provider = new SqliteDataProvider(StorePath))
+                {
+                    using (var context = new Vx.Context(provider))
+                    {
+                        context.Update<T>(item, true);
+                    }
+                }
+            }).ConfigureAwait(false);
+
+            Semaphore.Release();
+        }
+
+        private static async Task<List<T>> ReadBatchAsync<T>(int count, params Expression<Func<T, object>>[] relationsToLoad)
             where T: class
         {
-            var store = new SQLiteAsyncConnection(Factory);
-
-            return await store.GetAllWithChildrenAsync<T>().ConfigureAwait(false);
+            return await Task.Run<List<T>>(() =>
+            {
+                using (var provider = new SqliteDataProvider(StorePath))
+                {
+                    using (var context = new Vx.Context(provider))
+                    {
+                        return context.DataSet<T>().WithRelations(relationsToLoad).Take(count).ToList();
+                    }
+                }
+            }).ConfigureAwait(false);
         }
 
         private static async Task<T> FirstOrDefaultAsync<T>(Expression<Func<T, bool>> predicate
                                                           , bool                      recursive = false)
             where T: class
         {
-            var store = new SQLiteAsyncConnection(Factory);
-            var items = await store.GetAllWithChildrenAsync(predicate, recursive).ConfigureAwait(false);
-
-            return items.FirstOrDefault();
+            return await Task.Run<T>(() =>
+            {
+                using (var provider = new SqliteDataProvider(StorePath))
+                {
+                    using (var context = new Vx.Context(provider))
+                    {
+                        return context.DataSet<T>().FirstOrDefault(predicate);
+                    }
+                }
+            }).ConfigureAwait(false);
         }
     }
 }
