@@ -77,7 +77,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public List<ChatMessageAttachment> Attachments
         {
             get { return GetProperty(() => Attachments); }
-            set { SetProperty(() => Attachments, value); }
+            internal set { SetProperty(() => Attachments, value); }
         }
 
         [Column.Ignore]
@@ -110,7 +110,9 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public string From
         {
             get { return GetProperty(() => From); }
-            set { SetProperty(() => From, value); }
+            set {
+                SetProperty(() => From, value);
+            }
         }
 
         [Column.Ignore]
@@ -126,7 +128,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public string Id
         {
             get { return GetProperty(() => Id); }
-            set { SetProperty(() => Id, value); }
+            internal set { SetProperty(() => Id, value); }
         }
 
         /// <summary>
@@ -180,7 +182,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public bool IsReplyDisabled
         {
             get { return GetProperty(() => IsReplyDisabled); }
-            private set { SetProperty(() => IsReplyDisabled, value); }
+            internal set { SetProperty(() => IsReplyDisabled, value); }
         }
 
         /// <summary>
@@ -263,7 +265,7 @@ namespace Conversa.Net.Xmpp.InstantMessaging
         public string RemoteId
         {
             get { return GetProperty(() => RemoteId); }
-            set { SetProperty(() => RemoteId, value); }
+            internal set { SetProperty(() => RemoteId, value); }
         }
         
         /// <summary>

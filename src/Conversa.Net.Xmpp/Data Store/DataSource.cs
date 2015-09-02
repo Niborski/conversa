@@ -16,14 +16,14 @@ namespace Conversa.Net.Xmpp.DataStore
         private static readonly string StorePath = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "Data Store\\Conversa.db");
         private static SemaphoreSlim Semaphore   = new SemaphoreSlim(1);
 
-        public static void CreateTable<T>()
+        public static void CreateTable<T>(bool recreateTable = false)
             where T : class
         {
             using (var provider = new SqliteDataProvider(StorePath))
             {
                 using (var context = new Vx.Context(provider))
                 {
-                    context.CreateTable<T>();
+                    context.CreateTable<T>(recreateTable: recreateTable);
                 }
             }
         }
@@ -39,6 +39,21 @@ namespace Conversa.Net.Xmpp.DataStore
             }
 
             return result;
+        }
+
+        internal static async Task<long> GetCountAsync<T>(Expression<Func<T, bool>> predicate)
+            where T : class
+        {
+            return await Task.Run<long>(() =>
+            {
+                using (var provider = new SqliteDataProvider(StorePath))
+                {
+                    using (var context = new Vx.Context(provider))
+                    {
+                        return context.DataSet<T>().Where(predicate).Count();
+                    }
+                }
+            }).ConfigureAwait(false);
         }
 
         internal static async Task<ChatConversation> GetConversationAsync(string conversationId)
@@ -101,6 +116,18 @@ namespace Conversa.Net.Xmpp.DataStore
             }).ConfigureAwait(false);
         }
 
+        internal static async Task MarkMessageReadAsync(string localChatMessageId)
+        {
+            var chatMessage = await GetMessageAsync(localChatMessageId).ConfigureAwait(false);
+
+            if (chatMessage != null)
+            {
+                chatMessage.IsRead = true;
+
+                await UpdateAsync(chatMessage).ConfigureAwait(false);
+            }
+        }
+
         internal static async Task<List<ChatConversation>> ReadConversationBatchAsync(int count)
         {
             return await ReadBatchAsync<ChatConversation>(count, c => c.ThreadingInfo).ConfigureAwait(false);
@@ -143,31 +170,9 @@ namespace Conversa.Net.Xmpp.DataStore
             }
         }
 
-        internal static async Task MarkMessageReadAsync(string localChatMessageId)
+        internal static async Task<List<ChatMessage>> SearchMessagesAsync(Expression<Func<ChatMessage, bool>> searchCriteria, int take, int skip)
         {
-            var chatMessage = await GetMessageAsync(localChatMessageId).ConfigureAwait(false);
-
-            if (chatMessage != null)
-            {
-                chatMessage.IsRead = true;
-
-                await UpdateAsync(chatMessage).ConfigureAwait(false);
-            }
-        }
-
-        internal static async Task<long> GetCountAsync<T>(Expression<Func<T, bool>> predicate)
-            where T : class
-        {
-            return await Task.Run<long>(() =>
-            {
-                using (var provider = new SqliteDataProvider(StorePath))
-                {
-                    using (var context = new Vx.Context(provider))
-                    {
-                        return context.DataSet<T>().Where(predicate).Count();
-                    }
-                }
-            }).ConfigureAwait(false);
+            return await SearchAsync<ChatMessage>(searchCriteria, take, skip).ConfigureAwait(false);
         }
 
         private static async Task<bool> DeleteAsync<T>(T item)
@@ -239,6 +244,21 @@ namespace Conversa.Net.Xmpp.DataStore
                     using (var context = new Vx.Context(provider))
                     {
                         return context.DataSet<T>().WithRelations(relationsToLoad).Take(count).ToList();
+                    }
+                }
+            }).ConfigureAwait(false);
+        }
+
+        private static async Task<List<T>> SearchAsync<T>(Expression<Func<T, bool>> searchCriteria, int take, int skip)
+            where T: class
+        {
+            return await Task.Run<List<T>>(() =>
+            {
+                using (var provider = new SqliteDataProvider(StorePath))
+                {
+                    using (var context = new Vx.Context(provider))
+                    {
+                        return context.DataSet<T>().Take(take).Skip(skip).ToList();
                     }
                 }
             }).ConfigureAwait(false);

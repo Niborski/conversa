@@ -243,11 +243,11 @@ namespace Conversa.Net.Xmpp.InstantMessaging
             chatMessage.LocalTimestamp          = DateTimeOffset.UtcNow;
             chatMessage.ThreadingInfo           = new ChatConversationThreadingInfo
             {
-                Id              = chatMessage.Id
-              , ContactId       = this.ThreadingInfo.ContactId
-              , ConversationId  = this.ThreadingInfo.ConversationId
-              , Custom          = this.ThreadingInfo.Custom
-              , Kind            = this.ThreadingInfo.Kind
+                Id             = chatMessage.Id
+              , ContactId      = this.ThreadingInfo.ContactId
+              , ConversationId = this.ThreadingInfo.ConversationId
+              , Custom         = this.ThreadingInfo.Custom
+              , Kind           = this.ThreadingInfo.Kind
             };
             
             foreach (var participant in this.Participants)

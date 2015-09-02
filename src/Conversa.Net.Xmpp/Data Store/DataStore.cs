@@ -4,13 +4,13 @@ namespace Conversa.Net.Xmpp.DataStore
 {
     public static class DataStore
     {
-        public static void Create()
+        public static void Create(bool recreateTables = false)
         {
-            DataSource.CreateTable<ChatMessage>();
-            DataSource.CreateTable<ChatMessageAttachment>();
-            DataSource.CreateTable<ChatConversationThreadingInfo>();
-            DataSource.CreateTable<ChatRecipientDeliveryInfo>();
-            DataSource.CreateTable<ChatConversation>();
+            DataSource.CreateTable<ChatMessage>(recreateTables);
+            DataSource.CreateTable<ChatMessageAttachment>(recreateTables);
+            DataSource.CreateTable<ChatConversationThreadingInfo>(recreateTables);
+            DataSource.CreateTable<ChatRecipientDeliveryInfo>(recreateTables);
+            DataSource.CreateTable<ChatConversation>(recreateTables);
         }
     }
 }
